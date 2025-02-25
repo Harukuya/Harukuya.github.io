@@ -4,9 +4,36 @@
   
     
     <entry>
+      <title>《集成电路材料科学与工程基础》第六章</title>
+      <link href="/2024/04/10/%E3%80%8A%E9%9B%86%E6%88%90%E7%94%B5%E8%B7%AF%E6%9D%90%E6%96%99%E7%A7%91%E5%AD%A6%E4%B8%8E%E5%B7%A5%E7%A8%8B%E5%9F%BA%E7%A1%80%E3%80%8B%E7%AC%AC%E5%85%AD%E7%AB%A0/"/>
+      <url>/2024/04/10/%E3%80%8A%E9%9B%86%E6%88%90%E7%94%B5%E8%B7%AF%E6%9D%90%E6%96%99%E7%A7%91%E5%AD%A6%E4%B8%8E%E5%B7%A5%E7%A8%8B%E5%9F%BA%E7%A1%80%E3%80%8B%E7%AC%AC%E5%85%AD%E7%AB%A0/</url>
+      
+        <content type="html"><![CDATA[<div class="note orange no-icon flat"><p>Holograms插件是经典的悬浮字插件，更多功能详见官网。🎐🎐</p></div><div class="tag link"><a class="link-card" title="Holograms" href="https://www.spigotmc.org/resources/decentholograms-1-8-1-20-4-papi-support-no-dependencies.96927/ ✨✨"><div class="left"><img src="https://blogpic-5qb.pages.dev/img/avatar/holograms.png"/></div><div class="right"><p class="text">Holograms</p><p class="url">https://www.spigotmc.org/resources/decentholograms-1-8-1-20-4-papi-support-no-dependencies.96927/ ✨✨</p></div></a></div><hr><ul><li>&lt;&gt;    必需参数。</li><li>[]    可选参数。</li><li>{}    可能值的列表。</li></ul><hr><ul><li>创建  /dh create <name> [initial content]</li></ul><hr><ul><li>添加一行  /dh line add <hologram> <page> <content></li><li>设置一行  /dh line set <hologram> <page> <line> <content></li><li>移除一行  /dh line remove <hologram> <page> <line></li></ul><hr><ul><li>加一页      /dh page add <hologram> [initial content]</li><li>删除一页  /dh page remove <hologram> <page></li><li>查看一页  /dh page switch <hologram> <page></li></ul><hr><ul><li>要允许玩家在页面之间导航，您可以简单地执行以下操作：</li><li>/dh page addaction example 1 RIGHT NEXT_PAGE</li><li>/dh page addaction example 2 LEFT PREV_PAGE</li></ul><hr><ul><li>DecentHolograms 中的渐变使用以下格式定义：</li><li><p>&lt;#00FFFF&gt;&amp;l&amp;nDECENT HOLOGRAMS&lt;/#FF00FF&gt;</p></li><li><p>DecentHolograms 中的彩虹渐变使用以下格式定义：</p></li><li><p><RAINBOW1>Rainbow Text&lt;/RAINBOW&gt;/</p></li><li><p>/dh h center <hologram></p></li><li><p>将全息影像移动到块的当前 X 和 Z 位置的中心。</p></li><li><p>/dh h movehere <hologram></p></li><li>别名：mvhr</li><li>将给定的全息影像传送到您的位置。</li></ul>]]></content>
+      
+      
+      <categories>
+          
+          <category> 集成电路 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 集成电路 </tag>
+            
+            <tag> 材料科学与工程 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>Holograms插件快速入门指南</title>
-      <link href="/2024/04/10/Holograms%E6%8F%92%E4%BB%B6%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8%E6%8C%87%E5%8D%97/"/>
-      <url>/2024/04/10/Holograms%E6%8F%92%E4%BB%B6%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8%E6%8C%87%E5%8D%97/</url>
+      <link href="/2024/04/10/Holograms%E6%8F%92%E4%BB%B6%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8%E6%8C%87%E5%8D%97%20-%20%E5%89%AF%E6%9C%AC/"/>
+      <url>/2024/04/10/Holograms%E6%8F%92%E4%BB%B6%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8%E6%8C%87%E5%8D%97%20-%20%E5%89%AF%E6%9C%AC/</url>
       
         <content type="html"><![CDATA[<div class="note orange no-icon flat"><p>Holograms插件是经典的悬浮字插件，更多功能详见官网。🎐🎐</p></div><div class="tag link"><a class="link-card" title="Holograms" href="https://www.spigotmc.org/resources/decentholograms-1-8-1-20-4-papi-support-no-dependencies.96927/ ✨✨"><div class="left"><img src="https://blogpic-5qb.pages.dev/img/avatar/holograms.png"/></div><div class="right"><p class="text">Holograms</p><p class="url">https://www.spigotmc.org/resources/decentholograms-1-8-1-20-4-papi-support-no-dependencies.96927/ ✨✨</p></div></a></div><hr><ul><li>&lt;&gt;    必需参数。</li><li>[]    可选参数。</li><li>{}    可能值的列表。</li></ul><hr><ul><li>创建  /dh create <name> [initial content]</li></ul><hr><ul><li>添加一行  /dh line add <hologram> <page> <content></li><li>设置一行  /dh line set <hologram> <page> <line> <content></li><li>移除一行  /dh line remove <hologram> <page> <line></li></ul><hr><ul><li>加一页      /dh page add <hologram> [initial content]</li><li>删除一页  /dh page remove <hologram> <page></li><li>查看一页  /dh page switch <hologram> <page></li></ul><hr><ul><li>要允许玩家在页面之间导航，您可以简单地执行以下操作：</li><li>/dh page addaction example 1 RIGHT NEXT_PAGE</li><li>/dh page addaction example 2 LEFT PREV_PAGE</li></ul><hr><ul><li>DecentHolograms 中的渐变使用以下格式定义：</li><li><p>&lt;#00FFFF&gt;&amp;l&amp;nDECENT HOLOGRAMS&lt;/#FF00FF&gt;</p></li><li><p>DecentHolograms 中的彩虹渐变使用以下格式定义：</p></li><li><p><RAINBOW1>Rainbow Text&lt;/RAINBOW&gt;/</p></li><li><p>/dh h center <hologram></p></li><li><p>将全息影像移动到块的当前 X 和 Z 位置的中心。</p></li><li><p>/dh h movehere <hologram></p></li><li>别名：mvhr</li><li>将给定的全息影像传送到您的位置。</li></ul>]]></content>
       
@@ -134,9 +161,9 @@
     
     
     <entry>
-      <title>关于店长</title>
-      <link href="/about/index.html"/>
-      <url>/about/index.html</url>
+      <title>留言板</title>
+      <link href="/comments/index.html"/>
+      <url>/comments/index.html</url>
       
         <content type="html"><![CDATA[]]></content>
       
@@ -145,9 +172,9 @@
     
     
     <entry>
-      <title>分类</title>
-      <link href="/categories/index.html"/>
-      <url>/categories/index.html</url>
+      <title>关于店长</title>
+      <link href="/about/index.html"/>
+      <url>/about/index.html</url>
       
         <content type="html"><![CDATA[]]></content>
       
@@ -167,6 +194,17 @@
     
     
     <entry>
+      <title>标签</title>
+      <link href="/tags/index.html"/>
+      <url>/tags/index.html</url>
+      
+        <content type="html"><![CDATA[]]></content>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title></title>
       <link href="/js/fps.js"/>
       <url>/js/fps.js</url>
@@ -178,9 +216,9 @@
     
     
     <entry>
-      <title>留言板</title>
-      <link href="/comments/index.html"/>
-      <url>/comments/index.html</url>
+      <title>分类</title>
+      <link href="/categories/index.html"/>
+      <url>/categories/index.html</url>
       
         <content type="html"><![CDATA[]]></content>
       
@@ -238,17 +276,6 @@
       <url>/js/universe.js</url>
       
         <content type="html"><![CDATA[function dark() {window.requestAnimationFrame=window.requestAnimationFrame||window.mozRequestAnimationFrame||window.webkitRequestAnimationFrame||window.msRequestAnimationFrame;var n,e,i,h,t=.05,s=document.getElementById("universe"),o=!0,a="180,184,240",r="226,225,142",d="226,225,224",c=[];function f(){n=window.innerWidth,e=window.innerHeight,i=.216*n,s.setAttribute("width",n),s.setAttribute("height",e)}function u(){h.clearRect(0,0,n,e);for(var t=c.length,i=0;i<t;i++){var s=c[i];s.move(),s.fadeIn(),s.fadeOut(),s.draw()}}function y(){this.reset=function(){this.giant=m(3),this.comet=!this.giant&&!o&&m(10),this.x=l(0,n-10),this.y=l(0,e),this.r=l(1.1,2.6),this.dx=l(t,6*t)+(this.comet+1-1)*t*l(50,120)+2*t,this.dy=-l(t,6*t)-(this.comet+1-1)*t*l(50,120),this.fadingOut=null,this.fadingIn=!0,this.opacity=0,this.opacityTresh=l(.2,1-.4*(this.comet+1-1)),this.do=l(5e-4,.002)+.001*(this.comet+1-1)},this.fadeIn=function(){this.fadingIn&&(this.fadingIn=!(this.opacity>this.opacityTresh),this.opacity+=this.do)},this.fadeOut=function(){this.fadingOut&&(this.fadingOut=!(this.opacity<0),this.opacity-=this.do/2,(this.x>n||this.y<0)&&(this.fadingOut=!1,this.reset()))},this.draw=function(){if(h.beginPath(),this.giant)h.fillStyle="rgba("+a+","+this.opacity+")",h.arc(this.x,this.y,2,0,2*Math.PI,!1);else if(this.comet){h.fillStyle="rgba("+d+","+this.opacity+")",h.arc(this.x,this.y,1.5,0,2*Math.PI,!1);for(var t=0;t<30;t++)h.fillStyle="rgba("+d+","+(this.opacity-this.opacity/20*t)+")",h.rect(this.x-this.dx/4*t,this.y-this.dy/4*t-2,2,2),h.fill()}else h.fillStyle="rgba("+r+","+this.opacity+")",h.rect(this.x,this.y,this.r,this.r);h.closePath(),h.fill()},this.move=function(){this.x+=this.dx,this.y+=this.dy,!1===this.fadingOut&&this.reset(),(this.x>n-n/4||this.y<0)&&(this.fadingOut=!0)},setTimeout(function(){o=!1},50)}function m(t){return Math.floor(1e3*Math.random())+1<10*t}function l(t,i){return Math.random()*(i-t)+t}f(),window.addEventListener("resize",f,!1),function(){h=s.getContext("2d");for(var t=0;t<i;t++)c[t]=new y,c[t].reset();u()}(),function t(){document.getElementsByTagName('html')[0].getAttribute('data-theme')=='dark'&&u(),window.requestAnimationFrame(t)}()};dark()]]></content>
-      
-    </entry>
-    
-    
-    
-    <entry>
-      <title>标签</title>
-      <link href="/tags/index.html"/>
-      <url>/tags/index.html</url>
-      
-        <content type="html"><![CDATA[]]></content>
       
     </entry>
     
