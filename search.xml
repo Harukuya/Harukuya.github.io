@@ -4,6 +4,237 @@
   
     
     <entry>
+      <title>numpy2</title>
+      <link href="/2025/03/21/numpy2/"/>
+      <url>/2025/03/21/numpy2/</url>
+      
+        <content type="html"><![CDATA[]]></content>
+      
+      
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Python3</title>
+      <link href="/2025/03/21/python3/"/>
+      <url>/2025/03/21/python3/</url>
+      
+        <content type="html"><![CDATA[<div class="img-wrap"><div class="img-bg"><img class="img" src="https://blogpic-5qb.pages.dev/img/sc_swe/python/3.jpg" alt="<center>3"/></div><span class="image-caption"><center>3</span></div>]]></content>
+      
+      
+      <categories>
+          
+          <category> 辉夜の编程之路 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> Python </tag>
+            
+            <tag> 编程 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Numpy1</title>
+      <link href="/2025/03/21/numpy1/"/>
+      <url>/2025/03/21/numpy1/</url>
+      
+        <content type="html"><![CDATA[<h3 id="一、为什么要用到numpy"><a href="#一、为什么要用到numpy" class="headerlink" title="一、为什么要用到numpy"></a>一、为什么要用到numpy</h3><ol><li>是一个工具箱，专门做数据处理。</li><li>列表无法对数值进行批量运算，numpy可以提供新的数据存储方式，对这种新的格式进行处理即可实现。</li><li>需要有专门的库文件提供各种数值计算函数，如最大值最小值平均值。</li></ol><h3 id="二、基础用法"><a href="#二、基础用法" class="headerlink" title="二、基础用法"></a>二、基础用法</h3><ol><li><p>最大值最小值</p><p>```python</p><h1 id="求最大值最小值"><a href="#求最大值最小值" class="headerlink" title="求最大值最小值"></a>求最大值最小值</h1><p>max(a);min(a)</p><h1 id="平均值"><a href="#平均值" class="headerlink" title="平均值"></a>平均值</h1><p>mean(a)<br>```</p></li></ol>]]></content>
+      
+      
+      <categories>
+          
+          <category> 辉夜の编程之路 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> Python </tag>
+            
+            <tag> 编程 </tag>
+            
+            <tag> numpy库 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Python4</title>
+      <link href="/2025/03/21/python4/"/>
+      <url>/2025/03/21/python4/</url>
+      
+        <content type="html"><![CDATA[<div class="img-wrap"><div class="img-bg"><img class="img" src="https://blogpic-5qb.pages.dev/img/sc_swe/python/4.jpg" alt="<center>4"/></div><span class="image-caption"><center>4</span></div>]]></content>
+      
+      
+      <categories>
+          
+          <category> 辉夜の编程之路 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> Python </tag>
+            
+            <tag> 编程 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Python2</title>
+      <link href="/2025/03/21/python2/"/>
+      <url>/2025/03/21/python2/</url>
+      
+        <content type="html"><![CDATA[<div class="img-wrap"><div class="img-bg"><img class="img" src="https://blogpic-5qb.pages.dev/img/sc_swe/python/2.jpg" alt="<center>2"/></div><span class="image-caption"><center>2</span></div>]]></content>
+      
+      
+      <categories>
+          
+          <category> 辉夜の编程之路 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> Python </tag>
+            
+            <tag> 编程 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Python1</title>
+      <link href="/2025/03/21/python1/"/>
+      <url>/2025/03/21/python1/</url>
+      
+        <content type="html"><![CDATA[<div class="img-wrap"><div class="img-bg"><img class="img" src="https://blogpic-5qb.pages.dev/img/sc_swe/python/1.jpg" alt="<center>1"/></div><span class="image-caption"><center>1</span></div>]]></content>
+      
+      
+      <categories>
+          
+          <category> 辉夜の编程之路 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> Python </tag>
+            
+            <tag> 编程 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Python5</title>
+      <link href="/2025/03/21/python5/"/>
+      <url>/2025/03/21/python5/</url>
+      
+        <content type="html"><![CDATA[<div class="img-wrap"><div class="img-bg"><img class="img" src="https://blogpic-5qb.pages.dev/img/sc_swe/python/5.jpg" alt="<center>5"/></div><span class="image-caption"><center>5</span></div>]]></content>
+      
+      
+      <categories>
+          
+          <category> 辉夜の编程之路 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> Python </tag>
+            
+            <tag> 编程 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Python7</title>
+      <link href="/2025/03/21/python7/"/>
+      <url>/2025/03/21/python7/</url>
+      
+        <content type="html"><![CDATA[<div class="img-wrap"><div class="img-bg"><img class="img" src="https://blogpic-5qb.pages.dev/img/sc_swe/python/7.jpg" alt="<center>7"/></div><span class="image-caption"><center>7</span></div>]]></content>
+      
+      
+      <categories>
+          
+          <category> 辉夜の编程之路 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> Python </tag>
+            
+            <tag> 编程 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Python6</title>
+      <link href="/2025/03/21/python6/"/>
+      <url>/2025/03/21/python6/</url>
+      
+        <content type="html"><![CDATA[<div class="img-wrap"><div class="img-bg"><img class="img" src="https://blogpic-5qb.pages.dev/img/sc_swe/python/6.jpg" alt="<center>6"/></div><span class="image-caption"><center>6</span></div>]]></content>
+      
+      
+      <categories>
+          
+          <category> 辉夜の编程之路 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> Python </tag>
+            
+            <tag> 编程 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>《集成电路材料科学与工程基础》第六章</title>
       <link href="/2025/03/01/ICMfundamental/"/>
       <url>/2025/03/01/ICMfundamental/</url>
@@ -101,9 +332,9 @@
       
         <tags>
             
-            <tag> 杂谈 </tag>
-            
             <tag> 国G </tag>
+            
+            <tag> 杂谈 </tag>
             
             <tag> 炒饭三部曲 </tag>
             
@@ -130,9 +361,9 @@
       
         <tags>
             
-            <tag> 杂谈 </tag>
-            
             <tag> 国G </tag>
+            
+            <tag> 杂谈 </tag>
             
             <tag> 炒饭三部曲 </tag>
             
@@ -178,9 +409,9 @@
       
         <tags>
             
-            <tag> 生活碎碎念 </tag>
-            
             <tag> 杂谈 </tag>
+            
+            <tag> 生活碎碎念 </tag>
             
         </tags>
       
@@ -193,7 +424,7 @@
       <link href="/2022/12/15/mysterylover/"/>
       <url>/2022/12/15/mysterylover/</url>
       
-        <content type="html"><![CDATA[<div class="note orange no-icon flat"><p>致，那个令我们破大防的夏天。</p></div><!-- <div class="note orange no-icon flat"><p>本文章情节依附于国产galgame《恋爱绮谭~不存在的夏天~》，感兴趣的话，欢迎支持NKB制作组。🎐🎐</p></div><div class="tag link"><a class="link-card" title="《恋爱绮谭~不存在的夏天~》" href="https://steamcommunity.com/app/1345740 ✨✨"><div class="left"><img src="https://blogpic-5qb.pages.dev/img/avatar/mysterylover.png"/></div><div class="right"><p class="text">《恋爱绮谭~不存在的夏天~》</p><p class="url">https://steamcommunity.com/app/1345740 ✨✨</p></div></a></div> --><h1 id="遥远的ta"><a href="#遥远的ta" class="headerlink" title=" 遥远的ta"></a><center> 遥远的ta</h1><span class='p center small'>“前一世我护你周全，不只因为难舍难分。”</span><span class='p center small'>“这一世我佑你不伤，即便我们素不相识。”</span><hr><p>&emsp;&emsp;在飞机的轰鸣声中，我幽幽醒来，梦里，我仿佛去到了一间公寓，透过窗，月亮将静谧撒在一对轻吻着的情侣身上。</p><p>&emsp;&emsp;“再见了，苏半夏”，他轻轻说到。<br>&emsp;&emsp;“不要，别丢下我”，须臾，我下意识喊出。<br>&emsp;&emsp;我多么希望这一刻凝结成永恒。<br>&emsp;&emsp;但，我做不到。<br>&emsp;&emsp;下一刻，天雷划过，眼前的情景渐行渐远。</p><p>&emsp;&emsp;微微睁眼，却发现眼眶已些许湿润。<br>&emsp;&emsp;很少感性行事的我，在面对关于他的事情时，心中也会一阵悸动。<br>&emsp;&emsp;轻轻拭去泪痕，“又是他啊…”，我喃喃自语。<br>&emsp;&emsp;看向舷窗外，天空清澈明丽，我所心心念念的江城一览无余。<br>&emsp;&emsp;江城，我回来了。</p><p>&emsp;&emsp;江城的一月还是一如既往的熟悉。<br>&emsp;&emsp;天气已然转凉，但在冬日暖阳的眷顾下，仍有些许暖意。<br>&emsp;&emsp;我走下飞机，走出机场，享受着这不可多得的时光。<br>&emsp;&emsp;江城大桥、苹果湖中学、Necoday咖啡厅、老街、非日常部、孱陵路33号、陈墨、钟齐北、我们所解决掉的危险怪异，还有…我心里哪位重要的人。<br>&emsp;&emsp;过往一幕幕闪过眼前，但如同之前一样，不论我如何尝试，在我的记忆拼图中，总有缺失的几块。<br>&emsp;&emsp;这几块，代表着，他。<br>&emsp;&emsp;虽然我不知道他是谁，不，虽然我也许根本没有和他重逢的机会，但我会一直找下去，一定，一定。</p><p>&emsp;&emsp;……</p><p>&emsp;&emsp;在和爸爸妈妈打好招呼后，我独自走出家门，想再多一点和江城共处的时间，以及..再去寻找和他的记忆。</p><p>&emsp;&emsp;脚步轻踏，周遭渐转。</p><p>&emsp;&emsp;苹果湖中学门口，是半年前我和非日常部的朋友们——陈墨、钟齐北告别的地方。<br>&emsp;&emsp;每每路过这里，我总有一种不协调感，一种让我无法忽略，深深刻在我灵魂深处的不协调感。</p><p>&emsp;&emsp;就如同，一盘完整的棋局，被扣去了几粒棋子。<br>&emsp;&emsp;就如同，一幅精致的山水画，被抹去了几只飞雁。<br>&emsp;&emsp;就如同，一整个冬天都未落雪的江城。<br>&emsp;&emsp;在意时，它易寻端倪，而忽略时，又难以察觉。</p><p>&emsp;&emsp;但我知道，只有他，也只能是他。<br>&emsp;&emsp;“那里，本应该还有一个人的”</p><p>&emsp;&emsp;国安路上，站于CNGAL门前，我还记得自己曾独自一人发现微型摄像头，并与店主一起捉住了偷窥狂。<br>&emsp;&emsp;不，不对，不论何时回忆起这里的记忆，都会有严重的逻辑矛盾。<br>&emsp;&emsp;如果是我独自一人，又是谁和偷窥狂在小巷里对质？<br>&emsp;&emsp;如果我是独自一人，又是谁在我扭伤脚后将我背起？<br>&emsp;&emsp;如果我是独自一人，又是谁，能让我在那一个傍晚如此心痛？</p><p>&emsp;&emsp;只有他，也只能是他。</p><p>&emsp;&emsp;步子停在一方候车亭的角落。<br>&emsp;&emsp;依稀记得一个雨天，我在候车亭下等车，手中握着的，是不知何人在何时何地赠予我的红色雨伞，那似乎是我和那人友情的见证。<br>&emsp;&emsp;日历周转，同样是一个雨天，我与那人一同狼狈地被困在这样的亭下，感叹着那把红色雨伞的存在。<br>&emsp;&emsp;在那人身旁，冰冷的雨水不再凛冽，吹过的寒风不再彻骨。<br>&emsp;&emsp;在那人身旁，我可以毫无顾忌地，依靠他肩。<br>&emsp;&emsp;“他的手..在残留的记忆里，很暖。”</p><p>&emsp;&emsp;只有他，也只能是他。</p><p>&emsp;&emsp;可为什么，一旦我明确了他，脑海中的景象便随之模糊。<br>&emsp;&emsp;为什么，为什么。<br>&emsp;&emsp;经停的公交将我的回忆打断，我坐上了前往Necoday的车，心中微微不舍。</p><p>&emsp;&emsp;在Necoday咖啡厅，非日常部的成员在那一角谈天说地的景象似乎仍在眼前。<br>&emsp;&emsp;“但…我们非日常部，真的只有三个人吗”<br>&emsp;&emsp;我不知道，因为我的记忆给予我的是这个答案。<br>&emsp;&emsp;“这里，曾是陈默的位置，”<br>&emsp;&emsp;“这里，是钟齐北的，”<br>&emsp;&emsp;“这是我的座位，”<br>&emsp;&emsp;非日常部的会议位置，是一张四人圆桌，桌边，静静地摆放着四把椅子。<br>&emsp;&emsp;记忆中，我们三个围桌而坐，第四把椅子处，没有人。<br>&emsp;&emsp;但，在我闭上眼时，总有他的身影，出现在第四把椅子处。<br>&emsp;&emsp;记忆否定了他的存在，但我的灵魂却始终告诉我，他，本应存在于我的生命当中。</p><p>&emsp;&emsp;最后一站，是孱陵路老街。<br>&emsp;&emsp;路上，我在江城大桥站下了车，想用步行的方式感受大桥、长江的壮阔。<br>&emsp;&emsp;“也算是我这次回来的证明吧”<br>&emsp;&emsp;桥上，阳光穿过吊着大桥的铁臂，在地面上留下条条印记，身边的车流络绎不绝。<br>&emsp;&emsp;时间，在悄悄流逝。<br>&emsp;&emsp;这六个月里，我通过视频，参加非日常部的日常会议，另一边，我从发现自己记忆有误开始，便没有停止对他的探寻。<br>&emsp;&emsp;实际上，我在很早就发现了我记忆的问题，年幼时，每当我路过那个熟悉的沙坑，便感到些许头痛，而对他的记忆最模糊处，是我进入苹果湖上学进行学习的一年。</p><p>&emsp;&emsp;他，的确存在，而我，却似乎和他错开了一整个生世。</p><p>&emsp;&emsp;渐行渐远，我走到了大桥中央。<br>&emsp;&emsp;回首，转回。<br>&emsp;&emsp;我比较着两侧的江城。<br>&emsp;&emsp;它们不相近似，而又处处类似。<br>&emsp;&emsp;巧似我的人生。<br>&emsp;&emsp;我的过去，我的未来，是如何，将如何。<br>&emsp;&emsp;我不得而知。<br>&emsp;&emsp;但我知道，找到他，也许就找到了答案。</p><p>&emsp;&emsp;在大桥的另一侧，我重新乘上车，前往那最后的目的地。</p><p>&emsp;&emsp;入冬的老商业街，犹如冷下来的炉灶。<br>&emsp;&emsp;当日历撕到最后一页，柴，也添无可添。<br>&emsp;&emsp;今晚是除夕夜，街上人数寥寥，即便是为了生计日夜奔忙于此的人们，在今天也取得了外出小憩，寻找属于自己的热闹的机会。<br>&emsp;&emsp;大排档的桌椅整整齐齐地摆放在屋内，门上贴好了“春节休市”的告示。<br>&emsp;&emsp;不远处的鱼头汤店已经转让，大概店主已然找到了新的归宿。<br>&emsp;&emsp;上补习班回来的学生们，欣喜地走进各自的家门，期待着今晚能够拿到多少压岁钱。<br>&emsp;&emsp;夹着公文包的白领匆匆路过，抱怨着除夕还要加班的公司。<br>&emsp;&emsp;不远处，一家便利店内，大腹便便的店长和店员在看着电视，你一句，我一言地聊着演出的内容。<br>&emsp;&emsp;我喜欢这条老街的热闹，因为它让我感到温馨。<br>&emsp;&emsp;我亦喜欢现在老街的空荡，因为它让我能够漫步于此。<br>&emsp;&emsp;这种喜欢是莫名的。<br>&emsp;&emsp;也许是因为…我的记忆中，最大的波动点便是这里。</p><p>&emsp;&emsp;这意味着，他的存在。<br>&emsp;&emsp;至少，我还能回忆起，那个晚上，有人保护过我。</p><p>&emsp;&emsp;我倒背起双手，合上眼，沿着老街禹禹独行。<br>&emsp;&emsp;也许在他人眼里，我的做法有些奇怪。<br>&emsp;&emsp;奇怪在，在这所有人都围着“家”团团转的时候，有一位女孩却单独出门。<br>&emsp;&emsp;奇怪在，这位女孩天生白发，金瞳与红瞳交相辉映。<br>&emsp;&emsp;奇怪在，这位女孩看上去并不属于这里。<br>&emsp;&emsp;但，凡事总有例外。<br>&emsp;&emsp;这种做法，能让我去体会这条街，体会这座江城。</p><p>&emsp;&emsp;“这条街刚走进来的时候还挺有感觉的，走到这里，又找不到那种熟悉的气息了“<br>&emsp;&emsp;自言自语后，我无奈地在手机地图上记录下位置。</p><p>&emsp;&emsp;地图里，是我在不断努力寻找他的证明。<br>&emsp;&emsp;每一处记忆波动点，我都进行了详细的描述，生怕错过一丝线索。<br>&emsp;&emsp;也许最后我会将他遗忘，但这些，将会永远提醒着我。</p><p>&emsp;&emsp;“嗯，时候不早了，先回家吧，爸爸妈妈还等着呢”</p><p>&emsp;&emsp;不解风情的夕阳将淡金色的光辉铺在江城，在远处的高楼上映出自己的模样，点点碎金洒在少女的肩上，唯美而绮丽，仿佛在温柔地替少女抵消寒冷的侵袭，正如世界一角的他，默默守护了她的这一生。</p><p>&emsp;&emsp;“回美国之前，人多的时候，再来一次吧“<br>&emsp;&emsp;“如果过去我和这条街有什么关系的话…肯定也不是除夕这种日子”<br>&emsp;&emsp;我轻轻摇了摇头，走进一旁的便利店，想要换掉已经燃烧殆尽的暖贴。<br>&emsp;&emsp;“不快点换上新的的话，可能真的会感冒“<br>&emsp;&emsp;“感冒小事，爸爸不让我出来就麻烦了“</p><p>&emsp;&emsp;便利店里，不知疲倦的空调百无聊赖地吐着暖气，恰如其分的暖包裹了少女，少女内心的担忧散去了几分，迈着轻灵的步伐，寻找需要的商品。</p><p>&emsp;&emsp;我走到柜台前，将暖贴递给仍在营业的年轻店员，结了帐。<br>&emsp;&emsp;虽说是店员，可他一幅学生模样，相貌平平，与我在马路上遇到的普通人并无二致。<br>&emsp;&emsp;我没有丝毫其他的意思，只是感觉，世界上，似乎每个人都有自己明确的目标、明确的未来、明确的人生。<br>&emsp;&emsp;可我，却始终被记忆困在牢笼当中…正如深林中的蓝蝶一般，知晓自己的与众不同，但却始终无法逃离这深林去追寻属于自己的、明朗的光亮。<br>&emsp;&emsp;亦并不是说我没有自己的目标，仅仅是…仅仅是记忆里那一段段碎片，如同那林间渗进的光亮般，吸引着想要寻回他的我。</p><p>&emsp;&emsp;“一共33元，您需要袋子吗？”他问道。<br>&emsp;&emsp;“不了，谢谢。”<br>&emsp;&emsp;“欢迎再次光临”</p><p>&emsp;&emsp;推门离开时，我注意到店内播放着的是一首粤语歌，大部分歌词我难以听懂，但有一句却将我的回忆触动。</p><p>&emsp;&emsp;“忘掉砌过的沙，回忆的堡垒，刹那已倒下”</p><p>&emsp;&emsp;“好像，我也用沙子堆过城堡呢”</p><p>&emsp;&emsp;撕开的暖贴将热量传到指尖，这股暖流让恢复活力的毛细血管再次鼓动，而曾经那个旧沙坑的回忆，如同早春河水解冻时的冰一般，划过少女的眼前——<br>&emsp;&emsp;金色的沙旁，是她和一个男孩，沙堡立于沙坑之中，巧似一座空中楼阁。<br>&emsp;&emsp;脚边，是正忙着建设自己家园的蚂蚁们，排成规矩的长队，搬运着片片树叶。<br>&emsp;&emsp;她和男孩有说有笑，雕刻着他们的沙堡，也撰写着他们的友谊。</p><p>&emsp;&emsp;没错，之前不同的是，这次的回忆中，确定地，不可置否地出现了他。<br>&emsp;&emsp;那个她心心念念的他。</p><p>&emsp;&emsp;“那个人，是谁？”<br>&emsp;&emsp;少女略微惊到，她从未在回忆中如此清晰地看到他的模样。<br>&emsp;&emsp;仅仅是非常熟悉。</p><p>&emsp;&emsp;熟悉到，似乎在哪里依靠过他的肩膀，<br>&emsp;&emsp;熟悉到，似乎在哪里与他并肩走在路边，<br>&emsp;&emsp;熟悉到，似乎在哪里，他们曾有过永恒的誓言。</p><p>&emsp;&emsp;然而，现在依旧是寒冬，不是那个不存在的夏天。</p><p>&emsp;&emsp;潮湿的寒风再次掠过这条老街，略微解冻的记忆在瞬间再次被封上，甚至比原来更加牢固。</p><p>&emsp;&emsp;但这并不能阻止少女将那一幕记住。</p><p>&emsp;&emsp;“我…想起那个人了“<br>&emsp;&emsp;“虽然只想起一点点”</p><p>&emsp;&emsp;寒风愈吹愈强，被风吹动的招牌，发出簌簌的响声。<br>&emsp;&emsp;那块始终屹立不倒的鱼头汤招牌，还是抵不住风的洗礼，摇摇晃晃坠向自己的归宿。<br>&emsp;&emsp;不巧的是，目的地正是少女所站的地方。<br>&emsp;&emsp;可少女只是怔怔地站在原地，她的注意力全都放在了那微不可寻的记忆里，完全没有注意到正向自己坠来的招牌。</p><p>&emsp;&emsp;“小心”<br>&emsp;&emsp;忽地，一股力温柔地传到手边，将少女拉离原地，<br>&emsp;&emsp;巨大的鱼头招牌掉在少女刚刚站的地方，<br>&emsp;&emsp;有个人，帮她挡住了四处飞溅的塑料碎片。</p><p>&emsp;&emsp;“没事吧，没有哪里受伤吧。”<br>&emsp;&emsp;“刚刚好危险”</p><p>&emsp;&emsp;“没…没事”<br>&emsp;&emsp;“我完全没有看到那个”</p><p>&emsp;&emsp;拉开少女的，是不久前给少女结账的店员。</p><p>&emsp;&emsp;“啊，那家店关门了，这招牌一直没人修”<br>&emsp;&emsp;“起风时还在和店长聊，说这起大风肯定要砸到人的”<br>&emsp;&emsp;“然后就看到你站在下面了”<br>&emsp;&emsp;“被吓到了吧，要不要去店里坐一下”</p><p>&emsp;&emsp;“嗯…”</p><p>&emsp;&emsp;少女犹豫了一下，<br>&emsp;&emsp;她其实并未被突然坠落的招牌吓到，<br>&emsp;&emsp;暑假时，在这里的老楼冒险的时候，更可怕的景象都遇到过。</p><p>&emsp;&emsp;不过，<br>&emsp;&emsp;“他的手好暖”<br>&emsp;&emsp;少女心想。</p><p>&emsp;&emsp;她不是一个随便的人，也不是一个警惕性低的人。<br>&emsp;&emsp;她的包里放着辣椒喷雾，她的衣服里藏着防身电击枪。<br>&emsp;&emsp;如果是平时，她绝对不会这么随便答应对方的，也不会产生这种奇怪的想法。<br>&emsp;&emsp;可是今天…<br>&emsp;&emsp;或许是除夕，或许是吊桥效应，或许是别的什么冥冥之中的原因。<br>&emsp;&emsp;她觉得，对方的确是好意，她也应该接受对方的好意。</p><p>&emsp;&emsp;“好”<br>&emsp;&emsp;“那个，我叫苏半夏，谢谢你救了我”</p><p>&emsp;&emsp;“没事，这有啥好谢的”<br>&emsp;&emsp;“我叫顾韦，回顾的顾，芦苇去掉草字头的韦”<br>&emsp;&emsp;“是苹果胡中学的学生，在这里打工”</p><p>&emsp;&emsp;残阳终于还是抵不住地平线的吸引，软绵绵地向另一边落去，另一侧，澄明的月已然在天空上印出自己的模样。<br>&emsp;&emsp;银河缓缓移动，远处的北极星，已经亮至可以被肉眼观察的程度，在天空中展现着自己的存在。<br>&emsp;&emsp;这片苍穹下，大大小小的城市已经亮起了灯，点缀在广袤的大地上，车流匆匆，每个人都在为未来不停歇地奔走着。<br>&emsp;&emsp;得知一切的白永，走进她，亦或她们曾来过的华师大校园，走过她曾割舍一切的操场，走到他们曾约定好久别重逢的心形树下，略微靠在树旁，等待着她，亦或她们的出现。<br>&emsp;&emsp;就连忙碌的钟齐北，也在这胜天半子之后，给自己放了个简短的假期。</p><p>&emsp;&emsp;谁又会关注到这一世素不相识的两人跨越时空的重逢呢？<br>&emsp;&emsp;或许，只有你吧，远方的朋友。</p><p>&emsp;&emsp;对于每个人而言，也许每一次意外的初识，都是跨越时间与空间的，相距几生几世的久别重逢。</p>]]></content>
+        <content type="html"><![CDATA[<div class="note orange no-icon flat"><p>致，那个令我们破大防的夏天。</p></div><!-- <div class="note orange no-icon flat"><p>本文章情节依附于国产galgame《恋爱绮谭~不存在的夏天~》，感兴趣的话，欢迎支持NKB制作组。🎐🎐</p></div><div class="tag link"><a class="link-card" title="《恋爱绮谭~不存在的夏天~》" href="https://steamcommunity.com/app/1345740 ✨✨"><div class="left"><img src="https://blogpic-5qb.pages.dev/img/avatar/mysterylover.png"/></div><div class="right"><p class="text">《恋爱绮谭~不存在的夏天~》</p><p class="url">https://steamcommunity.com/app/1345740 ✨✨</p></div></a></div> --><h1 id="遥远的ta"><a href="#遥远的ta" class="headerlink" title=" 遥远的ta"></a><center> 遥远的ta</h1><span class='p center small'>“前一世我护你周全，不只因为难舍难分。”</span><span class='p center small'>“这一世我佑你不伤，即便我们素不相识。”</span><hr><p>&emsp;&emsp;在飞机的轰鸣声中，我幽幽醒来，梦里，我仿佛去到了一间公寓，透过窗，月亮将静谧撒在一对轻吻着的情侣身上。</p><p>&emsp;&emsp;“再见了，苏半夏”，他轻轻说到。<br>&emsp;&emsp;“不要，别丢下我”，须臾，我下意识喊出。<br>&emsp;&emsp;我多么希望这一刻凝结成永恒。<br>&emsp;&emsp;但，我做不到。<br>&emsp;&emsp;下一刻，天雷划过，眼前的情景渐行渐远。</p><p>&emsp;&emsp;微微睁眼，却发现眼眶已些许湿润。<br>&emsp;&emsp;很少感性行事的我，在面对关于他的事情时，心中也会一阵悸动。<br>&emsp;&emsp;轻轻拭去泪痕，“又是他啊…”，我喃喃自语。<br>&emsp;&emsp;看向舷窗外，天空清澈明丽，我所心心念念的江城一览无余。<br>&emsp;&emsp;江城，我回来了。</p><p>&emsp;&emsp;江城的一月还是一如既往的熟悉。<br>&emsp;&emsp;天气已然转凉，但在冬日暖阳的眷顾下，仍有些许暖意。<br>&emsp;&emsp;我走下飞机，走出机场，享受着这不可多得的时光。<br>&emsp;&emsp;江城大桥、苹果湖中学、Necoday咖啡厅、老街、非日常部、孱陵路33号、陈墨、钟齐北、我们所解决掉的危险怪异，还有…我心里哪位重要的人。<br>&emsp;&emsp;过往一幕幕闪过眼前，但如同之前一样，不论我如何尝试，在我的记忆拼图中，总有缺失的几块。<br>&emsp;&emsp;这几块，代表着，他。<br>&emsp;&emsp;虽然我不知道他是谁，不，虽然我也许根本没有和他重逢的机会，但我会一直找下去，一定，一定。</p><p>&emsp;&emsp;……</p><p>&emsp;&emsp;在和爸爸妈妈打好招呼后，我独自走出家门，想再多一点和江城共处的时间，以及..再去寻找和他的记忆。</p><p>&emsp;&emsp;脚步轻踏，周遭渐转。</p><p>&emsp;&emsp;苹果湖中学门口，是半年前我和非日常部的朋友们——陈墨、钟齐北告别的地方。<br>&emsp;&emsp;每每路过这里，我总有一种不协调感，一种让我无法忽略，深深刻在我灵魂深处的不协调感。</p><p>&emsp;&emsp;就如同，一盘完整的棋局，被扣去了几粒棋子。<br>&emsp;&emsp;就如同，一幅精致的山水画，被抹去了几只飞雁。<br>&emsp;&emsp;就如同，一整个冬天都未落雪的江城。<br>&emsp;&emsp;在意时，它易寻端倪，而忽略时，又难以察觉。</p><p>&emsp;&emsp;但我知道，只有他，也只能是他。<br>&emsp;&emsp;“那里，本应该还有一个人的”</p><p>&emsp;&emsp;国安路上，站于CNGAL门前，我还记得自己曾独自一人发现微型摄像头，并与店主一起捉住了偷窥狂。<br>&emsp;&emsp;不，不对，不论何时回忆起这里的记忆，都会有严重的逻辑矛盾。<br>&emsp;&emsp;如果是我独自一人，又是谁和偷窥狂在小巷里对质？<br>&emsp;&emsp;如果我是独自一人，又是谁在我扭伤脚后将我背起？<br>&emsp;&emsp;如果我是独自一人，又是谁，能让我在那一个傍晚如此心痛？</p><p>&emsp;&emsp;只有他，也只能是他。</p><p>&emsp;&emsp;步子停在一方候车亭的角落。<br>&emsp;&emsp;依稀记得一个雨天，我在候车亭下等车，手中握着的，是不知何人在何时何地赠予我的红色雨伞，那似乎是我和那人友情的见证。<br>&emsp;&emsp;日历周转，同样是一个雨天，我与那人一同狼狈地被困在这样的亭下，感叹着那把红色雨伞的存在。<br>&emsp;&emsp;在那人身旁，冰冷的雨水不再凛冽，吹过的寒风不再彻骨。<br>&emsp;&emsp;在那人身旁，我可以毫无顾忌地，依靠他肩。<br>&emsp;&emsp;“他的手..在残留的记忆里，很暖。”</p><p>&emsp;&emsp;只有他，也只能是他。</p><p>&emsp;&emsp;可为什么，一旦我明确了他，脑海中的景象便随之模糊。<br>&emsp;&emsp;为什么，为什么。<br>&emsp;&emsp;经停的公交将我的回忆打断，我坐上了前往Necoday的车，心中微微不舍。</p><p>&emsp;&emsp;在Necoday咖啡厅，非日常部的成员在那一角谈天说地的景象似乎仍在眼前。<br>&emsp;&emsp;“但…我们非日常部，真的只有三个人吗”<br>&emsp;&emsp;我不知道，因为我的记忆给予我的是这个答案。<br>&emsp;&emsp;“这里，曾是陈默的位置，”<br>&emsp;&emsp;“这里，是钟齐北的，”<br>&emsp;&emsp;“这是我的座位，”<br>&emsp;&emsp;非日常部的会议位置，是一张四人圆桌，桌边，静静地摆放着四把椅子。<br>&emsp;&emsp;记忆中，我们三个围桌而坐，第四把椅子处，没有人。<br>&emsp;&emsp;但，在我闭上眼时，总有他的身影，出现在第四把椅子处。<br>&emsp;&emsp;记忆否定了他的存在，但我的灵魂却始终告诉我，他，本应存在于我的生命当中。</p><p>&emsp;&emsp;最后一站，是孱陵路老街。<br>&emsp;&emsp;路上，我在江城大桥站下了车，想用步行的方式感受大桥、长江的壮阔。<br>&emsp;&emsp;“也算是我这次回来的证明吧”<br>&emsp;&emsp;桥上，阳光穿过吊着大桥的铁臂，在地面上留下条条印记，身边的车流络绎不绝。<br>&emsp;&emsp;时间，在悄悄流逝。<br>&emsp;&emsp;这六个月里，我通过视频，参加非日常部的日常会议，另一边，我从发现自己记忆有误开始，便没有停止对他的探寻。<br>&emsp;&emsp;实际上，我在很早就发现了我记忆的问题，年幼时，每当我路过那个熟悉的沙坑，便感到些许头痛，而对他的记忆最模糊处，是我进入苹果湖上学进行学习的一年。</p><p>&emsp;&emsp;他，的确存在，而我，却似乎和他错开了一整个生世。</p><p>&emsp;&emsp;渐行渐远，我走到了大桥中央。<br>&emsp;&emsp;回首，转回。<br>&emsp;&emsp;我比较着两侧的江城。<br>&emsp;&emsp;它们不相近似，而又处处类似。<br>&emsp;&emsp;巧似我的人生。<br>&emsp;&emsp;我的过去，我的未来，是如何，将如何。<br>&emsp;&emsp;我不得而知。<br>&emsp;&emsp;但我知道，找到他，也许就找到了答案。</p><p>&emsp;&emsp;在大桥的另一侧，我重新乘上车，前往那最后的目的地。</p><p>&emsp;&emsp;入冬的老商业街，犹如冷下来的炉灶。<br>&emsp;&emsp;当日历撕到最后一页，柴，也添无可添。<br>&emsp;&emsp;今晚是除夕夜，街上人数寥寥，即便是为了生计日夜奔忙于此的人们，在今天也取得了外出小憩，寻找属于自己的热闹的机会。<br>&emsp;&emsp;大排档的桌椅整整齐齐地摆放在屋内，门上贴好了“春节休市”的告示。<br>&emsp;&emsp;不远处的鱼头汤店已经转让，大概店主已然找到了新的归宿。<br>&emsp;&emsp;上补习班回来的学生们，欣喜地走进各自的家门，期待着今晚能够拿到多少压岁钱。<br>&emsp;&emsp;夹着公文包的白领匆匆路过，抱怨着除夕还要加班的公司。<br>&emsp;&emsp;不远处，一家便利店内，大腹便便的店长和店员在看着电视，你一句，我一言地聊着演出的内容。<br>&emsp;&emsp;我喜欢这条老街的热闹，因为它让我感到温馨。<br>&emsp;&emsp;我亦喜欢现在老街的空荡，因为它让我能够漫步于此。<br>&emsp;&emsp;这种喜欢是莫名的。<br>&emsp;&emsp;也许是因为…我的记忆中，最大的波动点便是这里。</p><p>&emsp;&emsp;这意味着，他的存在。<br>&emsp;&emsp;至少，我还能回忆起，那个晚上，有人保护过我。</p><p>&emsp;&emsp;我倒背起双手，合上眼，沿着老街禹禹独行。<br>&emsp;&emsp;也许在他人眼里，我的做法有些奇怪。<br>&emsp;&emsp;奇怪在，在这所有人都围着“家”团团转的时候，有一位女孩却单独出门。<br>&emsp;&emsp;奇怪在，这位女孩天生白发，金瞳与红瞳交相辉映。<br>&emsp;&emsp;奇怪在，这位女孩看上去并不属于这里。<br>&emsp;&emsp;但，凡事总有例外。<br>&emsp;&emsp;这种做法，能让我去体会这条街，体会这座江城。</p><p>&emsp;&emsp;“这条街刚走进来的时候还挺有感觉的，走到这里，又找不到那种熟悉的气息了”<br>&emsp;&emsp;自言自语后，我无奈地在手机地图上记录下位置。</p><p>&emsp;&emsp;地图里，是我在不断努力寻找他的证明。<br>&emsp;&emsp;每一处记忆波动点，我都进行了详细的描述，生怕错过一丝线索。<br>&emsp;&emsp;也许最后我会将他遗忘，但这些，将会永远提醒着我。</p><p>&emsp;&emsp;“嗯，时候不早了，先回家吧，爸爸妈妈还等着呢”</p><p>&emsp;&emsp;不解风情的夕阳将淡金色的光辉铺在江城，在远处的高楼上映出自己的模样，点点碎金洒在少女的肩上，唯美而绮丽，仿佛在温柔地替少女抵消寒冷的侵袭，正如世界一角的他，默默守护了她的这一生。</p><p>&emsp;&emsp;“回美国之前，人多的时候，再来一次吧”<br>&emsp;&emsp;“如果过去我和这条街有什么关系的话…肯定也不是除夕这种日子”<br>&emsp;&emsp;我轻轻摇了摇头，走进一旁的便利店，想要换掉已经燃烧殆尽的暖贴。<br>&emsp;&emsp;“不快点换上新的的话，可能真的会感冒”<br>&emsp;&emsp;“感冒小事，爸爸不让我出来就麻烦了”</p><p>&emsp;&emsp;便利店里，不知疲倦的空调百无聊赖地吐着暖气，恰如其分的暖包裹了少女，少女内心的担忧散去了几分，迈着轻灵的步伐，寻找需要的商品。</p><p>&emsp;&emsp;我走到柜台前，将暖贴递给仍在营业的年轻店员，结了帐。<br>&emsp;&emsp;虽说是店员，可他一幅学生模样，相貌平平，与我在马路上遇到的普通人并无二致。<br>&emsp;&emsp;我没有丝毫其他的意思，只是感觉，世界上，似乎每个人都有自己明确的目标、明确的未来、明确的人生。<br>&emsp;&emsp;可我，却始终被记忆困在牢笼当中…正如深林中的蓝蝶一般，知晓自己的与众不同，但却始终无法逃离这深林去追寻属于自己的、明朗的光亮。<br>&emsp;&emsp;亦并不是说我没有自己的目标，仅仅是…仅仅是记忆里那一段段碎片，如同那林间渗进的光亮般，吸引着想要寻回他的我。</p><p>&emsp;&emsp;“一共33元，您需要袋子吗？”他问道。<br>&emsp;&emsp;“不了，谢谢。”<br>&emsp;&emsp;“欢迎再次光临”</p><p>&emsp;&emsp;推门离开时，我注意到店内播放着的是一首粤语歌，大部分歌词我难以听懂，但有一句却将我的回忆触动。</p><p>&emsp;&emsp;“忘掉砌过的沙，回忆的堡垒，刹那已倒下”</p><p>&emsp;&emsp;“好像，我也用沙子堆过城堡呢”</p><p>&emsp;&emsp;撕开的暖贴将热量传到指尖，这股暖流让恢复活力的毛细血管再次鼓动，而曾经那个旧沙坑的回忆，如同早春河水解冻时的冰一般，划过少女的眼前——<br>&emsp;&emsp;金色的沙旁，是她和一个男孩，沙堡立于沙坑之中，巧似一座空中楼阁。<br>&emsp;&emsp;脚边，是正忙着建设自己家园的蚂蚁们，排成规矩的长队，搬运着片片树叶。<br>&emsp;&emsp;她和男孩有说有笑，雕刻着他们的沙堡，也撰写着他们的友谊。</p><p>&emsp;&emsp;没错，之前不同的是，这次的回忆中，确定地，不可置否地出现了他。<br>&emsp;&emsp;那个她心心念念的他。</p><p>&emsp;&emsp;“那个人，是谁？”<br>&emsp;&emsp;少女略微惊到，她从未在回忆中如此清晰地看到他的模样。<br>&emsp;&emsp;仅仅是非常熟悉。</p><p>&emsp;&emsp;熟悉到，似乎在哪里依靠过他的肩膀，<br>&emsp;&emsp;熟悉到，似乎在哪里与他并肩走在路边，<br>&emsp;&emsp;熟悉到，似乎在哪里，他们曾有过永恒的誓言。</p><p>&emsp;&emsp;然而，现在依旧是寒冬，不是那个不存在的夏天。</p><p>&emsp;&emsp;潮湿的寒风再次掠过这条老街，略微解冻的记忆在瞬间再次被封上，甚至比原来更加牢固。</p><p>&emsp;&emsp;但这并不能阻止少女将那一幕记住。</p><p>&emsp;&emsp;“我…想起那个人了”<br>&emsp;&emsp;“虽然只想起一点点”</p><p>&emsp;&emsp;寒风愈吹愈强，被风吹动的招牌，发出簌簌的响声。<br>&emsp;&emsp;那块始终屹立不倒的鱼头汤招牌，还是抵不住风的洗礼，摇摇晃晃坠向自己的归宿。<br>&emsp;&emsp;不巧的是，目的地正是少女所站的地方。<br>&emsp;&emsp;可少女只是怔怔地站在原地，她的注意力全都放在了那微不可寻的记忆里，完全没有注意到正向自己坠来的招牌。</p><p>&emsp;&emsp;“小心”<br>&emsp;&emsp;忽地，一股力温柔地传到手边，将少女拉离原地，<br>&emsp;&emsp;巨大的鱼头招牌掉在少女刚刚站的地方，<br>&emsp;&emsp;有个人，帮她挡住了四处飞溅的塑料碎片。</p><p>&emsp;&emsp;“没事吧，没有哪里受伤吧。”<br>&emsp;&emsp;“刚刚好危险”</p><p>&emsp;&emsp;“没…没事”<br>&emsp;&emsp;“我完全没有看到那个”</p><p>&emsp;&emsp;拉开少女的，是不久前给少女结账的店员。</p><p>&emsp;&emsp;“啊，那家店关门了，这招牌一直没人修”<br>&emsp;&emsp;“起风时还在和店长聊，说这起大风肯定要砸到人的”<br>&emsp;&emsp;“然后就看到你站在下面了”<br>&emsp;&emsp;“被吓到了吧，要不要去店里坐一下”</p><p>&emsp;&emsp;“嗯…”</p><p>&emsp;&emsp;少女犹豫了一下，<br>&emsp;&emsp;她其实并未被突然坠落的招牌吓到，<br>&emsp;&emsp;暑假时，在这里的老楼冒险的时候，更可怕的景象都遇到过。</p><p>&emsp;&emsp;不过，<br>&emsp;&emsp;“他的手好暖”<br>&emsp;&emsp;少女心想。</p><p>&emsp;&emsp;她不是一个随便的人，也不是一个警惕性低的人。<br>&emsp;&emsp;她的包里放着辣椒喷雾，她的衣服里藏着防身电击枪。<br>&emsp;&emsp;如果是平时，她绝对不会这么随便答应对方的，也不会产生这种奇怪的想法。<br>&emsp;&emsp;可是今天…<br>&emsp;&emsp;或许是除夕，或许是吊桥效应，或许是别的什么冥冥之中的原因。<br>&emsp;&emsp;她觉得，对方的确是好意，她也应该接受对方的好意。</p><p>&emsp;&emsp;“好”<br>&emsp;&emsp;“那个，我叫苏半夏，谢谢你救了我”</p><p>&emsp;&emsp;“没事，这有啥好谢的”<br>&emsp;&emsp;“我叫顾韦，回顾的顾，芦苇去掉草字头的韦”<br>&emsp;&emsp;“是苹果胡中学的学生，在这里打工”</p><hr><p>&emsp;&emsp;残阳终于还是抵不住地平线的吸引，软绵绵地向另一边落去，另一侧，澄明的月已然在天空上印出自己的模样。<br>&emsp;&emsp;银河缓缓移动，远处的北极星，已经亮至可以被肉眼观察的程度，在天空中展现着自己的存在。<br>&emsp;&emsp;这片苍穹下，大大小小的城市已经亮起了灯，点缀在广袤的大地上，车流匆匆，每个人都在为未来不停歇地奔走着。<br>&emsp;&emsp;得知一切的白永，走进她，亦或她们曾来过的华师大校园，走过她曾割舍一切的操场，走到他们曾约定好久别重逢的心形树下，略微靠在树旁，等待着她，亦或她们的出现。<br>&emsp;&emsp;就连忙碌的钟齐北，也在这胜天半子之后，给自己放了个简短的假期。</p><p>&emsp;&emsp;谁又会关注到这一世素不相识的两人跨越时空的重逢呢？<br>&emsp;&emsp;或许，只有你吧，远方的朋友。</p><p>&emsp;&emsp;对于每个人而言，也许每一次意外的初识，都是跨越时间与空间的，相距几生几世的久别重逢。</p>]]></content>
       
       
       <categories>
@@ -205,9 +436,9 @@
       
         <tags>
             
-            <tag> 杂谈 </tag>
-            
             <tag> 国G </tag>
+            
+            <tag> 杂谈 </tag>
             
             <tag> 恋爱绮谭 </tag>
             
@@ -222,7 +453,7 @@
       <link href="/2022/08/15/mysterylovercomm/"/>
       <url>/2022/08/15/mysterylovercomm/</url>
       
-        <content type="html"><![CDATA[<div class="note orange no-icon flat"><p>本文章情节依附于国产galgame《恋爱绮谭~不存在的夏天~》，感兴趣的话，欢迎支持NKB制作组。🎐🎐</p></div><div class="tag link"><a class="link-card" title="《恋爱绮谭~不存在的夏天~》" href="https://steamcommunity.com/app/1345740 ✨✨"><div class="left"><img src="https://blogpic-5qb.pages.dev/img/avatar/mysterylover.png"/></div><div class="right"><p class="text">《恋爱绮谭~不存在的夏天~》</p><p class="url">https://steamcommunity.com/app/1345740 ✨✨</p></div></a></div><hr><h2 id="“每个人，都有决定自己是谁的权力”"><a href="#“每个人，都有决定自己是谁的权力”" class="headerlink" title="“每个人，都有决定自己是谁的权力”"></a>“每个人，都有决定自己是谁的权力”</h2><p>&emsp;&emsp;致 那个令我们破大防的夏天，</p><p>&emsp;&emsp;首先，按照理性来解析一下这部作品吧。<br>&emsp;&emsp;题材上，确实是挑战了一个新的领域，并且，制作组发挥的出人意料的好，算是沉重与糖并存。<br>&emsp;&emsp;画面上，场景细节，氛围渲染，以及人物设计一定可以抓住（物理和心理）你的心。（如果有人不爱白毛异瞳美少女，那ta一定没有遇到过苏半夏！）<br>&emsp;&emsp;配音上，齐北的稳重与深藏不露，真真的灵动与对怪异的热忱，半夏的温柔与内心的矛盾以及苏溯表现出的冷淡与痛苦都体现地淋漓尽致，可以感受到配音老师制作时的认真。<br>&emsp;&emsp;剧情上，如题，怪谈+悬疑+恋爱，有微恐（？）元素，可以稍加注意。另外，速刷时你一定会发现这部作品有很多设定上留下的悬念与矛盾点，不过认真游玩过后，相信大部分悬念会迎刃而解，其他的，就静待制作组在“不存在的真相”中的发挥吧。<br>&emsp;&emsp;对于TE，也许会有人难以接受（比如一刷结束时我，呜呜呜为什么文案你这么刀），也有人认为这是一个HE（比如现在的我），不过，这虽然不是那个所有人都喜闻乐见的end，但却是给予苏半夏，以及引出下一作，所能做出的最好的结局。</p><p>&emsp;&emsp;接下来，是有感而发的文字。<br>&emsp;&emsp;我们喜欢一个人，究竟是喜欢ta的外表？声音？身体？<br>&emsp;&emsp;还是ta的性格？智慧？财富？<br>&emsp;&emsp;没错，都不是。<br>&emsp;&emsp;而是我们喜欢ta内心的自己，那个卸去外在盔甲，所展露出来的，最真实的ta。<br>&emsp;&emsp;苏半夏，便是这最真实的她。</p><p>&emsp;&emsp;她温柔体贴，能读懂顾韦的一举一动。<br>&emsp;&emsp;她冰雪聪明，为了不伤害顾韦宁愿独自离去。<br>&emsp;&emsp;她反抗世俗，不甘成为父母的傀儡。<br>&emsp;&emsp;她渴望自由，为了“成为”“苏半夏”不惜走向灭亡。<br>&emsp;&emsp;正是这样一个苏半夏，打动了顾韦的心。<br>&emsp;&emsp;哪怕“你的行为是受人控制的”，<br>&emsp;&emsp;哪怕“你会成为永远的工具人”，<br>&emsp;&emsp;顾韦为了所爱之人，义无反顾，走向深渊。</p><p>&emsp;&emsp;“在我眼里，你从来不是怪物”<br>&emsp;&emsp;“从一开始，我认识的就是苏半夏”<br>&emsp;&emsp;“和我一起调查的就是苏半夏，站在雨中等车的就是苏半夏，我背着的人就是苏半夏，在泳池里和我接吻的就是苏半夏，我爱上的人，也是苏半夏“<br>&emsp;&emsp;“我的女朋友，就是苏半夏<br>&emsp;&emsp;“她就在这里。”</p><p>&emsp;&emsp;回忆的胶卷刷刷掠过，<br>&emsp;&emsp;还记得，那夜半夏为顾韦所救，喜欢的种子仿佛久旱而逢甘雨，再度发芽。<br>&emsp;&emsp;还记得，那天半夏对顾韦五味杂陈的告白，让顾韦的人生不再平凡。<br>&emsp;&emsp;还记得，那次半夏与顾韦一同在车站等车，手牵手中流露着难以掩饰的幸福。<br>&emsp;&emsp;还记得，那晚知晓一些真相的顾韦，推开那扇门，向否定自己存在的半夏说出令她无法拒绝的求婚词<br>&emsp;&emsp;还记得，那个夏天，知晓结局的顾韦仍然遵从哪怕是受人控制的本心，拯救了半夏。<br>&emsp;&emsp;“一切，归零。”<br>&emsp;&emsp;因果逆转，往事烟消云散。<br>&emsp;&emsp;半夏拥有了幸福的家庭，<br>&emsp;&emsp;她成为了普普通通的女孩，<br>&emsp;&emsp;她可以自由地，选择自己的生活，选择自己想要成为的样子。<br>&emsp;&emsp;还记得，那是一个不存在的夏天，<br>&emsp;&emsp;“那里，本来应该有这谁的”<br>&emsp;&emsp;“有着我想不起来，也认不出的谁”<br>&emsp;&emsp;“我忘掉了很重要的事情”<br>&emsp;&emsp;“街上人来人往，每个人都行色匆匆，像是忙碌的蚂蚁”<br>&emsp;&emsp;“只有我，在擦着泪水”</p><p>&emsp;&emsp;不过，也是一个完美的夏天。</p><p>&emsp;&emsp;唯有自己可以决定自己想要成为的人，而这个自己，便是每个人内心的ta。<br>&emsp;&emsp;是啊，喜欢一个人，去喜欢一个人内心的ta，足矣，那才是ta真正的样子。</p><p>&emsp;&emsp;最后，在此衷心祝愿各位mtf坚定地生活下去！！</p><p>&emsp;&emsp;END</p><p>&emsp;&emsp;（以下为胡言乱语）<br>&emsp;&emsp;呜呜呜制作组你真的好刀啊，“在短短的一天中，我经历了半夏一生的故事”，“有着我想不起来，也认不出的谁”，还有在半夏离开苹果湖中学，眼中含泪时，直接抛出概括顾韦与苏半夏一起的经历的ed，半夜直接听破防了呜呜呜，看完了完全缓不过来呜呜呜，希望“不存在的真相“能给他们一个he！！</p><p>&emsp;&emsp;最后的最后，想聊聊dlc“玛奇朵之夏“。<br>&emsp;&emsp;相信这份dlc也算是圆了很多人的心愿（如果二者重识的过程能再长一些，再细致一些就更好了！！），即使有一生的距离，那份喜欢不会改变，就像焦糖玛奇朵一般，从糖浆的甜，至咖啡的苦，最后依然是焦糖彻人心扉且熟悉的回甘。<br>&emsp;&emsp;在游玩dlc之后的第二天，我便也前往常去的咖啡店，点一杯焦糖玛奇朵，轻轻端起，找一个静谧的角落，听着ed，回味着这篇作品的一切…<br>&emsp;&emsp;焦糖玛奇朵“层次分明，香浓醇厚，甜蜜细腻“，的确，其英文“Caramel Macchiato”，寓意为”甜蜜的印记“，拖杯，小呷一口，半夏与顾韦所经历的种种，在眼前回放，胜似自己一同经历一般，心中微悸，反应时，竟眼眶湿润。<br>&emsp;&emsp;茶托轻放，看向窗外遥远的天空，轻笑，不曾想这部作品会给自己带来如此深刻的体验与感受，仿佛自己也曾失去过“苏半夏“，转念之时，ed悄然结尾，<br>&emsp;&emsp;“抛下从前，才能与未来相连。”<br>&emsp;&emsp;“那个夏天，曾存在过的爱恋。”<br>&emsp;&emsp;人生还长，愿我们都不再失望，行至所期盼的彼方。<br>&emsp;&emsp;走出咖啡店，那写有“Caramel Macchiato”的咖啡杯正静静呆在那角落，亦如我们曾放下的，那年盛夏。</p>]]></content>
+        <content type="html"><![CDATA[<div class="note orange no-icon flat"><p>本文章情节依附于国产galgame《恋爱绮谭~不存在的夏天~》，感兴趣的话，欢迎支持NKB制作组。🎐🎐</p></div><div class="tag link"><a class="link-card" title="《恋爱绮谭~不存在的夏天~》" href="https://steamcommunity.com/app/1345740 ✨✨"><div class="left"><img src="https://blogpic-5qb.pages.dev/img/avatar/mysterylover.png"/></div><div class="right"><p class="text">《恋爱绮谭~不存在的夏天~》</p><p class="url">https://steamcommunity.com/app/1345740 ✨✨</p></div></a></div><hr><h2 id="“每个人，都有决定自己是谁的权力”"><a href="#“每个人，都有决定自己是谁的权力”" class="headerlink" title="“每个人，都有决定自己是谁的权力”"></a>“每个人，都有决定自己是谁的权力”</h2><p>&emsp;&emsp;致 那个令我们破大防的夏天，</p><p>&emsp;&emsp;首先，按照理性来解析一下这部作品吧。<br>&emsp;&emsp;题材上，确实是挑战了一个新的领域，并且，制作组发挥的出人意料的好，算是沉重与糖并存。<br>&emsp;&emsp;画面上，场景细节，氛围渲染，以及人物设计一定可以抓住（物理和心理）你的心。（如果有人不爱白毛异瞳美少女，那ta一定没有遇到过苏半夏！）<br>&emsp;&emsp;配音上，齐北的稳重与深藏不露，真真的灵动与对怪异的热忱，半夏的温柔与内心的矛盾以及苏溯表现出的冷淡与痛苦都体现地淋漓尽致，可以感受到配音老师制作时的认真。<br>&emsp;&emsp;剧情上，如题，怪谈+悬疑+恋爱，有微恐（？）元素，可以稍加注意。另外，速刷时你一定会发现这部作品有很多设定上留下的悬念与矛盾点，不过认真游玩过后，相信大部分悬念会迎刃而解，其他的，就静待制作组在“不存在的真相”中的发挥吧。<br>&emsp;&emsp;对于TE，也许会有人难以接受（比如一刷结束时我，呜呜呜为什么浅色你这么刀），也有人认为这是一个HE（比如现在的我），不过，这虽然不是那个所有人都喜闻乐见的end，但却是给予苏半夏，以及引出下一作，所能做出的最好的结局。</p><p>&emsp;&emsp;接下来，是有感而发的文字。<br>&emsp;&emsp;我们喜欢一个人，究竟是喜欢ta的外表？声音？身体？<br>&emsp;&emsp;还是ta的性格？智慧？财富？<br>&emsp;&emsp;没错，都不是。<br>&emsp;&emsp;而是我们喜欢ta内心的自己，那个卸去外在盔甲，所展露出来的，最真实的ta。<br>&emsp;&emsp;苏半夏，便是这最真实的她。</p><p>&emsp;&emsp;她温柔体贴，能读懂顾韦的一举一动。<br>&emsp;&emsp;她冰雪聪明，为了不伤害顾韦宁愿独自离去。<br>&emsp;&emsp;她反抗世俗，不甘成为父母的傀儡。<br>&emsp;&emsp;她渴望自由，为了“成为”“苏半夏”不惜走向灭亡。<br>&emsp;&emsp;正是这样一个苏半夏，打动了顾韦的心。<br>&emsp;&emsp;哪怕“你的行为是受人控制的”，<br>&emsp;&emsp;哪怕“你会成为永远的工具人”，<br>&emsp;&emsp;顾韦为了所爱之人，义无反顾，走向深渊。</p><p>&emsp;&emsp;“在我眼里，你从来不是怪物”<br>&emsp;&emsp;“从一开始，我认识的就是苏半夏”<br>&emsp;&emsp;“和我一起调查的就是苏半夏，站在雨中等车的就是苏半夏，我背着的人就是苏半夏，在泳池里和我接吻的就是苏半夏，我爱上的人，也是苏半夏”<br>&emsp;&emsp;“我的女朋友，就是苏半夏”<br>&emsp;&emsp;“她就在这里。”</p><p>&emsp;&emsp;回忆的胶卷刷刷掠过，<br>&emsp;&emsp;还记得，那夜半夏为顾韦所救，喜欢的种子仿佛久旱而逢甘雨，再度发芽。<br>&emsp;&emsp;还记得，那天半夏对顾韦五味杂陈的告白，让顾韦的人生不再平凡。<br>&emsp;&emsp;还记得，那次半夏与顾韦一同在车站等车，手牵手中流露着难以掩饰的幸福。<br>&emsp;&emsp;还记得，那晚知晓一些真相的顾韦，推开那扇门，向否定自己存在的半夏说出令她无法拒绝的求婚词<br>&emsp;&emsp;还记得，那个夏天，知晓结局的顾韦仍然遵从哪怕是受人控制的本心，拯救了半夏。<br>&emsp;&emsp;“一切，归零。”<br>&emsp;&emsp;因果逆转，往事烟消云散。<br>&emsp;&emsp;半夏拥有了幸福的家庭，<br>&emsp;&emsp;她成为了普普通通的女孩，<br>&emsp;&emsp;她可以自由地，选择自己的生活，选择自己想要成为的样子。<br>&emsp;&emsp;还记得，那是一个不存在的夏天，<br>&emsp;&emsp;“那里，本来应该有这谁的”<br>&emsp;&emsp;“有着我想不起来，也认不出的谁”<br>&emsp;&emsp;“我忘掉了很重要的事情”<br>&emsp;&emsp;“街上人来人往，每个人都行色匆匆，像是忙碌的蚂蚁”<br>&emsp;&emsp;“只有我，在擦着泪水”</p><p>&emsp;&emsp;不过，也是一个完美的夏天。</p><p>&emsp;&emsp;唯有自己可以决定自己想要成为的人，而这个自己，便是每个人内心的ta。<br>&emsp;&emsp;是啊，喜欢一个人，去喜欢一个人内心的ta，足矣，那才是ta真正的样子。</p><p>&emsp;&emsp;最后，在此衷心祝愿各位mtf坚定地生活下去！！</p><p>&emsp;&emsp;END</p><p>&emsp;&emsp;（以下为胡言乱语）<br>&emsp;&emsp;呜呜呜制作组你真的好刀啊，“在短短的一天中，我经历了半夏一生的故事”，“有着我想不起来，也认不出的谁”，还有在半夏离开苹果湖中学，眼中含泪时，直接抛出概括顾韦与苏半夏一起的经历的ed，半夜直接听破防了呜呜呜，看完了完全缓不过来呜呜呜，希望“不存在的真相“能给他们一个he！！</p><p>&emsp;&emsp;最后的最后，想聊聊dlc“玛奇朵之夏”。<br>&emsp;&emsp;相信这份dlc也算是圆了很多人的心愿（如果二者重识的过程能再长一些，再细致一些就更好了！！），即使有一生的距离，那份喜欢不会改变，就像焦糖玛奇朵一般，从糖浆的甜，至咖啡的苦，最后依然是焦糖彻人心扉且熟悉的回甘。<br>&emsp;&emsp;在游玩dlc之后的第二天，我便也前往常去的咖啡店，点一杯焦糖玛奇朵，轻轻端起，找一个静谧的角落，听着ed，回味着这篇作品的一切…<br>&emsp;&emsp;焦糖玛奇朵“层次分明，香浓醇厚，甜蜜细腻”，的确，其英文“Caramel Macchiato”，寓意为“甜蜜的印记”，拖杯，小呷一口，半夏与顾韦所经历的种种，在眼前回放，胜似自己一同经历一般，心中微悸，反应时，竟眼眶湿润。<br>&emsp;&emsp;茶托轻放，看向窗外遥远的天空，轻笑，不曾想这部作品会给自己带来如此深刻的体验与感受，仿佛自己也曾失去过“苏半夏”，转念之时，ed悄然结尾，<br>&emsp;&emsp;“抛下从前，才能与未来相连。”<br>&emsp;&emsp;“那个夏天，曾存在过的爱恋。”<br>&emsp;&emsp;人生还长，愿我们都不再失望，行至所期盼的彼方。<br>&emsp;&emsp;走出咖啡店，那写有“Caramel Macchiato”的咖啡杯正静静呆在那角落，亦如我们曾放下的，那年盛夏。</p>]]></content>
       
       
       <categories>
@@ -234,9 +465,9 @@
       
         <tags>
             
-            <tag> 杂谈 </tag>
-            
             <tag> 国G </tag>
+            
+            <tag> 杂谈 </tag>
             
             <tag> 恋爱绮谭 </tag>
             
@@ -273,10 +504,10 @@
     
     <entry>
       <title></title>
-      <link href="/css/custom.css"/>
-      <url>/css/custom.css</url>
+      <link href="/js/cursor.js"/>
+      <url>/js/cursor.js</url>
       
-        <content type="html"><![CDATA[:root {  --trans-light: rgba(255, 255, 255, 0.75);  --trans-dark: rgba(25, 25, 25, 0.75);  --border-style: 1px solid rgb(169, 169, 169);  --backdrop-filter: blur(5px) saturate(150%);}/* 页脚与头图透明 */#footer {    background: transparent !important;  }  #page-header {    background: transparent !important;  }    /* 白天模式遮罩透明 */  #footer::before {    background: transparent !important;  }  #page-header::before {    background: transparent !important;  }    /* 夜间模式遮罩透明 */  [data-theme="dark"] #footer::before {    background: transparent !important;  }  [data-theme="dark"] #page-header::before {    background: transparent !important;  }@font-face {  /* 为载入的字体取名字(随意) */  font-family: 'YSHST';  /* 字体文件地址(相对或者绝对路径都可以) */  src: url();  /* 定义加粗样式(加粗多少) */  font-weight: normal;  /* 定义字体样式(斜体/非斜体) */  font-style: normal;  /* 定义显示样式 */  font-display: block;}/* 一级菜单居中 */#nav .menus_items {  position: absolute !important;  width: fit-content !important;  left: 50% !important;  transform: translateX(-50%) !important;}/* 子菜单横向展示 */#nav .menus_items .menus_item:hover .menus_item_child {  display: flex !important;}/* 这里的2是代表导航栏的第2个元素，即有子菜单的元素，可以按自己需求修改 */.menus_items .menus_item:nth-child(5) .menus_item_child {  left: -85px;}/* 背景宇宙星光  */#universe{  display: block;  position: fixed;  margin: 0;  padding: 0;  border: 0;  outline: 0;  left: 0;  top: 0;  width: 100%;  height: 100%;  pointer-events: none;  /* 这个是调置顶的优先级的，-1在文章页下面，背景上面，个人推荐这种 */  z-index: -1;}/* 侧边栏个人信息卡片动态渐变色 */#aside-content > .card-widget.card-info {  background: linear-gradient(    -45deg,    #e8d8b9,    #eccec5,    #a3e9eb,    #bdbdf0,    #eec1ea  );  box-shadow: 0 0 5px rgb(66, 68, 68);  position: relative;  background-size: 400% 400%;  -webkit-animation: Gradient 10s ease infinite;  -moz-animation: Gradient 10s ease infinite;  animation: Gradient 10s ease infinite !important;}@-webkit-keyframes Gradient {  0% {    background-position: 0% 50%;  }  50% {    background-position: 100% 50%;  }  100% {    background-position: 0% 50%;  }}@-moz-keyframes Gradient {  0% {    background-position: 0% 50%;  }  50% {    background-position: 100% 50%;  }  100% {    background-position: 0% 50%;  }}@keyframes Gradient {  0% {    background-position: 0% 50%;  }  50% {    background-position: 100% 50%;  }  100% {    background-position: 0% 50%;  }}/* 黑夜模式适配 */[data-theme="dark"] #aside-content > .card-widget.card-info {  background: #191919ee;}/* 个人信息Follow me按钮 */#aside-content > .card-widget.card-info > #card-info-btn {  background-color: #ffbd41;  border-radius: 8px;}/* 鼠标样式 */#cursor {  position: fixed;  width: 16px;  height: 16px;  /* 这里改变跟随的底色 */  background: rgb(248, 193, 134);  border-radius: 8px;  opacity: 0.25;  z-index: 10086;  pointer-events: none;  transition: 0.2s ease-in-out;  transition-property: background, opacity, transform;}#cursor.hidden {  opacity: 0;}#cursor.hover {  opacity: 0.1;  transform: scale(2.5);  -webkit-transform: scale(2.5);  -moz-transform: scale(2.5);  -ms-transform: scale(2.5);  -o-transform: scale(2.5);}#cursor.active {  opacity: 0.5;  transform: scale(0.5);  -webkit-transform: scale(0.5);  -moz-transform: scale(0.5);  -ms-transform: scale(0.5);  -o-transform: scale(0.5);}/* 首页文章卡片 */#recent-posts > .recent-post-item {  background: var(--trans-light);  backdrop-filter: var(--backdrop-filter);  border-radius: 25px;  border: var(--border-style);}/* 首页侧栏卡片 */#aside-content .card-widget {  background: var(--trans-light);  backdrop-filter: var(--backdrop-filter);  border-radius: 18px;  border: var(--border-style);}/* 文章页、归档页、普通页面 */div#post,div#page,div#archive {  background: var(--trans-light);  backdrop-filter: var(--backdrop-filter);  border: var(--border-style);  border-radius: 20px;}/* 导航栏 */#page-header.nav-fixed #nav {  background: rgba(255, 255, 255, 0.75);  backdrop-filter: var(--backdrop-filter);}[data-theme="dark"] #page-header.nav-fixed #nav {  background: rgba(0, 0, 0, 0.7) !important;}/* 夜间模式遮罩 */[data-theme="dark"] #recent-posts > .recent-post-item,[data-theme="dark"] #aside-content .card-widget,[data-theme="dark"] div#post,[data-theme="dark"] div#archive,[data-theme="dark"] div#page {  background: var(--trans-dark);}/* 夜间模式页脚页头遮罩透明 */[data-theme="dark"] #footer::before {  background: transparent !important;}[data-theme="dark"] #page-header::before {  background: transparent !important;}/* 阅读模式 */.read-mode #aside-content .card-widget {  background: rgba(158, 204, 171, 0.5) !important;}.read-mode div#post {  background: rgba(158, 204, 171, 0.5) !important;}/* 夜间模式下的阅读模式 */[data-theme="dark"] .read-mode #aside-content .card-widget {  background: rgba(25, 25, 25, 0.9) !important;  color: #ffffff;}[data-theme="dark"] .read-mode div#post {  background: rgba(25, 25, 25, 0.9) !important;  color: #ffffff;}.pace {  -webkit-pointer-events: none;  pointer-events: none;  -webkit-user-select: none;  -moz-user-select: none;  user-select: none;  z-index: 2000;  position: fixed;  margin: auto;  top: 4px;  left: 0;  right: 0;  height: 8px;  border-radius: 8px;  width: 7rem;  background: #eaecf2;  border: 1px #e3e8f7;  overflow: hidden}.pace-inactive .pace-progress {  opacity: 0;  transition: .3s ease-in}.pace .pace-progress {  -webkit-box-sizing: border-box;  -moz-box-sizing: border-box;  -ms-box-sizing: border-box;  -o-box-sizing: border-box;  box-sizing: border-box;  -webkit-transform: translate3d(0, 0, 0);  -moz-transform: translate3d(0, 0, 0);  -ms-transform: translate3d(0, 0, 0);  -o-transform: translate3d(0, 0, 0);  transform: translate3d(0, 0, 0);  max-width: 200px;  position: absolute;  z-index: 2000;  display: block;  top: 0;  right: 100%;  height: 100%;  width: 100%;  /* linear-gradient(to right, #3494e6, #ec6ead) */  background: linear-gradient(to right, #f3d397, #fcad02);  animation: gradient 2s ease infinite;  background-size: 200%}.pace.pace-inactive {  opacity: 0;  transition: .3s;  top: -8px}/* 文章页H1-H6图标样式效果 *//* 控制风车转动速度 4s那里可以自己调节快慢 */h1::before,h2::before,h3::before,h4::before,h5::before,h6::before {  -webkit-animation: ccc 4s linear infinite;  animation: ccc 4s linear infinite;}/* 控制风车转动方向 -1turn 为逆时针转动，1turn 为顺时针转动，相同数字部分记得统一修改 */@-webkit-keyframes ccc {  0% {    -webkit-transform: rotate(0deg);    transform: rotate(0deg);  }  to {    -webkit-transform: rotate(-1turn);    transform: rotate(-1turn);  }}@keyframes ccc {  0% {    -webkit-transform: rotate(0deg);    transform: rotate(0deg);  }  to {    -webkit-transform: rotate(-1turn);    transform: rotate(-1turn);  }}/* 设置风车颜色 */#content-inner.layout h1::before {  color: #5ac3ff;  margin-left: -1.55rem;  font-size: 1.3rem;  margin-top: -0.23rem;}#content-inner.layout h2::before {  color: #78ffe9;  margin-left: -1.35rem;  font-size: 1.1rem;  margin-top: -0.12rem;}#content-inner.layout h3::before {  color: #4affd8;  margin-left: -1.22rem;  font-size: 0.95rem;  margin-top: -0.09rem;}#content-inner.layout h4::before {  color: #a9e000;  margin-left: -1.05rem;  font-size: 0.8rem;  margin-top: -0.09rem;}#content-inner.layout h5::before {  color: #57c850;  margin-left: -0.9rem;  font-size: 0.7rem;  margin-top: 0rem;}#content-inner.layout h6::before {  color: #dd54ff;  margin-left: -0.9rem;  font-size: 0.66rem;  margin-top: 0rem;}/* s设置风车hover动效 6s那里可以自己调节快慢*/#content-inner.layout h1:hover,#content-inner.layout h2:hover,#content-inner.layout h3:hover,#content-inner.layout h4:hover,#content-inner.layout h5:hover,#content-inner.layout h6:hover {  color: var(--theme-color);}#content-inner.layout h1:hover::before,#content-inner.layout h2:hover::before,#content-inner.layout h3:hover::before,#content-inner.layout h4:hover::before,#content-inner.layout h5:hover::before,#content-inner.layout h6:hover::before {  color: var(--theme-color);  -webkit-animation: ccc 6s linear infinite;  animation: ccc 6s linear infinite;}.loading-img {  background: url(https://blogpic-5qb.pages.dev/img/avatar/neko.jpg) no-repeat center center;  background-size: cover;}/* 帧率检测 */#fps {  position: fixed;  /* 指定位置 */  right: 10px;  bottom: 2px;  z-index: 1919810;}[data-theme="light"] #fps {  background-color: rgba(255, 173, 86, 0.644);  backdrop-filter: var(--backdrop-filter);  padding: 4px;  border-radius: 4px;}[data-theme="dark"] #fps {  background-color: rgba(0, 0, 0, 0.72);  backdrop-filter: var(--backdrop-filter);  padding: 4px;  border-radius: 4px;}body::-webkit-scrollbar {  width: 0;}.neko {  width: 64px;  height: 64px;  background-image: url("https://bu.dusays.com/2022/07/20/62d812db74be9.png");  position: absolute;  right: 32px;  background-repeat: no-repeat;  background-size: contain;  transform: translateX(50%);  cursor: pointer;  font-family: tzy;  font-weight: 600;  font-size: 16px;  color: #ffa53e;  display: none;}.neko::after {  display: none;  width: 100px;  height: 100px;  background-image: url("https://bu.dusays.com/2022/07/20/62d812d95e6f5.png");  background-size: contain;  z-index: 9999;  position: absolute;  right: 50%;  text-align: center;  line-height: 100px;  top: -115%;}.neko.showMsg::after {  content: attr(data-msg);  display: block;  overflow: hidden;  text-overflow: ellipsis;}.neko:hover::after {  content: attr(data-msg);  display: block;  overflow: hidden;  text-overflow: ellipsis;}.neko.fontColor::after {  color: #333;}/*** @description: 滚动条样式  跟猫二选一*/@media screen and (max-width:992px) {  ::-webkit-scrollbar {      width: 8px !important;      height: 8px !important  }  ::-webkit-scrollbar-track {      border-radius: 2em;  }  ::-webkit-scrollbar-thumb {      background-color: rgba(255, 255, 255, 0.3);      background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, 0.1) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0.1) 75%, transparent 75%, transparent);      border-radius: 2em  }  ::-webkit-scrollbar-corner {      background-color: transparent  }}/* 头像呼吸灯 */[data-theme="light"] .avatar-img {  animation: huxi_light 4s ease-in-out infinite;}[data-theme="dark"] .avatar-img {  animation: huxi_dark 4s ease-in-out infinite;}@keyframes huxi_light {  0% {    box-shadow: 0px 0px 1px 1px #ffdf77;  }  25% {    box-shadow: 0px 0px 5px 5px #ffcb59;  }  50% {    box-shadow: 0px 0px 5px 5px #ffc23f;  }  75% {    box-shadow: 0px 0px 5px 5px #fdb61d;  }  100% {    box-shadow: 0px 0px 1px 1px #ffb24d;  }}@keyframes huxi_dark {  0% {    box-shadow: 0px 0px 1px 1px #ffdf77;  }  25% {    box-shadow: 0px 0px 5px 5px #ffcb59;  }  50% {    box-shadow: 0px 0px 5px 5px #ffc23f;  }  75% {    box-shadow: 0px 0px 5px 5px #fdb61d;  }  100% {    box-shadow: 0px 0px 1px 1px #ffb24d;  }}/* 滚动条样式 */::-webkit-scrollbar {  width: 8px;  height: 8px;}::-webkit-scrollbar-track {  background-color: rgba(73, 177, 245, 0.2);  border-radius: 2em;}::-webkit-scrollbar-thumb {  background-color: var(rgb(255,158,53));  background-image: -webkit-linear-gradient(    45deg,    rgba(255, 255, 255, 0.4) 25%,    transparent 25%,    transparent 50%,    rgba(255, 255, 255, 0.4) 50%,    rgba(255, 255, 255, 0.4) 75%,    transparent 75%,    transparent  );  border-radius: 2em;}::-webkit-scrollbar-corner {  background-color: transparent;}::-moz-selection {  color: #fff;  background-color: var(--theme-color);}/* 夜间模式菜单栏发光字 */[data-theme="dark"] #nav .site-page,[data-theme="dark"] #nav .menus_items .menus_item .menus_item_child li a {  text-shadow: 0 0 2px rgb(255, 158, 53) !important;}/* 手机端适配 */[data-theme="dark"] #sidebar #sidebar-menus .menus_items .site-page {  text-shadow: 0 0 2px rgb(255, 158, 53) !important;}/* 闪烁变动颜色连续渐变 */#site-name,#site-title,#site-subtitle,#post-info,.author-info__name,.author-info__description {  transition: text-shadow 1s linear !important;}/* 日间模式不生效 */[data-theme="light"] #site-name,[data-theme="light"] #site-title,[data-theme="light"] #site-subtitle,[data-theme="light"] #post-info {  animation: none;}/* 夜间模式生效 */[data-theme="dark"] #site-name,[data-theme="dark"] #site-title {  animation: light_15px 10s linear infinite;}[data-theme="dark"] #site-subtitle {  animation: light_10px 10s linear infinite;}[data-theme="dark"] #post-info {  animation: light_5px 10s linear infinite;}/* 关键帧描述 */@keyframes light_15px {  0% {    text-shadow: #5636ed 0 0 15px;  }  12.5% {    text-shadow: #11ee5e 0 0 15px;  }  25% {    text-shadow: #f14747 0 0 15px;  }  37.5% {    text-shadow: #f1a247 0 0 15px;  }  50% {    text-shadow: #f1ee47 0 0 15px;  }  50% {    text-shadow: #b347f1 0 0 15px;  }  62.5% {    text-shadow: #002afa 0 0 15px;  }  75% {    text-shadow: #ed709b 0 0 15px;  }  87.5% {    text-shadow: #39c5bb 0 0 15px;  }  100% {    text-shadow: #5636ed 0 0 15px;  }}@keyframes light_10px {  0% {    text-shadow: #5636ed 0 0 10px;  }  12.5% {    text-shadow: #11ee5e 0 0 10px;  }  25% {    text-shadow: #f14747 0 0 10px;  }  37.5% {    text-shadow: #f1a247 0 0 10px;  }  50% {    text-shadow: #f1ee47 0 0 10px;  }  50% {    text-shadow: #b347f1 0 0 10px;  }  62.5% {    text-shadow: #002afa 0 0 10px;  }  75% {    text-shadow: #ed709b 0 0 10px;  }  87.5% {    text-shadow: #39c5bb 0 0 10px;  }  100% {    text-shadow: #5636ed 0 0 10px;  }}@keyframes light_5px {  0% {    text-shadow: #5636ed 0 0 5px;  }  12.5% {    text-shadow: #11ee5e 0 0 5px;  }  25% {    text-shadow: #f14747 0 0 5px;  }  37.5% {    text-shadow: #f1a247 0 0 15px;  }  50% {    text-shadow: #f1ee47 0 0 5px;  }  50% {    text-shadow: #b347f1 0 0 5px;  }  62.5% {    text-shadow: #002afa 0 0 5px;  }  75% {    text-shadow: #ed709b 0 0 5px;  }  87.5% {    text-shadow: #39c5bb 0 0 5px;  }  100% {    text-shadow: #5636ed 0 0 5px;  }}/* 欢迎信息 */#welcome-info {  background: linear-gradient(45deg, #b9f4f3, #e3fbf9);  border-radius: 18px;  padding: 8px;}[data-theme="dark"] #welcome-info {  background: #ffb74caf;}]]></content>
+        <content type="html"><![CDATA[var CURSOR;Math.lerp = (a, b, n) => (1 - n) * a + n * b;const getStyle = (el, attr) => {    try {        return window.getComputedStyle            ? window.getComputedStyle(el)[attr]            : el.currentStyle[attr];    } catch (e) {}    return "";};class Cursor {    constructor() {        this.pos = {curr: null, prev: null};        this.pt = [];        this.create();        this.init();        this.render();    }    move(left, top) {        this.cursor.style["left"] = `${left}px`;        this.cursor.style["top"] = `${top}px`;    }    create() {        if (!this.cursor) {            this.cursor = document.createElement("div");            this.cursor.id = "cursor";            this.cursor.classList.add("hidden");            document.body.append(this.cursor);        }        var el = document.getElementsByTagName('*');        for (let i = 0; i < el.length; i++)            if (getStyle(el[i], "cursor") == "pointer")                this.pt.push(el[i].outerHTML);        document.body.appendChild((this.scr = document.createElement("style")));        // 这里改变鼠标指针的颜色 由svg生成        this.scr.innerHTML = `* {cursor: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8' width='8px' height='8px'><circle cx='4' cy='4' r='4' opacity='1.0' fill='rgb(255, 158, 53)'/></svg>") 4 4, auto}`;    }    refresh() {        this.scr.remove();        this.cursor.classList.remove("hover");        this.cursor.classList.remove("active");        this.pos = {curr: null, prev: null};        this.pt = [];        this.create();        this.init();        this.render();    }    init() {        document.onmouseover  = e => this.pt.includes(e.target.outerHTML) && this.cursor.classList.add("hover");        document.onmouseout   = e => this.pt.includes(e.target.outerHTML) && this.cursor.classList.remove("hover");        document.onmousemove  = e => {(this.pos.curr == null) && this.move(e.clientX - 8, e.clientY - 8); this.pos.curr = {x: e.clientX - 8, y: e.clientY - 8}; this.cursor.classList.remove("hidden");};        document.onmouseenter = e => this.cursor.classList.remove("hidden");        document.onmouseleave = e => this.cursor.classList.add("hidden");        document.onmousedown  = e => this.cursor.classList.add("active");        document.onmouseup    = e => this.cursor.classList.remove("active");    }    render() {        if (this.pos.prev) {            this.pos.prev.x = Math.lerp(this.pos.prev.x, this.pos.curr.x, 0.15);            this.pos.prev.y = Math.lerp(this.pos.prev.y, this.pos.curr.y, 0.15);            this.move(this.pos.prev.x, this.pos.prev.y);        } else {            this.pos.prev = this.pos.curr;        }        requestAnimationFrame(() => this.render());    }}(() => {    CURSOR = new Cursor();    // 需要重新获取列表时，使用 CURSOR.refresh()})();]]></content>
       
     </entry>
     
@@ -295,10 +526,10 @@
     
     <entry>
       <title></title>
-      <link href="/js/cursor.js"/>
-      <url>/js/cursor.js</url>
+      <link href="/css/custom.css"/>
+      <url>/css/custom.css</url>
       
-        <content type="html"><![CDATA[var CURSOR;Math.lerp = (a, b, n) => (1 - n) * a + n * b;const getStyle = (el, attr) => {    try {        return window.getComputedStyle            ? window.getComputedStyle(el)[attr]            : el.currentStyle[attr];    } catch (e) {}    return "";};class Cursor {    constructor() {        this.pos = {curr: null, prev: null};        this.pt = [];        this.create();        this.init();        this.render();    }    move(left, top) {        this.cursor.style["left"] = `${left}px`;        this.cursor.style["top"] = `${top}px`;    }    create() {        if (!this.cursor) {            this.cursor = document.createElement("div");            this.cursor.id = "cursor";            this.cursor.classList.add("hidden");            document.body.append(this.cursor);        }        var el = document.getElementsByTagName('*');        for (let i = 0; i < el.length; i++)            if (getStyle(el[i], "cursor") == "pointer")                this.pt.push(el[i].outerHTML);        document.body.appendChild((this.scr = document.createElement("style")));        // 这里改变鼠标指针的颜色 由svg生成        this.scr.innerHTML = `* {cursor: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8' width='8px' height='8px'><circle cx='4' cy='4' r='4' opacity='1.0' fill='rgb(255, 158, 53)'/></svg>") 4 4, auto}`;    }    refresh() {        this.scr.remove();        this.cursor.classList.remove("hover");        this.cursor.classList.remove("active");        this.pos = {curr: null, prev: null};        this.pt = [];        this.create();        this.init();        this.render();    }    init() {        document.onmouseover  = e => this.pt.includes(e.target.outerHTML) && this.cursor.classList.add("hover");        document.onmouseout   = e => this.pt.includes(e.target.outerHTML) && this.cursor.classList.remove("hover");        document.onmousemove  = e => {(this.pos.curr == null) && this.move(e.clientX - 8, e.clientY - 8); this.pos.curr = {x: e.clientX - 8, y: e.clientY - 8}; this.cursor.classList.remove("hidden");};        document.onmouseenter = e => this.cursor.classList.remove("hidden");        document.onmouseleave = e => this.cursor.classList.add("hidden");        document.onmousedown  = e => this.cursor.classList.add("active");        document.onmouseup    = e => this.cursor.classList.remove("active");    }    render() {        if (this.pos.prev) {            this.pos.prev.x = Math.lerp(this.pos.prev.x, this.pos.curr.x, 0.15);            this.pos.prev.y = Math.lerp(this.pos.prev.y, this.pos.curr.y, 0.15);            this.move(this.pos.prev.x, this.pos.prev.y);        } else {            this.pos.prev = this.pos.curr;        }        requestAnimationFrame(() => this.render());    }}(() => {    CURSOR = new Cursor();    // 需要重新获取列表时，使用 CURSOR.refresh()})();]]></content>
+        <content type="html"><![CDATA[:root {  --trans-light: rgba(255, 255, 255, 0.75);  --trans-dark: rgba(25, 25, 25, 0.75);  --border-style: 1px solid rgb(169, 169, 169);  --backdrop-filter: blur(5px) saturate(150%);}/* 页脚与头图透明 */#footer {    background: transparent !important;  }  #page-header {    background: transparent !important;  }    /* 白天模式遮罩透明 */  #footer::before {    background: transparent !important;  }  #page-header::before {    background: transparent !important;  }    /* 夜间模式遮罩透明 */  [data-theme="dark"] #footer::before {    background: transparent !important;  }  [data-theme="dark"] #page-header::before {    background: transparent !important;  }@font-face {  /* 为载入的字体取名字(随意) */  font-family: 'YSHST';  /* 字体文件地址(相对或者绝对路径都可以) */  src: url();  /* 定义加粗样式(加粗多少) */  font-weight: normal;  /* 定义字体样式(斜体/非斜体) */  font-style: normal;  /* 定义显示样式 */  font-display: block;}/* 一级菜单居中 */#nav .menus_items {  position: absolute !important;  width: fit-content !important;  left: 50% !important;  transform: translateX(-50%) !important;}/* 子菜单横向展示 */#nav .menus_items .menus_item:hover .menus_item_child {  display: flex !important;}/* 这里的2是代表导航栏的第2个元素，即有子菜单的元素，可以按自己需求修改 */.menus_items .menus_item:nth-child(5) .menus_item_child {  left: -85px;}/* 背景宇宙星光  */#universe{  display: block;  position: fixed;  margin: 0;  padding: 0;  border: 0;  outline: 0;  left: 0;  top: 0;  width: 100%;  height: 100%;  pointer-events: none;  /* 这个是调置顶的优先级的，-1在文章页下面，背景上面，个人推荐这种 */  z-index: -1;}/* 侧边栏个人信息卡片动态渐变色 */#aside-content > .card-widget.card-info {  background: linear-gradient(    -45deg,    #e8d8b9,    #eccec5,    #a3e9eb,    #bdbdf0,    #eec1ea  );  box-shadow: 0 0 5px rgb(66, 68, 68);  position: relative;  background-size: 400% 400%;  -webkit-animation: Gradient 10s ease infinite;  -moz-animation: Gradient 10s ease infinite;  animation: Gradient 10s ease infinite !important;}@-webkit-keyframes Gradient {  0% {    background-position: 0% 50%;  }  50% {    background-position: 100% 50%;  }  100% {    background-position: 0% 50%;  }}@-moz-keyframes Gradient {  0% {    background-position: 0% 50%;  }  50% {    background-position: 100% 50%;  }  100% {    background-position: 0% 50%;  }}@keyframes Gradient {  0% {    background-position: 0% 50%;  }  50% {    background-position: 100% 50%;  }  100% {    background-position: 0% 50%;  }}/* 黑夜模式适配 */[data-theme="dark"] #aside-content > .card-widget.card-info {  background: #191919ee;}/* 个人信息Follow me按钮 */#aside-content > .card-widget.card-info > #card-info-btn {  background-color: #ffbd41;  border-radius: 8px;}/* 鼠标样式 */#cursor {  position: fixed;  width: 16px;  height: 16px;  /* 这里改变跟随的底色 */  background: rgb(248, 193, 134);  border-radius: 8px;  opacity: 0.25;  z-index: 10086;  pointer-events: none;  transition: 0.2s ease-in-out;  transition-property: background, opacity, transform;}#cursor.hidden {  opacity: 0;}#cursor.hover {  opacity: 0.1;  transform: scale(2.5);  -webkit-transform: scale(2.5);  -moz-transform: scale(2.5);  -ms-transform: scale(2.5);  -o-transform: scale(2.5);}#cursor.active {  opacity: 0.5;  transform: scale(0.5);  -webkit-transform: scale(0.5);  -moz-transform: scale(0.5);  -ms-transform: scale(0.5);  -o-transform: scale(0.5);}/* 首页文章卡片 */#recent-posts > .recent-post-item {  background: var(--trans-light);  backdrop-filter: var(--backdrop-filter);  border-radius: 25px;  border: var(--border-style);}/* 首页侧栏卡片 */#aside-content .card-widget {  background: var(--trans-light);  backdrop-filter: var(--backdrop-filter);  border-radius: 18px;  border: var(--border-style);}/* 文章页、归档页、普通页面 */div#post,div#page,div#archive {  background: var(--trans-light);  backdrop-filter: var(--backdrop-filter);  border: var(--border-style);  border-radius: 20px;}/* 导航栏 */#page-header.nav-fixed #nav {  background: rgba(255, 255, 255, 0.75);  backdrop-filter: var(--backdrop-filter);}[data-theme="dark"] #page-header.nav-fixed #nav {  background: rgba(0, 0, 0, 0.7) !important;}/* 夜间模式遮罩 */[data-theme="dark"] #recent-posts > .recent-post-item,[data-theme="dark"] #aside-content .card-widget,[data-theme="dark"] div#post,[data-theme="dark"] div#archive,[data-theme="dark"] div#page {  background: var(--trans-dark);}/* 夜间模式页脚页头遮罩透明 */[data-theme="dark"] #footer::before {  background: transparent !important;}[data-theme="dark"] #page-header::before {  background: transparent !important;}/* 阅读模式 */.read-mode #aside-content .card-widget {  background: rgba(158, 204, 171, 0.5) !important;}.read-mode div#post {  background: rgba(158, 204, 171, 0.5) !important;}/* 夜间模式下的阅读模式 */[data-theme="dark"] .read-mode #aside-content .card-widget {  background: rgba(25, 25, 25, 0.9) !important;  color: #ffffff;}[data-theme="dark"] .read-mode div#post {  background: rgba(25, 25, 25, 0.9) !important;  color: #ffffff;}.pace {  -webkit-pointer-events: none;  pointer-events: none;  -webkit-user-select: none;  -moz-user-select: none;  user-select: none;  z-index: 2000;  position: fixed;  margin: auto;  top: 4px;  left: 0;  right: 0;  height: 8px;  border-radius: 8px;  width: 7rem;  background: #eaecf2;  border: 1px #e3e8f7;  overflow: hidden}.pace-inactive .pace-progress {  opacity: 0;  transition: .3s ease-in}.pace .pace-progress {  -webkit-box-sizing: border-box;  -moz-box-sizing: border-box;  -ms-box-sizing: border-box;  -o-box-sizing: border-box;  box-sizing: border-box;  -webkit-transform: translate3d(0, 0, 0);  -moz-transform: translate3d(0, 0, 0);  -ms-transform: translate3d(0, 0, 0);  -o-transform: translate3d(0, 0, 0);  transform: translate3d(0, 0, 0);  max-width: 200px;  position: absolute;  z-index: 2000;  display: block;  top: 0;  right: 100%;  height: 100%;  width: 100%;  /* linear-gradient(to right, #3494e6, #ec6ead) */  background: linear-gradient(to right, #f3d397, #fcad02);  animation: gradient 2s ease infinite;  background-size: 200%}.pace.pace-inactive {  opacity: 0;  transition: .3s;  top: -8px}/* 文章页H1-H6图标样式效果 *//* 控制风车转动速度 4s那里可以自己调节快慢 */h1::before,h2::before,h3::before,h4::before,h5::before,h6::before {  -webkit-animation: ccc 4s linear infinite;  animation: ccc 4s linear infinite;}/* 控制风车转动方向 -1turn 为逆时针转动，1turn 为顺时针转动，相同数字部分记得统一修改 */@-webkit-keyframes ccc {  0% {    -webkit-transform: rotate(0deg);    transform: rotate(0deg);  }  to {    -webkit-transform: rotate(-1turn);    transform: rotate(-1turn);  }}@keyframes ccc {  0% {    -webkit-transform: rotate(0deg);    transform: rotate(0deg);  }  to {    -webkit-transform: rotate(-1turn);    transform: rotate(-1turn);  }}/* 设置风车颜色 */#content-inner.layout h1::before {  color: #5ac3ff;  margin-left: -1.55rem;  font-size: 1.3rem;  margin-top: -0.23rem;}#content-inner.layout h2::before {  color: #78ffe9;  margin-left: -1.35rem;  font-size: 1.1rem;  margin-top: -0.12rem;}#content-inner.layout h3::before {  color: #4affd8;  margin-left: -1.22rem;  font-size: 0.95rem;  margin-top: -0.09rem;}#content-inner.layout h4::before {  color: #a9e000;  margin-left: -1.05rem;  font-size: 0.8rem;  margin-top: -0.09rem;}#content-inner.layout h5::before {  color: #57c850;  margin-left: -0.9rem;  font-size: 0.7rem;  margin-top: 0rem;}#content-inner.layout h6::before {  color: #dd54ff;  margin-left: -0.9rem;  font-size: 0.66rem;  margin-top: 0rem;}/* s设置风车hover动效 6s那里可以自己调节快慢*/#content-inner.layout h1:hover,#content-inner.layout h2:hover,#content-inner.layout h3:hover,#content-inner.layout h4:hover,#content-inner.layout h5:hover,#content-inner.layout h6:hover {  color: var(--theme-color);}#content-inner.layout h1:hover::before,#content-inner.layout h2:hover::before,#content-inner.layout h3:hover::before,#content-inner.layout h4:hover::before,#content-inner.layout h5:hover::before,#content-inner.layout h6:hover::before {  color: var(--theme-color);  -webkit-animation: ccc 6s linear infinite;  animation: ccc 6s linear infinite;}.loading-img {  background: url(https://blogpic-5qb.pages.dev/img/avatar/neko.jpg) no-repeat center center;  background-size: cover;}/* 帧率检测 */#fps {  position: fixed;  /* 指定位置 */  right: 10px;  bottom: 2px;  z-index: 1919810;}[data-theme="light"] #fps {  background-color: rgba(255, 173, 86, 0.644);  backdrop-filter: var(--backdrop-filter);  padding: 4px;  border-radius: 4px;}[data-theme="dark"] #fps {  background-color: rgba(0, 0, 0, 0.72);  backdrop-filter: var(--backdrop-filter);  padding: 4px;  border-radius: 4px;}body::-webkit-scrollbar {  width: 0;}.neko {  width: 64px;  height: 64px;  background-image: url("https://bu.dusays.com/2022/07/20/62d812db74be9.png");  position: absolute;  right: 32px;  background-repeat: no-repeat;  background-size: contain;  transform: translateX(50%);  cursor: pointer;  font-family: tzy;  font-weight: 600;  font-size: 16px;  color: #ffa53e;  display: none;}.neko::after {  display: none;  width: 100px;  height: 100px;  background-image: url("https://bu.dusays.com/2022/07/20/62d812d95e6f5.png");  background-size: contain;  z-index: 9999;  position: absolute;  right: 50%;  text-align: center;  line-height: 100px;  top: -115%;}.neko.showMsg::after {  content: attr(data-msg);  display: block;  overflow: hidden;  text-overflow: ellipsis;}.neko:hover::after {  content: attr(data-msg);  display: block;  overflow: hidden;  text-overflow: ellipsis;}.neko.fontColor::after {  color: #333;}/*** @description: 滚动条样式  跟猫二选一*/@media screen and (max-width:992px) {  ::-webkit-scrollbar {      width: 8px !important;      height: 8px !important  }  ::-webkit-scrollbar-track {      border-radius: 2em;  }  ::-webkit-scrollbar-thumb {      background-color: rgba(255, 255, 255, 0.3);      background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, 0.1) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0.1) 75%, transparent 75%, transparent);      border-radius: 2em  }  ::-webkit-scrollbar-corner {      background-color: transparent  }}/* 头像呼吸灯 */[data-theme="light"] .avatar-img {  animation: huxi_light 4s ease-in-out infinite;}[data-theme="dark"] .avatar-img {  animation: huxi_dark 4s ease-in-out infinite;}@keyframes huxi_light {  0% {    box-shadow: 0px 0px 1px 1px #ffdf77;  }  25% {    box-shadow: 0px 0px 5px 5px #ffcb59;  }  50% {    box-shadow: 0px 0px 5px 5px #ffc23f;  }  75% {    box-shadow: 0px 0px 5px 5px #fdb61d;  }  100% {    box-shadow: 0px 0px 1px 1px #ffb24d;  }}@keyframes huxi_dark {  0% {    box-shadow: 0px 0px 1px 1px #ffdf77;  }  25% {    box-shadow: 0px 0px 5px 5px #ffcb59;  }  50% {    box-shadow: 0px 0px 5px 5px #ffc23f;  }  75% {    box-shadow: 0px 0px 5px 5px #fdb61d;  }  100% {    box-shadow: 0px 0px 1px 1px #ffb24d;  }}/* 滚动条样式 */::-webkit-scrollbar {  width: 8px;  height: 8px;}::-webkit-scrollbar-track {  background-color: rgba(73, 177, 245, 0.2);  border-radius: 2em;}::-webkit-scrollbar-thumb {  background-color: var(rgb(255,158,53));  background-image: -webkit-linear-gradient(    45deg,    rgba(255, 255, 255, 0.4) 25%,    transparent 25%,    transparent 50%,    rgba(255, 255, 255, 0.4) 50%,    rgba(255, 255, 255, 0.4) 75%,    transparent 75%,    transparent  );  border-radius: 2em;}::-webkit-scrollbar-corner {  background-color: transparent;}::-moz-selection {  color: #fff;  background-color: var(--theme-color);}/* 夜间模式菜单栏发光字 */[data-theme="dark"] #nav .site-page,[data-theme="dark"] #nav .menus_items .menus_item .menus_item_child li a {  text-shadow: 0 0 2px rgb(255, 158, 53) !important;}/* 手机端适配 */[data-theme="dark"] #sidebar #sidebar-menus .menus_items .site-page {  text-shadow: 0 0 2px rgb(255, 158, 53) !important;}/* 闪烁变动颜色连续渐变 */#site-name,#site-title,#site-subtitle,#post-info,.author-info__name,.author-info__description {  transition: text-shadow 1s linear !important;}/* 日间模式不生效 */[data-theme="light"] #site-name,[data-theme="light"] #site-title,[data-theme="light"] #site-subtitle,[data-theme="light"] #post-info {  animation: none;}/* 夜间模式生效 */[data-theme="dark"] #site-name,[data-theme="dark"] #site-title {  animation: light_15px 10s linear infinite;}[data-theme="dark"] #site-subtitle {  animation: light_10px 10s linear infinite;}[data-theme="dark"] #post-info {  animation: light_5px 10s linear infinite;}/* 关键帧描述 */@keyframes light_15px {  0% {    text-shadow: #5636ed 0 0 15px;  }  12.5% {    text-shadow: #11ee5e 0 0 15px;  }  25% {    text-shadow: #f14747 0 0 15px;  }  37.5% {    text-shadow: #f1a247 0 0 15px;  }  50% {    text-shadow: #f1ee47 0 0 15px;  }  50% {    text-shadow: #b347f1 0 0 15px;  }  62.5% {    text-shadow: #002afa 0 0 15px;  }  75% {    text-shadow: #ed709b 0 0 15px;  }  87.5% {    text-shadow: #39c5bb 0 0 15px;  }  100% {    text-shadow: #5636ed 0 0 15px;  }}@keyframes light_10px {  0% {    text-shadow: #5636ed 0 0 10px;  }  12.5% {    text-shadow: #11ee5e 0 0 10px;  }  25% {    text-shadow: #f14747 0 0 10px;  }  37.5% {    text-shadow: #f1a247 0 0 10px;  }  50% {    text-shadow: #f1ee47 0 0 10px;  }  50% {    text-shadow: #b347f1 0 0 10px;  }  62.5% {    text-shadow: #002afa 0 0 10px;  }  75% {    text-shadow: #ed709b 0 0 10px;  }  87.5% {    text-shadow: #39c5bb 0 0 10px;  }  100% {    text-shadow: #5636ed 0 0 10px;  }}@keyframes light_5px {  0% {    text-shadow: #5636ed 0 0 5px;  }  12.5% {    text-shadow: #11ee5e 0 0 5px;  }  25% {    text-shadow: #f14747 0 0 5px;  }  37.5% {    text-shadow: #f1a247 0 0 15px;  }  50% {    text-shadow: #f1ee47 0 0 5px;  }  50% {    text-shadow: #b347f1 0 0 5px;  }  62.5% {    text-shadow: #002afa 0 0 5px;  }  75% {    text-shadow: #ed709b 0 0 5px;  }  87.5% {    text-shadow: #39c5bb 0 0 5px;  }  100% {    text-shadow: #5636ed 0 0 5px;  }}/* 欢迎信息 */#welcome-info {  background: linear-gradient(45deg, #b9f4f3, #e3fbf9);  border-radius: 18px;  padding: 8px;}[data-theme="dark"] #welcome-info {  background: #ffb74caf;}]]></content>
       
     </entry>
     
@@ -339,17 +570,6 @@
     
     <entry>
       <title></title>
-      <link href="/js/runtime.js"/>
-      <url>/js/runtime.js</url>
-      
-        <content type="html"><![CDATA[var now=new Date;function createtime(){now.setTime(now.getTime()+1e3);var e=new Date("04/10/2023 00:00:00"),t=Math.trunc(234e8+(now-e)/1e3*17),a=(t/1496e5).toFixed(6),o=new Date("04/10/2023 00:00:00"),n=(now-o)/1e3/60/60/24,r=Math.floor(n),i=(now-o)/1e3/60/60-24*r,s=Math.floor(i);1==String(s).length&&(s="0"+s);var d=(now-o)/1e3/60-1440*r-60*s,l=Math.floor(d);1==String(l).length&&(l="0"+l);var flye=new Date("2024-02-06T10:00:00"),flyn=(now-flye)/1e3/60/60/24,flyr=Math.floor(flyn),flyi=(now-flye)/1e3/60/60-24*flyr,flys=Math.floor(flyi),flyd=(now-flye)/1e3/60-1440*flyr-60*flys,flyl=Math.floor(flyd),flyg=(now-flye)/1e3-86400*flyr-3600*flys-60*flyl,flyb=Math.round(flyg); 1==String(flyb).length&&(flyb="0"+flyb);1==String(flys).length&&(flys="0"+flys);1==String(flyl).length&&(flyl="0"+flyl);var g=(now-o)/1e3-86400*r-3600*s-60*l,b=Math.round(g);1==String(b).length&&(b="0"+b);let c="";c=s<18&&s>=9?` <img class='boardsign' src='' title=''><br> <div style="font-size:13px;font-weight:bold">本店已开张 ${r} 天 ${s} 小时 ${l} 分 ${b} 秒 <i id="heartbeat" class='fas fa-heartbeat'></i><br>与 FireFly 相遇的第 ${flyr} 天 ${flys} 小时 ${flyl} 分 ${flyb} 秒 🌃</div> </b> <br> <b> <font size = 2px style="white-space: pre-wrap;">“ 𝐼 𝑑𝑟𝑒𝑎𝑚𝑒𝑑 𝑜𝑓 𝑎 𝑠𝑐𝑜𝑟𝑐ℎ𝑒𝑑 𝑒𝑎𝑟𝑡ℎ.   𝐴 𝑛𝑒𝑤 𝑠ℎ𝑜𝑜𝑡 𝑠𝑝𝑟𝑜𝑢𝑡𝑒𝑑 𝑓𝑟𝑜𝑚 𝑡ℎ𝑒 𝑒𝑎𝑟𝑡ℎ.   𝐼𝑡 𝑏𝑙𝑜𝑜𝑚𝑒𝑑 𝑖𝑛 𝑡ℎ𝑒 𝑚𝑜𝑟𝑛𝑖𝑛𝑔 𝑠𝑢𝑛, 𝑎𝑛𝑑 𝑤ℎ𝑖𝑠𝑝𝑒𝑟𝑒𝑑 𝑡𝑜 𝑚𝑒... ”🎇<br>“ 𝐿𝑖𝑘𝑒 𝑓𝑖𝑟𝑒𝑓𝑙𝑖𝑒𝑠 𝑡𝑜 𝑎 𝑓𝑙𝑎𝑚𝑒... 𝑙𝑖𝑓𝑒 𝑏𝑒𝑔𝑒𝑡𝑠 𝑑𝑒𝑎𝑡ℎ. ”🌠</font></b> `:` <img class='boardsign' src='' title=''><br> <div style="font-size:13px;font-weight:bold">本店已开张 ${r} 天 ${s} 小时 ${l} 分 ${b} 秒 <i id="heartbeat" class='fas fa-heartbeat'></i><br>与 FireFly 相遇的第 ${flyr} 天 ${flys} 小时 ${flyl} 分 ${flyb} 秒 🌃</div> </b> <br> <b> <font size = 2px style="white-space: pre-wrap;">“ 𝐼 𝑑𝑟𝑒𝑎𝑚𝑒𝑑 𝑜𝑓 𝑎 𝑠𝑐𝑜𝑟𝑐ℎ𝑒𝑑 𝑒𝑎𝑟𝑡ℎ.   𝐴 𝑛𝑒𝑤 𝑠ℎ𝑜𝑜𝑡 𝑠𝑝𝑟𝑜𝑢𝑡𝑒𝑑 𝑓𝑟𝑜𝑚 𝑡ℎ𝑒 𝑒𝑎𝑟𝑡ℎ.   𝐼𝑡 𝑏𝑙𝑜𝑜𝑚𝑒𝑑 𝑖𝑛 𝑡ℎ𝑒 𝑚𝑜𝑟𝑛𝑖𝑛𝑔 𝑠𝑢𝑛, 𝑎𝑛𝑑 𝑤ℎ𝑖𝑠𝑝𝑒𝑟𝑒𝑑 𝑡𝑜 𝑚𝑒... ”🎇<br>“ 𝐿𝑖𝑘𝑒 𝑓𝑖𝑟𝑒𝑓𝑙𝑖𝑒𝑠 𝑡𝑜 𝑎 𝑓𝑙𝑎𝑚𝑒... 𝑙𝑖𝑓𝑒 𝑏𝑒𝑔𝑒𝑡𝑠 𝑑𝑒𝑎𝑡ℎ. ”🌠</font></b> `,document.getElementById("workboard")&&(document.getElementById("workboard").innerHTML=c)}setInterval((()=>{createtime()}),1e3);// <br>旅行者 1 号当前距离地球 ${t} 千米，约为 ${a} 个天文单位 🚀// var now = new Date();// function createtime() {//     now.setTime(now.getTime() + 1e3);    //     // 原店铺计时开始时间//     const shopStart = new Date("04/10/2023 00:00:00");    //     // 新增的FireFly相遇开始时间 (2024-02-06 10:00:00)//     const fireflyStart = new Date("2024-02-06T10:00:00"); //     // ▂▂▂▂▂▂▂▂ 原有计算逻辑 ▂▂▂▂▂▂▂▂//     var t = Math.trunc(234e8 + (now - shopStart) / 1e3 * 17),//         a = (t / 1496e5).toFixed(6),//         n = (now - shopStart) / 1e3 / 60 / 60 / 24,//         r = Math.floor(n),//         i = (now - shopStart) / 1e3 / 60 / 60 - 24 * r,//         s = Math.floor(i),//         d = (now - shopStart) / 1e3 / 60 - 1440 * r - 60 * s,//         l = Math.floor(d),//         g = (now - shopStart) / 1e3 - 86400 * r - 3600 * s - 60 * l,//         b = Math.round(g);//     // ▂▂▂▂▂▂▂▂ 新增FireFly计时计算 ▂▂▂▂▂▂▂▂//     const fireflyDiff = now - fireflyStart;//     const fireflyDays = Math.floor(fireflyDiff / 864e5);//     const fireflyHours = Math.floor((fireflyDiff % 864e5) / 36e5);//     const fireflyMinutes = Math.floor((fireflyDiff % 36e5) / 6e4);//     const fireflySeconds = Math.floor((fireflyDiff % 6e4) / 1e3);//     // ▂▂▂▂▂▂▂▂ 构建显示内容 ▂▂▂▂▂▂▂▂//     let c = s < 18 && s >= 9 ? //     `<img class='boardsign' src='' title=''><br>  //     <div style="font-size:13px;font-weight:bold">//         本店已开张 ${r} 天 ${s} 小时 ${l} 分 ${b} 秒 <i id="heartbeat" class='fas fa-heartbeat'></i><br>//         和 FireFly 相遇的第 ${fireflyDays} 天 ${fireflyHours} 小时 ${fireflyMinutes} 分 ${fireflySeconds} 秒 ⭐<br>//         旅行者 1 号当前距离地球 ${t} 千米，约为 ${a} 个天文单位 🚀//     </div>//     </b> <br> <b> <font size = 2px style="white-space: pre-wrap;">“ 𝐼 𝑑𝑟𝑒𝑎𝑚𝑒𝑑 𝑜𝑓 𝑎 𝑠𝑐𝑜𝑟𝑐ℎ𝑒𝑑 𝑒𝑎𝑟𝑡ℎ.   𝐴 𝑛𝑒𝑤 𝑠ℎ𝑜𝑜𝑡 𝑠𝑝𝑟𝑜𝑢𝑡𝑒𝑑 𝑓𝑟𝑜𝑚 𝑡ℎ𝑒 𝑒𝑎𝑟𝑡ℎ.   𝐼𝑡 𝑏𝑙𝑜𝑜𝑚𝑒𝑑 𝑖𝑛 𝑡ℎ𝑒 𝑚𝑜𝑟𝑛𝑖𝑛𝑔 𝑠𝑢𝑛, 𝑎𝑛𝑑 𝑤ℎ𝑖𝑠𝑝𝑒𝑟𝑒𝑑 𝑡𝑜 𝑚𝑒... ”🎇<br>“ 𝐿𝑖𝑘𝑒 𝑓𝑖𝑟𝑒𝑓𝑙𝑖𝑒𝑠 𝑡𝑜 𝑎 𝑓𝑙𝑎𝑚𝑒... 𝑙𝑖𝑓𝑒 𝑏𝑒𝑔𝑒𝑡𝑠 𝑑𝑒𝑎𝑡ℎ. ”🌠</font></b> ` //     : //     `<img class='boardsign' src='' title=''><br>  //     <div style="font-size:13px;font-weight:bold">//         本店已开张 ${r} 天 ${s} 小时 ${l} 分 ${b} 秒 <i id="heartbeat" class='fas fa-heartbeat'></i><br>//         和 FireFly 相遇的第 ${fireflyDays} 天 ${fireflyHours} 小时 ${fireflyMinutes} 分 ${fireflySeconds} 秒 🌙<br>//         旅行者 1 号当前距离地球 ${t} 千米，约为 ${a} 个天文单位 🚀//     </div>//     </b> <br> <b> <font size = 2px style="white-space: pre-wrap;">“ 𝐼 𝑑𝑟𝑒𝑎𝑚𝑒𝑑 𝑜𝑓 𝑎 𝑠𝑐𝑜𝑟𝑐ℎ𝑒𝑑 𝑒𝑎𝑟𝑡ℎ.   𝐴 𝑛𝑒𝑤 𝑠ℎ𝑜𝑜𝑡 𝑠𝑝𝑟𝑜𝑢𝑡𝑒𝑑 𝑓𝑟𝑜𝑚 𝑡ℎ𝑒 𝑒𝑎𝑟𝑡ℎ.   𝐼𝑡 𝑏𝑙𝑜𝑜𝑚𝑒𝑑 𝑖𝑛 𝑡ℎ𝑒 𝑚𝑜𝑟𝑛𝑖𝑛𝑔 𝑠𝑢𝑛, 𝑎𝑛𝑑 𝑤ℎ𝑖𝑠𝑝𝑒𝑟𝑒𝑑 𝑡𝑜 𝑚𝑒... ”🎇<br>“ 𝐿𝑖𝑘𝑒 𝑓𝑖𝑟𝑒𝑓𝑙𝑖𝑒𝑠 𝑡𝑜 𝑎 𝑓𝑙𝑎𝑚𝑒... 𝑙𝑖𝑓𝑒 𝑏𝑒𝑔𝑒𝑡𝑠 𝑑𝑒𝑎𝑡ℎ. ”🌠</font></b> `;//     document.getElementById("workboard") && (document.getElementById("workboard").innerHTML = c);// }// setInterval(() => { createtime() }, 1e3);]]></content>
-      
-    </entry>
-    
-    
-    
-    <entry>
-      <title></title>
       <link href="/js/txmap.js"/>
       <url>/js/txmap.js</url>
       
@@ -376,6 +596,17 @@
       <url>/tags/index.html</url>
       
         <content type="html"><![CDATA[]]></content>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title></title>
+      <link href="/js/runtime.js"/>
+      <url>/js/runtime.js</url>
+      
+        <content type="html"><![CDATA[var now=new Date;function createtime(){now.setTime(now.getTime()+1e3);var e=new Date("04/10/2023 00:00:00"),t=Math.trunc(234e8+(now-e)/1e3*17),a=(t/1496e5).toFixed(6),o=new Date("04/10/2023 00:00:00"),n=(now-o)/1e3/60/60/24,r=Math.floor(n),i=(now-o)/1e3/60/60-24*r,s=Math.floor(i);1==String(s).length&&(s="0"+s);var d=(now-o)/1e3/60-1440*r-60*s,l=Math.floor(d);1==String(l).length&&(l="0"+l);var flye=new Date("2024-02-06T10:00:00"),flyn=(now-flye)/1e3/60/60/24,flyr=Math.floor(flyn),flyi=(now-flye)/1e3/60/60-24*flyr,flys=Math.floor(flyi),flyd=(now-flye)/1e3/60-1440*flyr-60*flys,flyl=Math.floor(flyd),flyg=(now-flye)/1e3-86400*flyr-3600*flys-60*flyl,flyb=Math.round(flyg); 1==String(flyb).length&&(flyb="0"+flyb);1==String(flys).length&&(flys="0"+flys);1==String(flyl).length&&(flyl="0"+flyl);var g=(now-o)/1e3-86400*r-3600*s-60*l,b=Math.round(g);1==String(b).length&&(b="0"+b);let c="";c=s<18&&s>=9?` <img class='boardsign' src='' title=''><br> <div style="font-size:13px;font-weight:bold">本店已开张 ${r} 天 ${s} 小时 ${l} 分 ${b} 秒 <i id="heartbeat" class='fas fa-heartbeat'></i><br>与 FireFly 相遇的第 ${flyr} 天 ${flys} 小时 ${flyl} 分 ${flyb} 秒 🌃</div> </b> <br> <b> <font size = 2px style="white-space: pre-wrap;">“ 𝐼 𝑑𝑟𝑒𝑎𝑚𝑒𝑑 𝑜𝑓 𝑎 𝑠𝑐𝑜𝑟𝑐ℎ𝑒𝑑 𝑒𝑎𝑟𝑡ℎ.   𝐴 𝑛𝑒𝑤 𝑠ℎ𝑜𝑜𝑡 𝑠𝑝𝑟𝑜𝑢𝑡𝑒𝑑 𝑓𝑟𝑜𝑚 𝑡ℎ𝑒 𝑒𝑎𝑟𝑡ℎ.   𝐼𝑡 𝑏𝑙𝑜𝑜𝑚𝑒𝑑 𝑖𝑛 𝑡ℎ𝑒 𝑚𝑜𝑟𝑛𝑖𝑛𝑔 𝑠𝑢𝑛, 𝑎𝑛𝑑 𝑤ℎ𝑖𝑠𝑝𝑒𝑟𝑒𝑑 𝑡𝑜 𝑚𝑒... ”🎇<br>“ 𝐿𝑖𝑘𝑒 𝑓𝑖𝑟𝑒𝑓𝑙𝑖𝑒𝑠 𝑡𝑜 𝑎 𝑓𝑙𝑎𝑚𝑒... 𝑙𝑖𝑓𝑒 𝑏𝑒𝑔𝑒𝑡𝑠 𝑑𝑒𝑎𝑡ℎ. ”🌠</font></b> `:` <img class='boardsign' src='' title=''><br> <div style="font-size:13px;font-weight:bold">本店已开张 ${r} 天 ${s} 小时 ${l} 分 ${b} 秒 <i id="heartbeat" class='fas fa-heartbeat'></i><br>与 FireFly 相遇的第 ${flyr} 天 ${flys} 小时 ${flyl} 分 ${flyb} 秒 🌃</div> </b> <br> <b> <font size = 2px style="white-space: pre-wrap;">“ 𝐼 𝑑𝑟𝑒𝑎𝑚𝑒𝑑 𝑜𝑓 𝑎 𝑠𝑐𝑜𝑟𝑐ℎ𝑒𝑑 𝑒𝑎𝑟𝑡ℎ.   𝐴 𝑛𝑒𝑤 𝑠ℎ𝑜𝑜𝑡 𝑠𝑝𝑟𝑜𝑢𝑡𝑒𝑑 𝑓𝑟𝑜𝑚 𝑡ℎ𝑒 𝑒𝑎𝑟𝑡ℎ.   𝐼𝑡 𝑏𝑙𝑜𝑜𝑚𝑒𝑑 𝑖𝑛 𝑡ℎ𝑒 𝑚𝑜𝑟𝑛𝑖𝑛𝑔 𝑠𝑢𝑛, 𝑎𝑛𝑑 𝑤ℎ𝑖𝑠𝑝𝑒𝑟𝑒𝑑 𝑡𝑜 𝑚𝑒... ”🎇<br>“ 𝐿𝑖𝑘𝑒 𝑓𝑖𝑟𝑒𝑓𝑙𝑖𝑒𝑠 𝑡𝑜 𝑎 𝑓𝑙𝑎𝑚𝑒... 𝑙𝑖𝑓𝑒 𝑏𝑒𝑔𝑒𝑡𝑠 𝑑𝑒𝑎𝑡ℎ. ”🌠</font></b> `,document.getElementById("workboard")&&(document.getElementById("workboard").innerHTML=c)}setInterval((()=>{createtime()}),1e3);// <br>旅行者 1 号当前距离地球 ${t} 千米，约为 ${a} 个天文单位 🚀// var now = new Date();// function createtime() {//     now.setTime(now.getTime() + 1e3);    //     // 原店铺计时开始时间//     const shopStart = new Date("04/10/2023 00:00:00");    //     // 新增的FireFly相遇开始时间 (2024-02-06 10:00:00)//     const fireflyStart = new Date("2024-02-06T10:00:00"); //     // ▂▂▂▂▂▂▂▂ 原有计算逻辑 ▂▂▂▂▂▂▂▂//     var t = Math.trunc(234e8 + (now - shopStart) / 1e3 * 17),//         a = (t / 1496e5).toFixed(6),//         n = (now - shopStart) / 1e3 / 60 / 60 / 24,//         r = Math.floor(n),//         i = (now - shopStart) / 1e3 / 60 / 60 - 24 * r,//         s = Math.floor(i),//         d = (now - shopStart) / 1e3 / 60 - 1440 * r - 60 * s,//         l = Math.floor(d),//         g = (now - shopStart) / 1e3 - 86400 * r - 3600 * s - 60 * l,//         b = Math.round(g);//     // ▂▂▂▂▂▂▂▂ 新增FireFly计时计算 ▂▂▂▂▂▂▂▂//     const fireflyDiff = now - fireflyStart;//     const fireflyDays = Math.floor(fireflyDiff / 864e5);//     const fireflyHours = Math.floor((fireflyDiff % 864e5) / 36e5);//     const fireflyMinutes = Math.floor((fireflyDiff % 36e5) / 6e4);//     const fireflySeconds = Math.floor((fireflyDiff % 6e4) / 1e3);//     // ▂▂▂▂▂▂▂▂ 构建显示内容 ▂▂▂▂▂▂▂▂//     let c = s < 18 && s >= 9 ? //     `<img class='boardsign' src='' title=''><br>  //     <div style="font-size:13px;font-weight:bold">//         本店已开张 ${r} 天 ${s} 小时 ${l} 分 ${b} 秒 <i id="heartbeat" class='fas fa-heartbeat'></i><br>//         和 FireFly 相遇的第 ${fireflyDays} 天 ${fireflyHours} 小时 ${fireflyMinutes} 分 ${fireflySeconds} 秒 ⭐<br>//         旅行者 1 号当前距离地球 ${t} 千米，约为 ${a} 个天文单位 🚀//     </div>//     </b> <br> <b> <font size = 2px style="white-space: pre-wrap;">“ 𝐼 𝑑𝑟𝑒𝑎𝑚𝑒𝑑 𝑜𝑓 𝑎 𝑠𝑐𝑜𝑟𝑐ℎ𝑒𝑑 𝑒𝑎𝑟𝑡ℎ.   𝐴 𝑛𝑒𝑤 𝑠ℎ𝑜𝑜𝑡 𝑠𝑝𝑟𝑜𝑢𝑡𝑒𝑑 𝑓𝑟𝑜𝑚 𝑡ℎ𝑒 𝑒𝑎𝑟𝑡ℎ.   𝐼𝑡 𝑏𝑙𝑜𝑜𝑚𝑒𝑑 𝑖𝑛 𝑡ℎ𝑒 𝑚𝑜𝑟𝑛𝑖𝑛𝑔 𝑠𝑢𝑛, 𝑎𝑛𝑑 𝑤ℎ𝑖𝑠𝑝𝑒𝑟𝑒𝑑 𝑡𝑜 𝑚𝑒... ”🎇<br>“ 𝐿𝑖𝑘𝑒 𝑓𝑖𝑟𝑒𝑓𝑙𝑖𝑒𝑠 𝑡𝑜 𝑎 𝑓𝑙𝑎𝑚𝑒... 𝑙𝑖𝑓𝑒 𝑏𝑒𝑔𝑒𝑡𝑠 𝑑𝑒𝑎𝑡ℎ. ”🌠</font></b> ` //     : //     `<img class='boardsign' src='' title=''><br>  //     <div style="font-size:13px;font-weight:bold">//         本店已开张 ${r} 天 ${s} 小时 ${l} 分 ${b} 秒 <i id="heartbeat" class='fas fa-heartbeat'></i><br>//         和 FireFly 相遇的第 ${fireflyDays} 天 ${fireflyHours} 小时 ${fireflyMinutes} 分 ${fireflySeconds} 秒 🌙<br>//         旅行者 1 号当前距离地球 ${t} 千米，约为 ${a} 个天文单位 🚀//     </div>//     </b> <br> <b> <font size = 2px style="white-space: pre-wrap;">“ 𝐼 𝑑𝑟𝑒𝑎𝑚𝑒𝑑 𝑜𝑓 𝑎 𝑠𝑐𝑜𝑟𝑐ℎ𝑒𝑑 𝑒𝑎𝑟𝑡ℎ.   𝐴 𝑛𝑒𝑤 𝑠ℎ𝑜𝑜𝑡 𝑠𝑝𝑟𝑜𝑢𝑡𝑒𝑑 𝑓𝑟𝑜𝑚 𝑡ℎ𝑒 𝑒𝑎𝑟𝑡ℎ.   𝐼𝑡 𝑏𝑙𝑜𝑜𝑚𝑒𝑑 𝑖𝑛 𝑡ℎ𝑒 𝑚𝑜𝑟𝑛𝑖𝑛𝑔 𝑠𝑢𝑛, 𝑎𝑛𝑑 𝑤ℎ𝑖𝑠𝑝𝑒𝑟𝑒𝑑 𝑡𝑜 𝑚𝑒... ”🎇<br>“ 𝐿𝑖𝑘𝑒 𝑓𝑖𝑟𝑒𝑓𝑙𝑖𝑒𝑠 𝑡𝑜 𝑎 𝑓𝑙𝑎𝑚𝑒... 𝑙𝑖𝑓𝑒 𝑏𝑒𝑔𝑒𝑡𝑠 𝑑𝑒𝑎𝑡ℎ. ”🌠</font></b> `;//     document.getElementById("workboard") && (document.getElementById("workboard").innerHTML = c);// }// setInterval(() => { createtime() }, 1e3);]]></content>
       
     </entry>
     
