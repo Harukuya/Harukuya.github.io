@@ -4,6 +4,64 @@
   
     
     <entry>
+      <title>Datapreprocess2</title>
+      <link href="/2025/03/24/Datapreprocess2/"/>
+      <url>/2025/03/24/Datapreprocess2/</url>
+      
+        <content type="html"><![CDATA[<h3 id="零、准备工作"><a href="#零、准备工作" class="headerlink" title="零、准备工作"></a>零、准备工作</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line">data = pd.read_excel(<span class="string">&#x27;111.xlsx&#x27;</span>)</span><br><span class="line">data.head()</span><br></pre></td></tr></table></figure><h3 id="一、标准化"><a href="#一、标准化" class="headerlink" title="一、标准化"></a>一、标准化</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 数据标准化</span></span><br><span class="line">data[<span class="string">&#x27;面积&#x27;</span>] <span class="comment"># 查看一下</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 计算标准化值，返回表格</span></span><br><span class="line">(data[<span class="string">&#x27;面积&#x27;</span>] - data[<span class="string">&#x27;面积&#x27;</span>].mean())/data[<span class="string">&#x27;面积&#x27;</span>].std() </span><br><span class="line"><span class="comment"># 放入原表格</span></span><br><span class="line">data[<span class="string">&#x27;面积（标准化）&#x27;</span>] = (data[<span class="string">&#x27;面积&#x27;</span>] - data[<span class="string">&#x27;面积&#x27;</span>].mean())/data[<span class="string">&#x27;面积&#x27;</span>].std()</span><br><span class="line"><span class="comment"># 确认均值是否为0，标准差是否为1，即是否标准化成功</span></span><br><span class="line">data[<span class="string">&#x27;面积（标准化）&#x27;</span>].mean()</span><br><span class="line">data[<span class="string">&#x27;面积（标准化）&#x27;</span>].std()</span><br></pre></td></tr></table></figure><h3 id="二、归一化"><a href="#二、归一化" class="headerlink" title="二、归一化"></a>二、归一化</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 计算</span></span><br><span class="line">(data[<span class="string">&#x27;面积&#x27;</span>] - data[<span class="string">&#x27;面积&#x27;</span>].<span class="built_in">min</span>())/(data[<span class="string">&#x27;面积&#x27;</span>].<span class="built_in">max</span>() - data[<span class="string">&#x27;面积&#x27;</span>].<span class="built_in">min</span>())</span><br><span class="line"><span class="comment"># 入表</span></span><br><span class="line">data[<span class="string">&#x27;面积（归一化）&#x27;</span>] = (data[<span class="string">&#x27;面积&#x27;</span>] - data[<span class="string">&#x27;面积&#x27;</span>].<span class="built_in">min</span>())/(data[<span class="string">&#x27;面积&#x27;</span>].<span class="built_in">max</span>() - data[<span class="string">&#x27;面积&#x27;</span>].<span class="built_in">min</span>())</span><br><span class="line"><span class="comment"># 查看最小值是否为0，最大值是否为1</span></span><br><span class="line">data[<span class="string">&#x27;面积（归一化）&#x27;</span>].<span class="built_in">min</span>()</span><br><span class="line">data[<span class="string">&#x27;面积（归一化）&#x27;</span>].<span class="built_in">max</span>()</span><br></pre></td></tr></table></figure><h3 id="离散化"><a href="#离散化" class="headerlink" title="离散化"></a>离散化</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 等宽离散化（人为)</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看一下，确认最大最小值</span></span><br><span class="line">data[<span class="string">&#x27;最近地铁距离&#x27;</span>].<span class="built_in">max</span>()</span><br><span class="line">data[<span class="string">&#x27;最近地铁距离&#x27;</span>].<span class="built_in">min</span>()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置0-500为近，500-1000为较近，1000-2000为远</span></span><br><span class="line">bins = [<span class="number">0</span>,<span class="number">500</span>,<span class="number">1000</span>,<span class="number">2000</span>]</span><br><span class="line"><span class="comment"># pd库提供相应分类方法</span></span><br><span class="line">pd.cut(data[<span class="string">&#x27;最近地铁距离&#x27;</span>].bins = bins) <span class="comment"># 返回表格，告知每一个是哪个区间</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 存入</span></span><br><span class="line">data[<span class="string">&#x27;等宽划分距离&#x27;</span>] = pd.cut(data[<span class="string">&#x27;最近地铁距离&#x27;</span>].bins = bins)</span><br><span class="line"><span class="comment"># 查看每个区间都有多少值</span></span><br><span class="line">data[<span class="string">&#x27;等宽划分距离&#x27;</span>].value_counts()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 等频离散化（每组数量差不多）</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 划分三组，q=3</span></span><br><span class="line">pd.qcut(data[<span class="string">&#x27;最近地铁距离&#x27;</span>],q = <span class="number">3</span>) <span class="comment"># 自带函数</span></span><br><span class="line">data[<span class="string">&#x27;等频划分距离&#x27;</span>] = pd.qcut(data[<span class="string">&#x27;最近地铁距离&#x27;</span>],q = <span class="number">3</span>) <span class="comment"># 存入</span></span><br><span class="line">data[<span class="string">&#x27;等频划分距离&#x27;</span>].value_counts()</span><br></pre></td></tr></table></figure><h3 id="独热编码"><a href="#独热编码" class="headerlink" title="独热编码"></a>独热编码</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">data[<span class="string">&#x27;楼层&#x27;</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 独热编码函数</span></span><br><span class="line">pd.get_dummies(data[<span class="string">&#x27;楼层&#x27;</span>]) <span class="comment"># 会告诉你</span></span><br></pre></td></tr></table></figure><h3 id="映射数据"><a href="#映射数据" class="headerlink" title="映射数据"></a>映射数据</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 映射函数</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">str</span>(data[<span class="string">&#x27;等宽划分距离&#x27;</span>].iloc[<span class="number">0</span>])</span><br><span class="line">data[<span class="string">&#x27;等宽划分距离&#x27;</span>].<span class="built_in">map</span>(<span class="keyword">lambda</span> x:<span class="built_in">str</span>(x)) <span class="comment"># 使用cut得到的是区间，不是字符串，这个可以转化为字符串</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 根据字典进行映射</span></span><br><span class="line">dis = &#123;<span class="string">&#x27;(0,500]&#x27;</span>.<span class="string">&#x27;近&#x27;</span>,<span class="string">&#x27;(500,1000]&#x27;</span>.<span class="string">&#x27;较近&#x27;</span>,<span class="string">&#x27;(1000,2000]&#x27;</span>.<span class="string">&#x27;远&#x27;</span>,&#125;</span><br><span class="line">data[<span class="string">&#x27;等宽划分距离&#x27;</span>].<span class="built_in">map</span>(dis) <span class="comment"># 根据字典进行替换</span></span><br></pre></td></tr></table></figure>]]></content>
+      
+      
+      <categories>
+          
+          <category> 辉夜の编程之路 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> Python </tag>
+            
+            <tag> 编程 </tag>
+            
+            <tag> 数据预处理 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Datapreprocess1</title>
+      <link href="/2025/03/24/Datapreprocess1/"/>
+      <url>/2025/03/24/Datapreprocess1/</url>
+      
+        <content type="html"><![CDATA[<h3 id="都有什么？"><a href="#都有什么？" class="headerlink" title="都有什么？"></a>都有什么？</h3><ul><li>标准化与归一化</li><li>数据离散化</li><li>独热编码</li><li>数据映射</li></ul><h3 id="一、标准化与归一化"><a href="#一、标准化与归一化" class="headerlink" title="一、标准化与归一化"></a>一、标准化与归一化</h3><ol><li>为什么？<br> 多指标评价体系中，由于各个评价指标的性质不同，通常有不同的量纲和数量级。当各指标的水平相差很大时，如果直接使用原始指标值进行分析，会突出数值较高的指标在综合分析中的作用，相对削弱了数值水平较低指标的作用。因此，为了保证结果的可靠性，需要对原始指标数据进行标准化处理。<br> 这种处理方式得到的信息不会发生变化。只改变了量纲  <blockquote><p>比如，房价和看房人数，房价数量级在W级别，但人在个位数，这样则导致了房价对某量影响更大，但显然不合理。  </p><div class="img-wrap"><div class="img-bg"><img class="img" src="https://blogpic-5qb.pages.dev/img/sc_swe/keyan/标准化.png" alt="<center>标准化"/></div><span class="image-caption"><center>标准化</span></div><div class="img-wrap"><div class="img-bg"><img class="img" src="https://blogpic-5qb.pages.dev/img/sc_swe/keyan/归一化.png" alt="<center>归一化"/></div><span class="image-caption"><center>归一化</span></div></blockquote></li></ol><h3 id="二、离散化"><a href="#二、离散化" class="headerlink" title="二、离散化"></a>二、离散化</h3><ol><li>分类    <ul><li>分段离散化：人为确定类别，然后让数据入座</li><li>等频离散化：不人为指定，只告诉分为多少组，自动分类。</li></ul></li></ol><h3 id="三、独热编码"><a href="#三、独热编码" class="headerlink" title="三、独热编码"></a>三、独热编码</h3><ol><li>是什么？  <ul><li>One-Hot码，一位有效码；该方法是用N位状态寄存器表达N个状态，且只有一位有效。</li><li>将文字变为编码</li></ul></li></ol>]]></content>
+      
+      
+      <categories>
+          
+          <category> 辉夜の编程之路 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> Python </tag>
+            
+            <tag> 编程 </tag>
+            
+            <tag> 数据预处理 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>Datawash4</title>
       <link href="/2025/03/24/Datawash4/"/>
       <url>/2025/03/24/Datawash4/</url>
