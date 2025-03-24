@@ -838,8 +838,8 @@
     
     <entry>
       <title>文章封面</title>
-      <link href="/gallerys/cover.html"/>
-      <url>/gallerys/cover.html</url>
+      <link href="/gallerys/cover/index.html"/>
+      <url>/gallerys/cover/index.html</url>
       
         <content type="html"><![CDATA[<div class="gallery">    <div class="fj-gallery  data" data-rowHeight="220" data-limit="10">    <span class="gallery-data">[]</span>    </div>    <button class="gallery-load-more"><span>加载更多</span><i class="fa-solid fa-arrow-down"></i></button>    </div>]]></content>
       
@@ -849,8 +849,8 @@
     
     <entry>
       <title>萤宝</title>
-      <link href="/gallerys/firefly.html"/>
-      <url>/gallerys/firefly.html</url>
+      <link href="/gallerys/firefly/index.html"/>
+      <url>/gallerys/firefly/index.html</url>
       
         <content type="html"><![CDATA[<div class="gallery">    <div class="fj-gallery  data" data-rowHeight="220" data-limit="10">    <span class="gallery-data">[]</span>    </div>    <button class="gallery-load-more"><span>加载更多</span><i class="fa-solid fa-arrow-down"></i></button>    </div>]]></content>
       
