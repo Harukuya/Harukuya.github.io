@@ -824,5 +824,38 @@
     </entry>
     
     
+    
+    <entry>
+      <title>辉夜の插画厅</title>
+      <link href="/gallery/index.html"/>
+      <url>/gallery/index.html</url>
+      
+        <content type="html"><![CDATA[<div class="gallery-group-main">  <figure class="gallery-group">  <img class="gallery-group-img no-lightbox" src='https://blogpic-5qb.pages.dev/img/postcover/18.png' alt="Group Image Gallery">  <figcaption>  <div class="gallery-group-name">文章封面</div>  <p>文章封面图片，部分已压缩</p>  <a href='/gallerys/cover'></a>  </figcaption>  </figure>    <figure class="gallery-group">  <img class="gallery-group-img no-lightbox" src='https://blogpic-5qb.pages.dev/img/postcover/21.JPG' alt="Group Image Gallery">  <figcaption>  <div class="gallery-group-name">流萤流萤</div>  <p>“店长是流萤厨”</p>  <a href='/gallerys/firefly'></a>  </figcaption>  </figure>  </div>]]></content>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>文章封面</title>
+      <link href="/gallerys/cover.html"/>
+      <url>/gallerys/cover.html</url>
+      
+        <content type="html"><![CDATA[<div class="gallery">    <div class="fj-gallery  data" data-rowHeight="220" data-limit="10">    <span class="gallery-data">[]</span>    </div>    <button class="gallery-load-more"><span>加载更多</span><i class="fa-solid fa-arrow-down"></i></button>    </div>]]></content>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>萤宝</title>
+      <link href="/gallerys/firefly.html"/>
+      <url>/gallerys/firefly.html</url>
+      
+        <content type="html"><![CDATA[<div class="gallery">    <div class="fj-gallery  data" data-rowHeight="220" data-limit="10">    <span class="gallery-data">[]</span>    </div>    <button class="gallery-load-more"><span>加载更多</span><i class="fa-solid fa-arrow-down"></i></button>    </div>]]></content>
+      
+    </entry>
+    
+    
   
 </search>
