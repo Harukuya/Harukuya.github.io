@@ -205,35 +205,6 @@
     
     
     <entry>
-      <title>Datawash1</title>
-      <link href="/2025/03/23/Datawash1/"/>
-      <url>/2025/03/23/Datawash1/</url>
-      
-        <content type="html"><![CDATA[<h3 id="什么是数据清洗？"><a href="#什么是数据清洗？" class="headerlink" title="什么是数据清洗？"></a>什么是数据清洗？</h3><ol><li>包含四大情况：  <ul><li>缺失值处理</li><li>重复值处理</li><li>异常值处理</li><li>字符串处理</li></ul></li></ol><h3 id="缺失值"><a href="#缺失值" class="headerlink" title="缺失值"></a>缺失值</h3><ol><li>缺失原因：  <ul><li>由于数据未维护、服务器或存储故障等造成了有些数据暂时无法获取，一部分属性值空缺。  </li><li>由于人为因素缺失，如未保存。  </li><li>有些对象对于某个属性不可用，如对于未婚者的配偶姓名。  </li><li>有些信息获取代价太大，从而未获取，如爬取数据质量差，加密数据或收费数据。</li></ul></li><li>产生问题：  <ul><li>系统丢失了大量有用的信息——完整样本数减少。  </li><li>系统不确定性显著，系统中确定性成分更难把握——有效信息减少，系统平衡性受影响。  </li><li>包含空值的数据会使分析过程陷入混乱，导致不可靠的输出——有些算法或统计检验要求数据没有缺失。  </li></ul></li><li>如何解决？  <ul><li>删除缺失值：删除记录 —— 把一行删除，如果相对于样本量很少的话；删除属性 —— 80%原则，某一列确实了80%及以上的数据，删除。  </li><li>插值填补：均值，中位数，众数，特殊值（-1）；前向后向填充，填的和前面/后面一样；机器学习算法填补。  </li><li>不处理：用不到的属性；算法可以接受缺失值。</li></ul></li></ol><h3 id="重复值"><a href="#重复值" class="headerlink" title="重复值"></a>重复值</h3><ol><li>出现原因与处理方法  <ul><li>原因：爬取数据时，可能会重复爬取，获取重复数据；人为录入内容，可能重复录入。</li><li>处理方法：剔除即可</li></ul></li></ol><h3 id="异常值"><a href="#异常值" class="headerlink" title="异常值"></a>异常值</h3><ol><li>判别方法：  <ul><li>物理判别；对客观事物的已有认识。如气温100°C。</li><li>统计判别；给定置信概率和置信限。如气温35°C，对于三亚正常但对于漠河异常，要给出置信概率和置信限来判断是否去除。</li></ul></li><li>判别原则：  <ul><li>散点图 —— 点不在主要范围内。</li><li>正态分布 —— 距离平均值＞3σ √</li><li>不服从正态分布 —— 根据N被标准差</li><li>分位数判别 —— 上分位+1.5IQR、下分位-1.5IQR，设定上下界 √</li><li>模型预测 —— 聚类、回归</li></ul></li><li>处理：  <ul><li>删除异常记录</li><li>视同缺失值，用可能值填补。如中位数平均数众数、上下四分位、上下界。<div class="img-wrap"><div class="img-bg"><img class="img" src="https://blogpic-5qb.pages.dev/img/sc_swe/keyan/异常值示意图.png" alt="<center>异常值示意图"/></div><span class="image-caption"><center>异常值示意图</span></div></li><li>覆盖法。将超出上下界的值都替换成上下界的值。</li><li>不处理</li></ul></li></ol>]]></content>
-      
-      
-      <categories>
-          
-          <category> 辉夜の编程之路 </category>
-          
-      </categories>
-      
-      
-        <tags>
-            
-            <tag> Python </tag>
-            
-            <tag> 编程 </tag>
-            
-            <tag> 数据清洗 </tag>
-            
-        </tags>
-      
-    </entry>
-    
-    
-    
-    <entry>
       <title>matplotlib1</title>
       <link href="/2025/03/22/matplotlib1/"/>
       <url>/2025/03/22/matplotlib1/</url>
@@ -921,7 +892,7 @@
       <link href="/gallerys/photo/index.html"/>
       <url>/gallerys/photo/index.html</url>
       
-        <content type="html"><![CDATA[<span class='p center h4'>“很想带着手机、相机、电脑，”</span><span class='p center h4'>“以及喜欢的咖啡与茶，”</span><span class='p center h4'>“去外面寻找属于自己的新生。”</span><hr><div class="gallery">    <div class="fj-gallery  data" data-rowHeight="220" data-limit="10">    <span class="gallery-data">[{"url":"https://blogpic-5qb.pages.dev/img/gallery_photo/1.jpg","alt":"p1"},{"url":"https://blogpic-5qb.pages.dev/img/gallery_photo/2.jpg","alt":"p2"},{"url":"https://blogpic-5qb.pages.dev/img/gallery_photo/3.jpg","alt":"p3"},{"url":"https://blogpic-5qb.pages.dev/img/gallery_photo/4.jpg","alt":"p4"},{"url":"https://blogpic-5qb.pages.dev/img/gallery_photo/5.JPG","alt":"p5"},{"url":"https://blogpic-5qb.pages.dev/img/gallery_photo/6.jpg","alt":"p6"},{"url":"https://blogpic-5qb.pages.dev/img/gallery_photo/7.JPG","alt":"p7"},{"url":"hhttps://blogpic-5qb.pages.dev/img/gallery_photo/8.jpg","alt":"p8"},{"url":"https://blogpic-5qb.pages.dev/img/gallery_photo/9.png","alt":"p9"},{"url":"https://blogpic-5qb.pages.dev/img/gallery_photo/10.png","alt":"p10"},{"url":"https://blogpic-5qb.pages.dev/img/gallery_photo/11.png","alt":"p11"},{"url":"https://blogpic-5qb.pages.dev/img/gallery_photo/12.jpg","alt":"p12"}]</span>    </div>    <button class="gallery-load-more"><span>加载更多</span><i class="fa-solid fa-arrow-down"></i></button>    </div>]]></content>
+        <content type="html"><![CDATA[<span class='p center h4'>“很想带着手机、相机、电脑，”</span><span class='p center h4'>“以及喜欢的咖啡与茶，”</span><span class='p center h4'>“去外面寻找属于自己的新生。”</span><hr><div class="gallery">    <div class="fj-gallery  data" data-rowHeight="220" data-limit="10">    <span class="gallery-data">[{"url":"https://blogpic-5qb.pages.dev/img/gallery_photo/1.jpg","alt":"p1"},{"url":"https://blogpic-5qb.pages.dev/img/gallery_photo/2.jpg","alt":"p2"},{"url":"https://blogpic-5qb.pages.dev/img/gallery_photo/3.jpg","alt":"p3"},{"url":"https://blogpic-5qb.pages.dev/img/gallery_photo/4.jpg","alt":"p4"},{"url":"https://blogpic-5qb.pages.dev/img/gallery_photo/5.JPG","alt":"p5"},{"url":"https://blogpic-5qb.pages.dev/img/gallery_photo/6.jpg","alt":"p6"},{"url":"https://blogpic-5qb.pages.dev/img/gallery_photo/7.JPG","alt":"p7"},{"url":"hhttps://blogpic-5qb.pages.dev/img/gallery_photo/8.jpg","alt":"p8"},{"url":"https://blogpic-5qb.pages.dev/img/gallery_photo/9.png","alt":"p9"},{"url":"https://blogpic-5qb.pages.dev/img/gallery_photo/10.png","alt":"p10"},{"url":"https://blogpic-5qb.pages.dev/img/gallery_photo/11.png","alt":"p11"},{"url":"https://blogpic-5qb.pages.dev/img/gallery_photo/12.jpg","alt":"p12"},{"url":"https://blogpic-5qb.pages.dev/img/gallery_photo/13.jpg","alt":"p13"},{"url":"https://blogpic-5qb.pages.dev/img/gallery_photo/14.jpg","alt":"p14"},{"url":"https://blogpic-5qb.pages.dev/img/gallery_photo/15.jpg","alt":"p15"},{"url":"https://blogpic-5qb.pages.dev/img/gallery_photo/16.jpg","alt":"p16"},{"url":"https://blogpic-5qb.pages.dev/img/gallery_photo/17.JPG","alt":"p17"},{"url":"https://blogpic-5qb.pages.dev/img/gallery_photo/18.JPG","alt":"p18"},{"url":"https://blogpic-5qb.pages.dev/img/gallery_photo/19.jpg","alt":"p19"},{"url":"https://blogpic-5qb.pages.dev/img/gallery_photo/20.jpg","alt":"p20"},{"url":"https://blogpic-5qb.pages.dev/img/gallery_photo/21.jpg","alt":"p21"},{"url":"https://blogpic-5qb.pages.dev/img/gallery_photo/22.jpg","alt":"p22"},{"url":"https://blogpic-5qb.pages.dev/img/gallery_photo/23.jpg","alt":"p23"},{"url":"https://blogpic-5qb.pages.dev/img/gallery_photo/24.jpg","alt":"p24"},{"url":"https://blogpic-5qb.pages.dev/img/gallery_photo/25.jpg","alt":"p25"},{"url":"https://blogpic-5qb.pages.dev/img/gallery_photo/26.jpg","alt":"p26"}]</span>    </div>    <button class="gallery-load-more"><span>加载更多</span><i class="fa-solid fa-arrow-down"></i></button>    </div>]]></content>
       
     </entry>
     
