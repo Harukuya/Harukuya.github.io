@@ -4,11 +4,11 @@
   
     
     <entry>
-      <title>Python1</title>
-      <link href="/2025/06/19/python1/"/>
-      <url>/2025/06/19/python1/</url>
+      <title>正则化线性回归1</title>
+      <link href="/2025/03/28/Regularization1/"/>
+      <url>/2025/03/28/Regularization1/</url>
       
-        <content type="html"><![CDATA[<div class="img-wrap"><div class="img-bg"><img class="img" src="https://blogpic-5qb.pages.dev/img/sc_swe/python/1.jpg" alt="<center>1"/></div><span class="image-caption"><center>1</span></div>]]></content>
+        <content type="html"><![CDATA[<h3 id=""><a href="#" class="headerlink" title=" "></a> </h3>]]></content>
       
       
       <categories>
@@ -20,9 +20,11 @@
       
         <tags>
             
-            <tag> Python </tag>
+            <tag> 人工智能 </tag>
             
-            <tag> 编程 </tag>
+            <tag> 机器学习 </tag>
+            
+            <tag> 回归模型 </tag>
             
         </tags>
       
@@ -51,7 +53,7 @@
             
             <tag> 机器学习 </tag>
             
-            <tag> 交叉验证 </tag>
+            <tag> 回归模型 </tag>
             
         </tags>
       
@@ -80,7 +82,7 @@
             
             <tag> 机器学习 </tag>
             
-            <tag> 交叉验证 </tag>
+            <tag> 回归模型 </tag>
             
         </tags>
       
@@ -89,7 +91,7 @@
     
     
     <entry>
-      <title>回归模型2</title>
+      <title>线性回归2</title>
       <link href="/2025/03/27/Linearregression2/"/>
       <url>/2025/03/27/Linearregression2/</url>
       
@@ -109,7 +111,7 @@
             
             <tag> 机器学习 </tag>
             
-            <tag> 线性回归 </tag>
+            <tag> 回归模型 </tag>
             
         </tags>
       
@@ -118,7 +120,7 @@
     
     
     <entry>
-      <title>回归模型1</title>
+      <title>线性回归1</title>
       <link href="/2025/03/25/Linearregression1/"/>
       <url>/2025/03/25/Linearregression1/</url>
       
@@ -138,7 +140,7 @@
             
             <tag> 机器学习 </tag>
             
-            <tag> 线性回归 </tag>
+            <tag> 回归模型 </tag>
             
         </tags>
       
@@ -602,6 +604,33 @@
       <url>/2023/06/23/python2/</url>
       
         <content type="html"><![CDATA[<div class="img-wrap"><div class="img-bg"><img class="img" src="https://blogpic-5qb.pages.dev/img/sc_swe/python/2.jpg" alt="<center>2"/></div><span class="image-caption"><center>2</span></div>]]></content>
+      
+      
+      <categories>
+          
+          <category> 辉夜の编程之路 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> Python </tag>
+            
+            <tag> 编程 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Python1</title>
+      <link href="/2023/06/19/python1/"/>
+      <url>/2023/06/19/python1/</url>
+      
+        <content type="html"><![CDATA[<div class="img-wrap"><div class="img-bg"><img class="img" src="https://blogpic-5qb.pages.dev/img/sc_swe/python/1.jpg" alt="<center>1"/></div><span class="image-caption"><center>1</span></div>]]></content>
       
       
       <categories>
