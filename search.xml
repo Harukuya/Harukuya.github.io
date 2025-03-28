@@ -31,11 +31,98 @@
     
     
     <entry>
-      <title>线性回归理论</title>
-      <link href="/2025/03/25/Linearregressiontheory/"/>
-      <url>/2025/03/25/Linearregressiontheory/</url>
+      <title>交叉验证2</title>
+      <link href="/2025/03/28/Cross-validation2/"/>
+      <url>/2025/03/28/Cross-validation2/</url>
       
-        <content type="html"><![CDATA[<h3 id="一、任务驱动"><a href="#一、任务驱动" class="headerlink" title="一、任务驱动"></a>一、任务驱动</h3><div class="img-wrap"><div class="img-bg"><img class="img" src="https://blogpic-5qb.pages.dev/img/sc_swe/keyan/任务驱动.png" alt="<center>示意图"/></div><span class="image-caption"><center>示意图</span></div><h3 id="二、线性回归是什么？"><a href="#二、线性回归是什么？" class="headerlink" title="二、线性回归是什么？"></a>二、线性回归是什么？</h3>]]></content>
+        <content type="html"><![CDATA[<h3 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 导入数据</span></span><br><span class="line"><span class="keyword">from</span> sklearn.datasets <span class="keyword">import</span> load_boston</span><br><span class="line">data = load_boston()</span><br><span class="line">x = data[<span class="string">&#x27;data&#x27;</span>]</span><br><span class="line">y = data[<span class="string">&#x27;target&#x27;</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 划分训练集和测试集</span></span><br><span class="line"><span class="keyword">from</span> sklearn.model_selection <span class="keyword">import</span> train_test_split</span><br><span class="line">X_train,X_test,y_train,y_test = train_test_split(x,y,test_size = <span class="number">0.2</span>,random = ...) <span class="comment"># 如果想固定划分结果，用种子</span></span><br><span class="line"></span><br><span class="line">X_train.shape <span class="comment"># 查看情况，X_test,y_train,y_test应一一对应</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 调用线性模型</span></span><br><span class="line"><span class="keyword">from</span> sklearn.linear_model <span class="keyword">import</span> LinearRegression</span><br><span class="line"></span><br><span class="line"><span class="comment"># 使用训练集上的x与y</span></span><br><span class="line">clf = LinearRegression()</span><br><span class="line">clf.fit(X_train,y_train)</span><br><span class="line">clf.coef_ <span class="comment"># 查看系数</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看该模型在训练集和测试集上的表现情况</span></span><br><span class="line">y_train_pred = clf.predict(X_train)</span><br><span class="line">y_test_pred = clf.predict(X_test)</span><br><span class="line"><span class="comment"># 查看MSE</span></span><br><span class="line"><span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> mean_squared_error</span><br><span class="line">mean_squared_error(y_train,y_train_pred) <span class="comment"># 训练集</span></span><br><span class="line">mean_squared_error(y_test,y_test_pred) <span class="comment"># 测试集</span></span><br><span class="line"><span class="comment"># 查看R²</span></span><br><span class="line"><span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> r2_score</span><br><span class="line">r2_score(y_train,y_train_pred) <span class="comment"># 训练集</span></span><br><span class="line">r2_score(y_test,y_test_pred) <span class="comment"># 测试集</span></span><br><span class="line"><span class="comment"># 查看绝对值</span></span><br><span class="line"><span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> mean_absolute_error</span><br><span class="line">mean_absolute_error(y_train,y_train_pred) <span class="comment"># 训练集</span></span><br><span class="line">mean_absolute_error(y_test,y_test_pred) <span class="comment"># 测试集</span></span><br></pre></td></tr></table></figure>]]></content>
+      
+      
+      <categories>
+          
+          <category> 辉夜の编程之路 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 人工智能 </tag>
+            
+            <tag> 机器学习 </tag>
+            
+            <tag> 交叉验证 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>交叉验证1</title>
+      <link href="/2025/03/28/Cross-validation1/"/>
+      <url>/2025/03/28/Cross-validation1/</url>
+      
+        <content type="html"><![CDATA[<h3 id="拟合情况"><a href="#拟合情况" class="headerlink" title="拟合情况"></a>拟合情况</h3><ol><li>泛化能力：模型对于未见过数据的预测能力（使用测试集）<br> 比如有500组数据，可以用400组用于训练，即训练集，剩下100组作为测试集。  </li><li>模型误差：  <ul><li>偏差大：多次训练，训练集平均拟合不好。离得太大了。</li><li>方差大：多次训练，测试集上效果抖动厉害。在测试集对比时，上下抖动太厉害。</li><li>泛化误差 = 偏差+误差+噪声，偏差小方差小才是好模型。</li></ul></li><li>欠拟合与过拟合：  <ul><li>欠拟合：模型在训练集上拟合的不好。还没上测试集的时候就已经表现出明显拟合欠缺。</li><li>过拟合：模型在训练集上拟合的很好，但在测试集上拟合的不好。</li><li>好的模型应该对训练集和测试集的拟合上都很好。</li></ul></li></ol><h3 id="交叉验证"><a href="#交叉验证" class="headerlink" title="交叉验证"></a>交叉验证</h3><ol><li>原理<br>等分后，进行训练，将测试结果（mse）保存，最后平均，得到总的结果。如果结果差→偏差大，波动大→方差大  <div class="img-wrap"><div class="img-bg"><img class="img" src="https://blogpic-5qb.pages.dev/img/sc_swe/keyan/交叉验证.png" alt="<center>交叉验证"/></div><span class="image-caption"><center>交叉验证</span></div>  实际操作中，可以先73分，作为训练集测试集，进行测试，没必要完全使用交叉验证。</li></ol><h3 id="模型调参的评估指标——模型在具体问题上的适用性"><a href="#模型调参的评估指标——模型在具体问题上的适用性" class="headerlink" title="模型调参的评估指标——模型在具体问题上的适用性"></a>模型调参的评估指标——模型在具体问题上的适用性</h3><p>MSE：真实值与预测值的差的平方和/N；RMSE：MSE开根；MAE：如图；<br>SSr：预测Y点到真实Y平均值的距离；SST：实际Y点到真实Y平均值的距离。<br>R方接近于1更好，MSE越接近于0越好。<br><div class="img-wrap"><div class="img-bg"><img class="img" src="https://blogpic-5qb.pages.dev/img/sc_swe/keyan/适用性.png" alt="<center>适用性"/></div><span class="image-caption"><center>适用性</span></div>  </p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 辉夜の编程之路 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 人工智能 </tag>
+            
+            <tag> 机器学习 </tag>
+            
+            <tag> 交叉验证 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>回归模型2</title>
+      <link href="/2025/03/27/Linearregression2/"/>
+      <url>/2025/03/27/Linearregression2/</url>
+      
+        <content type="html"><![CDATA[<h3 id="代码演示"><a href="#代码演示" class="headerlink" title="代码演示"></a>代码演示</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.dataseats <span class="keyword">import</span> load_boston <span class="comment"># 使用库自带的数据演示</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 导入波士顿房价数据</span></span><br><span class="line">data = load_boston()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 提取x和y</span></span><br><span class="line">x = data[<span class="string">&#x27;data&#x27;</span>]</span><br><span class="line">y = data[<span class="string">&#x27;target&#x27;</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 使用sklearn线性回归库</span></span><br><span class="line"><span class="keyword">from</span> sklearn.linear_model <span class="keyword">import</span> LinearRegression</span><br><span class="line"></span><br><span class="line"><span class="comment"># 实例化一个线性回归</span></span><br><span class="line">clf = LineaRegression()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 根据已知的xy进行训练</span></span><br><span class="line">clf.fit(x,y)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看每个x对应的系数</span></span><br><span class="line">clf.coef_</span><br><span class="line"><span class="comment"># 查看常数项（截距项）</span></span><br><span class="line">clf.intercept_</span><br><span class="line"></span><br><span class="line"><span class="comment"># 测试，选101行</span></span><br><span class="line">clf.predict([x[<span class="number">101</span>]])</span><br><span class="line"><span class="comment"># 将所有x进行预测，可以用来对比</span></span><br><span class="line">y_pred = clf.predict(x)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 调用函数，计算均方和</span></span><br><span class="line"><span class="keyword">import</span> sklearn.metrics <span class="keyword">import</span> mean_squared_error</span><br><span class="line">mean_squared_error(y,y_pred)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 画图展示一下</span></span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line">x = <span class="built_in">list</span>(<span class="built_in">range</span>(<span class="built_in">len</span>(y)))</span><br><span class="line">plt.plot(x,y,label = <span class="string">&#x27;true&#x27;</span>) <span class="comment"># 真实值曲线</span></span><br><span class="line">plt.plot(x,y_pred,label = <span class="string">&#x27;pred&#x27;</span>) <span class="comment"># 预测值曲线</span></span><br><span class="line">plt.legend()</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>]]></content>
+      
+      
+      <categories>
+          
+          <category> 辉夜の编程之路 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 人工智能 </tag>
+            
+            <tag> 机器学习 </tag>
+            
+            <tag> 线性回归 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>回归模型1</title>
+      <link href="/2025/03/25/Linearregression1/"/>
+      <url>/2025/03/25/Linearregression1/</url>
+      
+        <content type="html"><![CDATA[<h3 id="一、任务驱动"><a href="#一、任务驱动" class="headerlink" title="一、任务驱动"></a>一、任务驱动</h3><p>简单来讲，我们要使用线性回归的方法，求出一个函数，将如图14个参数输入进去后，得到预测房价。<br><div class="img-wrap"><div class="img-bg"><img class="img" src="https://blogpic-5qb.pages.dev/img/sc_swe/keyan/任务驱动.png" alt="<center>示意图"/></div><span class="image-caption"><center>示意图</span></div>  </p><h3 id="二、线性回归是什么？"><a href="#二、线性回归是什么？" class="headerlink" title="二、线性回归是什么？"></a>二、线性回归是什么？</h3><p>线性回归，即要求所有点到某线的距离之和最小，一般是看均方和，如图中所示。<br><div class="img-wrap"><div class="img-bg"><img class="img" src="https://blogpic-5qb.pages.dev/img/sc_swe/keyan/线性回归.png" alt="<center>线性回归"/></div><span class="image-caption"><center>线性回归</span></div><br>用矩阵表达如图所示。<br><div class="img-wrap"><div class="img-bg"><img class="img" src="https://blogpic-5qb.pages.dev/img/sc_swe/keyan/用矩阵表达.png" alt="<center>用矩阵表达"/></div><span class="image-caption"><center>用矩阵表达</span></div></p><h3 id="三、如何算出参数θ？"><a href="#三、如何算出参数θ？" class="headerlink" title="三、如何算出参数θ？"></a>三、如何算出参数θ？</h3><ol><li>也就是多元二次函数最小值问题，举个例子，当“θx”为一元，则直接对（θx-y）²求导，让导数为零即可。<br> 但这种方法有限制：  <ul><li>矩阵的维度无法太大。</li><li>速度会变慢。</li></ul></li><li>梯度下降法，推荐。<br>如图。<div class="img-wrap"><div class="img-bg"><img class="img" src="https://blogpic-5qb.pages.dev/img/sc_swe/keyan/梯度下降法.png" alt="<center>图解梯度下降法"/></div><span class="image-caption"><center>图解梯度下降法</span></div>  </li><li>梯度下降法注意事项<br> 3.1 步长β：也称为学习效率，属于超参数。要大小合适，或者前期较大，后期较小。若太大，结果反复横跳，若太小，耗时太长。<br> 3.2 下凸函数（如x²），唯一极小值即为最小值，要小心上凸函数以及局部平缓的情况，可能会陷入局部最优（极小值、鞍点）。可以取多个初始值。<br> 3.3 注意去量纲，进行标准化与归一化。</li></ol>]]></content>
       
       
       <categories>
