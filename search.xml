@@ -4,11 +4,69 @@
   
     
     <entry>
+      <title>逻辑回归1</title>
+      <link href="/2025/03/29/LogisticRegression1/"/>
+      <url>/2025/03/29/LogisticRegression1/</url>
+      
+        <content type="html"><![CDATA[<h3 id="逻辑斯特回归是什么？"><a href="#逻辑斯特回归是什么？" class="headerlink" title="逻辑斯特回归是什么？"></a>逻辑斯特回归是什么？</h3><ol><li>不同于线性回归，逻辑回归是用来分类的。<br> 典型数据集——鸢尾花卉数据集，用于实验逻辑回归代码，实验分类算法。<div class="img-wrap"><div class="img-bg"><img class="img" src="https://blogpic-5qb.pages.dev/img/sc_swe/keyan/典型数据集.png" alt="<center>典型数据集"/></div><span class="image-caption"><center>典型数据集</span></div></li><li>如何将线性回归的方法改造成可以处理分类问题的方法？<br> 如图，f(X)即为线性回归得到的模型函数，由图可看出，y在0-1之间，可以看做概率，也可以看做小于0.5是一类，大于0.5是另一类，可用来做分类。<br> 问题被简化了，只需要将f(x)外面套上一个函数即可分类。<ul><li>类似于升降维度，<div class="img-wrap"><div class="img-bg"><img class="img" src="https://blogpic-5qb.pages.dev/img/sc_swe/keyan/逻辑斯特回归.png" alt="<center>逻辑斯特回归"/></div><span class="image-caption"><center>逻辑斯特回归</span></div></li></ul></li><li>几何角度的理解：<br> f(x) = 0，是分界常数，将数据分为了两类，一类的yprob大于0.5，一类小于0.5。</li></ol><h3 id="如何计算逻辑斯特回归？"><a href="#如何计算逻辑斯特回归？" class="headerlink" title="如何计算逻辑斯特回归？"></a>如何计算逻辑斯特回归？</h3><ol><li>使用MSE？<br> 实测效果并不好，太多局部最低点。</li><li></li></ol>]]></content>
+      
+      
+      <categories>
+          
+          <category> 辉夜の编程之路 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 人工智能 </tag>
+            
+            <tag> 机器学习 </tag>
+            
+            <tag> 分类模型 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>正则化线性回归2</title>
+      <link href="/2025/03/29/Regularization2/"/>
+      <url>/2025/03/29/Regularization2/</url>
+      
+        <content type="html"><![CDATA[<h3 id="代码实现lasso回归"><a href="#代码实现lasso回归" class="headerlink" title="代码实现lasso回归"></a>代码实现lasso回归</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 导入数据</span></span><br><span class="line"><span class="keyword">from</span> sklearn.datasets <span class="keyword">import</span> load_boston</span><br><span class="line">data = load_boston()</span><br><span class="line">x = data[<span class="string">&#x27;data&#x27;</span>]</span><br><span class="line">y = data[<span class="string">&#x27;target&#x27;</span>]</span><br><span class="line"><span class="comment"># 划分训练集和测试集</span></span><br><span class="line"><span class="keyword">from</span> sklearn.model_selection <span class="keyword">import</span> train_test_split</span><br><span class="line">X_train,X_test,y_train,y_test = train_test_split(x,y,test_size = <span class="number">0.2</span>,random = ...) <span class="comment"># 如果想固定划分结果，用种子</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 实例化一个lasso回归</span></span><br><span class="line"><span class="keyword">from</span> sklearn.linear_model <span class="keyword">import</span> Lasso</span><br><span class="line">clf1 = Lasso(alpha = <span class="number">0.1</span>) <span class="comment"># α默认1，可调节。可以调节至欠拟合和过拟合之间。</span></span><br><span class="line">clf1.fit(X_train,y_train)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 进行预测</span></span><br><span class="line">y_train_pred = clf1.predict(X_train)</span><br><span class="line">y_test_pred = clf1.predict(X_test)</span><br><span class="line"></span><br><span class="line"><span class="comment"># MSE</span></span><br><span class="line"><span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> mean_squared_error</span><br><span class="line">mean_squared_error(y_train,y_train_pred) <span class="comment"># 训练集</span></span><br><span class="line">mean_squared_error(y_test,y_test_pred) <span class="comment"># 测试集</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#写一个alpha列表，取多个值作对比</span></span><br><span class="line">alphas = [<span class="number">0.001</span>,<span class="number">0.005</span>,<span class="number">0.1</span>,<span class="number">0.2</span>,<span class="number">0.3</span>,<span class="number">0.4</span>,<span class="number">0.5</span>,<span class="number">1</span>,<span class="number">1.5</span>]</span><br><span class="line">mse_trains = []</span><br><span class="line">mse_tests = []</span><br><span class="line"><span class="keyword">for</span> alpha <span class="keyword">in</span> alphas:</span><br><span class="line">    clf = Lasso(alpha = alpha)</span><br><span class="line">    clf.fit(X_train,y_train)</span><br><span class="line">    <span class="comment"># 预测</span></span><br><span class="line">    y_train_pred = clf.predict(X_train)</span><br><span class="line">    y_test_pred = clf.predict(X_test)</span><br><span class="line">    <span class="comment"># 存储</span></span><br><span class="line">    mse_trains.append(mean_squared_error(y_train,y_train_pred)) <span class="comment"># 训练集</span></span><br><span class="line">    mse_tests.append(mean_squared_error(y_test,y_test_pred)) <span class="comment"># 测试集</span></span><br><span class="line"><span class="comment"># 可视化</span></span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line">plt.plot(alphas,mse_trains,label = <span class="string">&#x27;train&#x27;</span>)</span><br><span class="line">plt.plot(alphas,mse_tests,label = <span class="string">&#x27;test&#x27;</span>)</span><br><span class="line">plt.legend()</span><br><span class="line">plt.show()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 如果mse特别大，则说明不适合做lasso回归，可以试试ridge回归。</span></span><br></pre></td></tr></table></figure><h3 id="代码实现ridge回归"><a href="#代码实现ridge回归" class="headerlink" title="代码实现ridge回归"></a>代码实现ridge回归</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 实例化一个ridge回归</span></span><br><span class="line"><span class="keyword">from</span> sklearn.linear_model <span class="keyword">import</span> Ridge</span><br><span class="line">clf1 = Ridge(alpha = <span class="number">0.1</span>) <span class="comment"># α默认1，可调节。可以调节至欠拟合和过拟合之间。</span></span><br><span class="line">clf1.fit(X_train,y_train)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 进行预测</span></span><br><span class="line">y_train_pred = clf1.predict(X_train)</span><br><span class="line">y_test_pred = clf1.predict(X_test)</span><br><span class="line"></span><br><span class="line"><span class="comment"># MSE</span></span><br><span class="line"><span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> mean_squared_error</span><br><span class="line">mean_squared_error(y_train,y_train_pred) <span class="comment"># 训练集</span></span><br><span class="line">mean_squared_error(y_test,y_test_pred) <span class="comment"># 测试集</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#写一个alpha列表，取多个值作对比</span></span><br><span class="line">alphas = [<span class="number">0.001</span>,<span class="number">0.005</span>,<span class="number">0.1</span>,<span class="number">0.2</span>,<span class="number">0.3</span>,<span class="number">0.4</span>,<span class="number">0.5</span>,<span class="number">1</span>,<span class="number">1.5</span>]</span><br><span class="line">mse_trains = []</span><br><span class="line">mse_tests = []</span><br><span class="line"><span class="keyword">for</span> alpha <span class="keyword">in</span> alphas:</span><br><span class="line">    clf = Ridge(alpha = alpha)</span><br><span class="line">    clf.fit(X_train,y_train)</span><br><span class="line">    <span class="comment"># 预测</span></span><br><span class="line">    y_train_pred = clf.predict(X_train)</span><br><span class="line">    y_test_pred = clf.predict(X_test)</span><br><span class="line">    <span class="comment"># 存储</span></span><br><span class="line">    mse_trains.append(mean_squared_error(y_train,y_train_pred)) <span class="comment"># 训练集</span></span><br><span class="line">    mse_tests.append(mean_squared_error(y_test,y_test_pred)) <span class="comment"># 测试集</span></span><br><span class="line"><span class="comment"># 可视化</span></span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line">plt.plot(alphas,mse_trains,label = <span class="string">&#x27;train&#x27;</span>)</span><br><span class="line">plt.plot(alphas,mse_tests,label = <span class="string">&#x27;test&#x27;</span>)</span><br><span class="line">plt.legend()</span><br><span class="line">plt.show()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 可能用ridge更好</span></span><br><span class="line"><span class="comment"># 如何筛选？</span></span><br><span class="line"><span class="comment"># 选训练集mse变平缓时，测试集mse合适的时候的alpha即可</span></span><br></pre></td></tr></table></figure>]]></content>
+      
+      
+      <categories>
+          
+          <category> 辉夜の编程之路 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 人工智能 </tag>
+            
+            <tag> 机器学习 </tag>
+            
+            <tag> 回归模型 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>正则化线性回归1</title>
       <link href="/2025/03/28/Regularization1/"/>
       <url>/2025/03/28/Regularization1/</url>
       
-        <content type="html"><![CDATA[<h3 id=""><a href="#" class="headerlink" title=" "></a> </h3>]]></content>
+        <content type="html"><![CDATA[<h3 id="如何防止过拟合？"><a href="#如何防止过拟合？" class="headerlink" title="如何防止过拟合？"></a>如何防止过拟合？</h3><ol><li>答：增加正则化项，减小模型复杂度。如最高次从三次方降到二次方。遵从“奥卡姆剃刀原则”。一旦模型太复杂，就只符合训练集了，泛化能力就会变差。  </li><li>三种新的回归模型  <ul><li>ridge回归：除了α外的额外项称为正则化项，α为比重，是超参数，人为规定。。α越大，θ就要越小。同时，α越小，代表使得拟合函数越复杂，因为用于减小模型复杂度的正则化项的比重小了。</li><li>lasso和elastic回归也类似类似，都是加了正则化项。<div class="img-wrap"><div class="img-bg"><img class="img" src="https://blogpic-5qb.pages.dev/img/sc_swe/keyan/三种新的回归.png" alt="<center>三种防止过拟合的回归"/></div><span class="image-caption"><center>三种防止过拟合的回归</span></div></li></ul></li></ol><h3 id="Ridge回归"><a href="#Ridge回归" class="headerlink" title="Ridge回归"></a>Ridge回归</h3><ol><li>α调的越大，θi就会越小。同时，对于一个α，θi越接近0，说明该参数对于模型影响越小。反之，θi远离0，则对模型更重要。<div class="img-wrap"><div class="img-bg"><img class="img" src="https://blogpic-5qb.pages.dev/img/sc_swe/keyan/ridge.png" alt="<center>ridge回归"/></div><span class="image-caption"><center>ridge回归</span></div></li></ol><h3 id="Lasso回归"><a href="#Lasso回归" class="headerlink" title="Lasso回归"></a>Lasso回归</h3><ol><li>可以筛选出哪个X对于模型更重要。  <div class="img-wrap"><div class="img-bg"><img class="img" src="https://blogpic-5qb.pages.dev/img/sc_swe/keyan/lasso.png" alt="<center>lasso回归"/></div><span class="image-caption"><center>lasso回归</span></div></li></ol><h3 id="Elastic回归"><a href="#Elastic回归" class="headerlink" title="Elastic回归"></a>Elastic回归</h3><ol><li>是将前两个结合使用。</li></ol><h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><ol><li>α越大，约束越强，模型越简单，拟合能力变弱。用于平衡测试集准确度和训练集准确度。</li><li>优化方法不同，ridge回归可以继续用梯度下降法优化，但lasso和elastic需要用其他方法。</li></ol>]]></content>
       
       
       <categories>
