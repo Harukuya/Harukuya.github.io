@@ -4,11 +4,224 @@
   
     
     <entry>
+      <title>Stacking1</title>
+      <link href="/2025/04/01/Stacking1/"/>
+      <url>/2025/04/01/Stacking1/</url>
+      
+        <content type="html"><![CDATA[<h3 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">from</span> sklearn.datasets <span class="keyword">import</span> load_boston</span><br><span class="line"><span class="keyword">from</span> sklearn.ensemble <span class="keyword">import</span> RandomForestRegressor</span><br><span class="line"><span class="keyword">from</span> sklearn.model_selection <span class="keyword">import</span> train_test_split</span><br><span class="line"><span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> mean_squared_error,mean_absolute_error</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="keyword">from</span> sklearn_tree <span class="keyword">import</span> DecisionTreeRgeressor</span><br><span class="line"></span><br><span class="line">data = load_boston()</span><br><span class="line">X = data[<span class="string">&#x27;data&#x27;</span>]</span><br><span class="line">y = data[<span class="string">&#x27;target&#x27;</span>]</span><br><span class="line">train_X,test_X, train_y, test_y = train_test_split(X,y,test_size = <span class="number">0.3</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> sklearn.model_selection <span class="keyword">import</span> KFold</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">get_stacking</span>(<span class="params">clf, x_train, y_train, x_test, n_folds=<span class="number">10</span></span>): <span class="comment"># 设定几折交叉验证</span></span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    这个函数是stacking的核心，使用交叉验证的方法得到次级训练集</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    <span class="comment">#计算训练集和测试集的样本数</span></span><br><span class="line">    train_num, test_num = x_train.shape[<span class="number">0</span>], x_test.shape[<span class="number">0</span>]</span><br><span class="line">    <span class="comment">#存储结果</span></span><br><span class="line">    second_level_train_set = np.zeros((train_num,))</span><br><span class="line">    second_level_test_set = np.zeros((test_num,))</span><br><span class="line">    test_nfolds_sets = np.zeros((test_num, n_folds))</span><br><span class="line">    <span class="comment">#K折交叉验证</span></span><br><span class="line">    kf = KFold(n_splits=n_folds)</span><br><span class="line">    <span class="comment">#依次使用K折数据集训练数据</span></span><br><span class="line">    <span class="keyword">for</span> i,(train_index, test_index) <span class="keyword">in</span> <span class="built_in">enumerate</span>(kf.split(x_train)):</span><br><span class="line">        <span class="comment">#切分K折数据</span></span><br><span class="line">        x_tra, y_tra = x_train[train_index], y_train[train_index]</span><br><span class="line">        x_tst, y_tst = x_train[test_index], y_train[test_index]</span><br><span class="line">        <span class="comment">#训练数据</span></span><br><span class="line">        clf.fit(x_tra, y_tra)</span><br><span class="line">        <span class="comment">#对训练集和测试集进行预测</span></span><br><span class="line">        second_level_train_set[test_index] = clf.predict(x_tst)</span><br><span class="line">        test_nfolds_sets[:,i] = clf.predict(x_test)</span><br><span class="line">    <span class="comment">#计算返回的均值</span></span><br><span class="line">    second_level_test_set[:] = test_nfolds_sets.mean(axis = <span class="number">1</span>)</span><br><span class="line">    <span class="keyword">return</span> second_level_train_set, second_level_test_set</span><br></pre></td></tr></table></figure>]]></content>
+      
+      
+      <categories>
+          
+          <category> 辉夜の编程之路 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 人工智能 </tag>
+            
+            <tag> 机器学习 </tag>
+            
+            <tag> 回归模型 </tag>
+            
+            <tag> 分类模型 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>随机森林</title>
+      <link href="/2025/04/01/RandomForest1/"/>
+      <url>/2025/04/01/RandomForest1/</url>
+      
+        <content type="html"><![CDATA[<h3 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.datasets <span class="keyword">import</span> load_boston</span><br><span class="line"><span class="keyword">from</span> sklearn.ensemble <span class="keyword">import</span> RandomForestRegressor</span><br><span class="line"><span class="keyword">from</span> sklearn.model_selection <span class="keyword">import</span> train_test_split</span><br><span class="line"><span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> mean_squared_error</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line">data = load_boston()</span><br><span class="line">X = data[<span class="string">&#x27;data&#x27;</span>]</span><br><span class="line">Y = data[<span class="string">&#x27;target&#x27;</span>]</span><br><span class="line">train_X,test_X,train_y,test_y = train_test_split(X,y,test_size = <span class="number">0.3</span>) <span class="comment"># 如果想固定划分结果，用种子</span></span><br><span class="line"></span><br><span class="line">rfr = RandomForestRegressor()</span><br><span class="line">rfr.fit(train_X,train_y)</span><br><span class="line">train_predicts = rfr.predict(train_X)</span><br><span class="line">test_predicts = rfr.predict(test_X)</span><br><span class="line"></span><br><span class="line">mean_squared_error(train_predicts,train_y)</span><br><span class="line">mean_squared_error(test_predicts,test_y)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 调节参数，决策树棵数</span></span><br><span class="line">error_trains = []</span><br><span class="line">error_tests = []</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">10</span>,<span class="number">200</span>,<span class="number">10</span>):</span><br><span class="line">    <span class="comment"># 修改n_estimators，也就是决策树棵数，并确定随机种子</span></span><br><span class="line">    rfr = RandomForestRegressor(n_estimators = i,random_state = <span class="number">90</span>) <span class="comment"># 控制种子，保证变量唯一</span></span><br><span class="line">    rfr.fit(train_X,train_y)</span><br><span class="line">    train_predicts = rfr.predict(train_X)</span><br><span class="line">    test_predicts = rfr.predict(test_X)</span><br><span class="line">    error_trains.append(mean_squared_error(train_predicts,train_y))</span><br><span class="line">    mean_squared_error.append((test_predicts,test_y))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 绘制调参图</span></span><br><span class="line">x = <span class="built_in">list</span>(<span class="built_in">range</span>(<span class="number">10</span>,<span class="number">200</span>,<span class="number">10</span>))</span><br><span class="line">plt.plot(x,error_trains,<span class="string">&#x27;--&#x27;</span>,label = <span class="string">&#x27;train&#x27;</span>)</span><br><span class="line">plt.plot(x,error_tests,<span class="string">&#x27;o&#x27;</span>,label = <span class="string">&#x27;test&#x27;</span>)</span><br><span class="line">plt.xlabel(<span class="string">&#x27;n_estimators&#x27;</span>)</span><br><span class="line">plt.ylabel(<span class="string">&#x27;MSE&#x27;</span>)</span><br><span class="line">plt.legend()</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>]]></content>
+      
+      
+      <categories>
+          
+          <category> 辉夜の编程之路 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 人工智能 </tag>
+            
+            <tag> 机器学习 </tag>
+            
+            <tag> 回归模型 </tag>
+            
+            <tag> 分类模型 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>集成模型</title>
+      <link href="/2025/04/01/Integratedmodel/"/>
+      <url>/2025/04/01/Integratedmodel/</url>
+      
+        <content type="html"><![CDATA[<h3 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h3><ul><li>集成模型，顾名思义，使用多个模型完成一件任务。找一种策略融合N个模型</li><li>同质学习器：只改变超参数，本质上使用同一种方法，如用线性回归，但用不同超参数。</li><li>异质学习器：使用不同的方法，如用决策树+线性回归来决策。</li></ul><h3 id="如何集成？"><a href="#如何集成？" class="headerlink" title="如何集成？"></a>如何集成？</h3><p>分为平均策略和加权策略，如图所示。<br>两种策略都是线性的。<br><div class="img-wrap"><div class="img-bg"><img class="img" src="https://blogpic-5qb.pages.dev/img/sc_swe/keyan/集成学习策略.png" alt="<center>集成学习策略"/></div><span class="image-caption"><center>集成学习策略</span></div></p><h3 id="为什么可行？"><a href="#为什么可行？" class="headerlink" title="为什么可行？"></a>为什么可行？</h3><p>随机森林由多个决策树构成，如图，有四棵决策树。从样本中抽n列特征（少于总数），放到第一个决策树中，再随机抽，放入第二个树，以此类推，进行建模，最后将y进行平均。<br>每一棵树都可以反馈自己的准确率等情况。<br>也可以返回每个x对于y的重要性。可以用来剔除等，优化算力。<br><div class="img-wrap"><div class="img-bg"><img class="img" src="https://blogpic-5qb.pages.dev/img/sc_swe/keyan/随机森林.png" alt="<center>随机森林"/></div><span class="image-caption"><center>随机森林</span></div></p><h3 id="Stacking集成"><a href="#Stacking集成" class="headerlink" title="Stacking集成"></a>Stacking集成</h3><ol><li>线性集成包含：  <ul><li>Bagging——Random forest，是平均集成</li><li>Boosting——GBDT，加权集成</li></ul></li><li>非线性集成：<br>一种非线性集成。  <div class="img-wrap"><div class="img-bg"><img class="img" src="https://blogpic-5qb.pages.dev/img/sc_swe/keyan/stacking.png" alt="<center>Stacking集成"/></div><span class="image-caption"><center>Stacking集成</span></div></li></ol>]]></content>
+      
+      
+      <categories>
+          
+          <category> 辉夜の编程之路 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 人工智能 </tag>
+            
+            <tag> 机器学习 </tag>
+            
+            <tag> 回归模型 </tag>
+            
+            <tag> 分类模型 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>决策树模型2</title>
+      <link href="/2025/04/01/DecisionTree2/"/>
+      <url>/2025/04/01/DecisionTree2/</url>
+      
+        <content type="html"><![CDATA[<h3 id="决策树分类"><a href="#决策树分类" class="headerlink" title="决策树分类"></a>决策树分类</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 导入数据集</span></span><br><span class="line"><span class="comment"># data返回一个字典</span></span><br><span class="line"><span class="keyword">from</span> sklearn.datasets <span class="keyword">import</span> load_iris</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line">data = load_iris()</span><br><span class="line"></span><br><span class="line">x = data[<span class="string">&#x27;data&#x27;</span>]</span><br><span class="line">y = data[<span class="string">&#x27;target&#x27;</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 直接看y是三分类，先看看二分类</span></span><br><span class="line">x = x[<span class="number">50</span>:]</span><br><span class="line">y = y[<span class="number">50</span>:]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 数据集划分</span></span><br><span class="line"><span class="keyword">from</span> sklearn.model_selection <span class="keyword">import</span> train_test_split</span><br><span class="line">x_train,x_test,y_train,y_test = train_test_split(x,y,test_size = <span class="number">0.2</span>,random_state = <span class="number">0</span>) <span class="comment"># 如果想固定划分结果，用种子</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 导入决策树模型</span></span><br><span class="line"><span class="keyword">from</span> sklearn.tree <span class="keyword">import</span> DecisionTreeClassifier</span><br><span class="line"><span class="comment"># 实例化模型</span></span><br><span class="line">model = DecisionTreeClassifier(max_depth = <span class="number">5</span>) <span class="comment"># 可设置参数，见前post</span></span><br><span class="line"><span class="comment"># 训练模型</span></span><br><span class="line">model.fit(x_train,y_train)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 预测数据</span></span><br><span class="line">y_train_pred = model.predict(x_train)</span><br><span class="line">y_test_pred = model.predict(x_test)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 准确率</span></span><br><span class="line"><span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> accuracy_score</span><br><span class="line">accuracy_score(y_train_pred,y_train)</span><br><span class="line">accuracy_score(y_test_pred,y_test) <span class="comment"># 通过调整参数获得不同的准确率</span></span><br></pre></td></tr></table></figure><h3 id="决策树回归"><a href="#决策树回归" class="headerlink" title="决策树回归"></a>决策树回归</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 导入数据集</span></span><br><span class="line"><span class="comment"># data返回一个字典</span></span><br><span class="line"><span class="keyword">from</span> sklearn.datasets <span class="keyword">import</span> load_boston</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line">data = load_boston()</span><br><span class="line"></span><br><span class="line">x = data[<span class="string">&#x27;data&#x27;</span>]</span><br><span class="line">y = data[<span class="string">&#x27;target&#x27;</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 数据集划分</span></span><br><span class="line"><span class="keyword">from</span> sklearn.model_selection <span class="keyword">import</span> train_test_split</span><br><span class="line">X_train,X_test,y_train,y_test = train_test_split(x,y,test_size = <span class="number">0.2</span>,random_state = <span class="number">0</span>) <span class="comment"># 如果想固定划分结果，用种子</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 导入模型</span></span><br><span class="line"><span class="keyword">from</span> sklearn.tree <span class="keyword">import</span> DecisionTreeRegressor</span><br><span class="line"><span class="comment"># 实例化模型</span></span><br><span class="line">model = DecisionTreeRegressor(max_depth = <span class="number">5</span>) <span class="comment"># 可设置参数，见前post</span></span><br><span class="line"><span class="comment"># 训练模型</span></span><br><span class="line">model.fit(X_train,y_train)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 预测数据</span></span><br><span class="line">y_train_pred = model.predict(X_train)</span><br><span class="line">y_test_pred = model.predict(X_test)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 准确率</span></span><br><span class="line"><span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> mean_squared_error</span><br><span class="line">mean_squared_error(y_train_pred,y_train) <span class="comment"># 因为针对单个数据进行训练，一般结果会很好</span></span><br><span class="line">mean_squared_error(y_test_pred,y_test) <span class="comment"># 也能差一些，因为涉及到过拟合</span></span><br><span class="line"><span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> r2_score</span><br><span class="line">r2_score(y_train_pred,y_train) </span><br><span class="line">r2_score(y_test_pred,y_test) <span class="comment"># 也可以看出是过拟合</span></span><br></pre></td></tr></table></figure>]]></content>
+      
+      
+      <categories>
+          
+          <category> 辉夜の编程之路 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 人工智能 </tag>
+            
+            <tag> 机器学习 </tag>
+            
+            <tag> 回归模型 </tag>
+            
+            <tag> 分类模型 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>决策树模型1</title>
+      <link href="/2025/04/01/DecisionTree1/"/>
+      <url>/2025/04/01/DecisionTree1/</url>
+      
+        <content type="html"><![CDATA[<h2 id="决策树分类"><a href="#决策树分类" class="headerlink" title="决策树分类"></a>决策树分类</h2><h3 id="决策树是什么"><a href="#决策树是什么" class="headerlink" title="决策树是什么"></a>决策树是什么</h3><ol><li>树：如图，分位根节点、中间结点、叶子结点。<br> 注意树的深度不算根节点。  <div class="img-wrap"><div class="img-bg"><img class="img" src="https://blogpic-5qb.pages.dev/img/sc_swe/keyan/树.png" alt="<center>树"/></div><span class="image-caption"><center>树</span></div></li><li>决策树：针对多个指标进行多次划分，最后划分为一类。<br> 包含二叉树——每一次只划分两类。<br> 根节点：包含所有样本、划分的属性、划分的阈值。<br> 内部节点：包含划分后的样本、下一步划分的属性、划分的阈值。<br> 叶子结点：在这个决策路径下最后包含的样本。  <div class="img-wrap"><div class="img-bg"><img class="img" src="https://blogpic-5qb.pages.dev/img/sc_swe/keyan/决策树.png" alt="<center>决策树"/></div><span class="image-caption"><center>决策树</span></div></li></ol><h3 id="决策树特点"><a href="#决策树特点" class="headerlink" title="决策树特点"></a>决策树特点</h3><ol><li>支持多分类</li><li>支持输出概率</li></ol><h3 id="决策树核心"><a href="#决策树核心" class="headerlink" title="决策树核心"></a>决策树核心</h3><p>CART决策树有两个核心：  </p><ol><li>如何选择划分的特征？</li><li>如何选择划分的阈值？</li></ol><ul><li>贪心策略：每一次划分都要使得两边的子集都足够纯，足够单一。</li></ul><ol><li>使用GINI指数进行判断。<br> GINI越小，样本越纯，分的越好。  <div class="img-wrap"><div class="img-bg"><img class="img" src="https://blogpic-5qb.pages.dev/img/sc_swe/keyan/gini指数.png" alt="<center>gini指数"/></div><span class="image-caption"><center>gini指数</span></div></li><li>如何使用？  <ul><li>比较分类前GINI和分类后GINI加权和，越小越好  </li><li>贪心策略，多次改变分类条件，让GINI最小  </li><li>最小化分类后GINI加权和  </li></ul></li><li>数学表达<br> 如图，多设置几个阈值，排序后遍历，选最小的即可。  <div class="img-wrap"><div class="img-bg"><img class="img" src="https://blogpic-5qb.pages.dev/img/sc_swe/keyan/gini算法.png" alt="<center>算gini"/></div><span class="image-caption"><center>算gini</span></div></li></ol><h2 id="决策树回归"><a href="#决策树回归" class="headerlink" title="决策树回归"></a>决策树回归</h2><h3 id=""><a href="#" class="headerlink" title=" "></a> </h3><h2 id="决策树参数"><a href="#决策树参数" class="headerlink" title="决策树参数"></a>决策树参数</h2><p>如图。<br>最大深度：越大，模型越复杂，可以控制欠拟合、过拟合。<br>简单来讲max开头越大，趋向于过拟合。min开头越大，趋向于欠拟合。<br><div class="img-wrap"><div class="img-bg"><img class="img" src="https://blogpic-5qb.pages.dev/img/sc_swe/keyan/决策树参数.png" alt="<center>决策树参数"/></div><span class="image-caption"><center>决策树参数</span></div></p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 辉夜の编程之路 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 人工智能 </tag>
+            
+            <tag> 机器学习 </tag>
+            
+            <tag> 回归模型 </tag>
+            
+            <tag> 分类模型 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>逻辑回归3</title>
+      <link href="/2025/03/31/LogisticRegression3/"/>
+      <url>/2025/03/31/LogisticRegression3/</url>
+      
+        <content type="html"><![CDATA[<h3 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 导入数据集</span></span><br><span class="line"><span class="comment"># data返回一个字典</span></span><br><span class="line"><span class="keyword">from</span> sklearn.datasets <span class="keyword">import</span> load_iris</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line">data = load_iris()</span><br><span class="line"></span><br><span class="line">x = data[<span class="string">&#x27;data&#x27;</span>]</span><br><span class="line">y = data[<span class="string">&#x27;target&#x27;</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 直接看y是三分类，先看看二分类</span></span><br><span class="line">x = x[<span class="number">50</span>:]</span><br><span class="line">y = y[<span class="number">50</span>:]</span><br><span class="line"></span><br><span class="line">y[:<span class="number">50</span>] = <span class="number">0</span></span><br><span class="line">y[<span class="number">50</span>:] = <span class="number">1</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 数据集划分</span></span><br><span class="line"><span class="keyword">from</span> sklearn.model_selection <span class="keyword">import</span> train_test_split</span><br><span class="line">x_train,x_test,y_train,y_test = train_test_split(x,y,test_size = <span class="number">0.2</span>,random_state = <span class="number">0</span>) <span class="comment"># 如果想固定划分结果，用种子</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 导入逻辑回归</span></span><br><span class="line"><span class="keyword">from</span> sklearn.linear_model <span class="keyword">import</span> LogisticRegression</span><br><span class="line"><span class="comment"># 实例化模型</span></span><br><span class="line">lr = LogisticRegression()</span><br><span class="line"><span class="comment"># 训练模型</span></span><br><span class="line">lr.fit(x_train,y_train)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看训练情况</span></span><br><span class="line">y_train_pred = lr.predict(x_train)</span><br><span class="line">y_test_pred = lr.predict(x_test)</span><br><span class="line">y_train_pred</span><br><span class="line">y_test_pred</span><br><span class="line"><span class="comment"># 查看准确率</span></span><br><span class="line"><span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> accuracy_score</span><br><span class="line">accuracy_score(y_train,y_train_pred) <span class="comment"># 查看训练集准确率</span></span><br><span class="line">accuracy_score(y_test,y_test_pred) <span class="comment"># 查看测试准确率</span></span><br><span class="line"><span class="comment"># 查看混淆矩阵，返回2x2数组</span></span><br><span class="line"><span class="keyword">from</span> sklearn_metrics <span class="keyword">import</span> confusion_matrix</span><br><span class="line">cm1 = confusion_matrix(y_train,y_train_pred) <span class="comment"># 测试集</span></span><br><span class="line">P1 = cm1[<span class="number">0</span>,<span class="number">0</span>]/(cm1[<span class="number">0</span>,<span class="number">0</span>] + cm1[<span class="number">1</span>,<span class="number">0</span>]) <span class="comment"># 查准率</span></span><br><span class="line">R1 = cm1[<span class="number">0</span>,<span class="number">0</span>]/(cm1[<span class="number">0</span>,<span class="number">0</span>] + cm1[<span class="number">0</span>,<span class="number">1</span>]) <span class="comment"># 查全率</span></span><br><span class="line">F11 = <span class="number">2</span>/(<span class="number">1</span>/P1 + <span class="number">1</span>/R1) <span class="comment"># F1指标</span></span><br><span class="line">cm2 = confusion_matrix(y_test,y_test_pred) <span class="comment"># 训练集</span></span><br><span class="line">P2 = cm2[<span class="number">0</span>,<span class="number">0</span>]/(cm2[<span class="number">0</span>,<span class="number">0</span>] + cm2[<span class="number">1</span>,<span class="number">0</span>]) <span class="comment"># 查准率</span></span><br><span class="line">R2 = cm2[<span class="number">0</span>,<span class="number">0</span>]/(cm2[<span class="number">0</span>,<span class="number">0</span>] + cm2[<span class="number">0</span>,<span class="number">1</span>]) <span class="comment"># 查全率</span></span><br><span class="line">F12 = <span class="number">2</span>/(<span class="number">1</span>/P1 + <span class="number">1</span>/R1) <span class="comment"># F1指标</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># AUC、ROC曲线（训练集）</span></span><br><span class="line"><span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> roc_auc_score,roc_curve,auc</span><br><span class="line"><span class="comment"># 返回概率</span></span><br><span class="line">y_p = lr.predict_proba(x_train)[:,<span class="number">1</span>] <span class="comment"># 第一列</span></span><br><span class="line">fpr,tpr,thresholds = roc_curve(y_train,y_p) <span class="comment"># 计算FPR、TPR</span></span><br><span class="line"><span class="comment"># 直接计算AUC面积</span></span><br><span class="line">auc(fpr,tpr)</span><br><span class="line"><span class="comment"># 绘制ROC曲线图</span></span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line">plt.subplots(figsize = (<span class="number">8</span>,<span class="number">5</span>))</span><br><span class="line">plt.plot(fpr,tpr,color = <span class="string">&#x27;darkorange&#x27;</span>,lw = <span class="number">2</span>,label = <span class="string">&#x27;ROC curve(area = %0.4f)&#x27;</span>%roc_auc) <span class="comment"># ROC曲线</span></span><br><span class="line">plt.plot([<span class="number">0</span>,<span class="number">1</span>],[<span class="number">0</span>,<span class="number">1</span>],color = <span class="string">&#x27;navy&#x27;</span>，linestyle = <span class="string">&#x27;--&#x27;</span>) <span class="comment"># 对角线为虚线</span></span><br><span class="line">plt.xlim([<span class="number">0.0</span>,<span class="number">1.0</span>]) <span class="comment"># 制定x轴刻度范围</span></span><br><span class="line">plt.ylim([<span class="number">0.0</span>,<span class="number">1.05</span>]) <span class="comment"># 制定y轴刻度范围</span></span><br><span class="line">plt.xlabel(<span class="string">&#x27;FPR&#x27;</span>) <span class="comment"># x轴标签</span></span><br><span class="line">plt.ylabel(<span class="string">&#x27;TPR&#x27;</span>) <span class="comment"># y轴标签</span></span><br><span class="line">plt.title(<span class="string">&#x27;Train ROC Curve&#x27;</span>) <span class="comment"># 标题</span></span><br><span class="line">plt.legend(loc = <span class="string">&#x27;lower right&#x27;</span>) <span class="comment"># 图例以及位置</span></span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure><h3 id="正则化"><a href="#正则化" class="headerlink" title="正则化"></a>正则化</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 实例化模型</span></span><br><span class="line">lr = LogisticRegression(penalty = <span class="string">&#x27;l2&#x27;</span>,C = <span class="number">0.1</span>) <span class="comment"># 制定正则化，确认C，改变模型复杂程度，C越大越复杂</span></span><br><span class="line"><span class="comment"># 训练模型</span></span><br><span class="line">lr.fit(x_train,y_train)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看训练情况</span></span><br><span class="line">y_train_pred = lr.predict(x_train)</span><br><span class="line">y_test_pred = lr.predict(x_test)</span><br><span class="line">y_train_pred</span><br><span class="line">y_test_pred</span><br><span class="line"></span><br></pre></td></tr></table></figure>]]></content>
+      
+      
+      <categories>
+          
+          <category> 辉夜の编程之路 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 人工智能 </tag>
+            
+            <tag> 机器学习 </tag>
+            
+            <tag> 分类模型 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>逻辑回归2</title>
+      <link href="/2025/03/31/LogisticRegression2/"/>
+      <url>/2025/03/31/LogisticRegression2/</url>
+      
+        <content type="html"><![CDATA[<h3 id="为什么要设立分类评价指标？"><a href="#为什么要设立分类评价指标？" class="headerlink" title="为什么要设立分类评价指标？"></a>为什么要设立分类评价指标？</h3><ol><li>确定模型是否能用。</li><li>避免特殊情况下的唯准确率论，如样本不平衡，1个A，99个B的情况。</li></ol><h3 id="评估指标"><a href="#评估指标" class="headerlink" title="评估指标"></a>评估指标</h3><ol><li>混淆矩阵<br> 如混淆矩阵所示，所以求出查准率和查全率。<br> 根据这两个指标即可解决样本不均衡导致的单准确率无法判断模型优劣的问题。<br> 往往，我们要求查准率和查全率都要高，但实际上一方高了另一方会偏低。<br> 查准率偏向于使用训练集测试结果，查全率偏向于实际使用上的具体结果。<div class="img-wrap"><div class="img-bg"><img class="img" src="https://blogpic-5qb.pages.dev/img/sc_swe/keyan/评估指标.png" alt="<center>评估指标"/></div><span class="image-caption"><center>评估指标</span></div></li><li>什么时候用什么？<br> 查准率：如人脸识别，只关心预测对不对。<br> 查全率：确认诈骗信息，挖掘诈骗邮件，挖掘少数的样本。  </li><li>F1指标<br> F1指标表示了同时考虑两种情况，越大越好。<div class="img-wrap"><div class="img-bg"><img class="img" src="https://blogpic-5qb.pages.dev/img/sc_swe/keyan/F1指标.png" alt="<center>F1指标"/></div><span class="image-caption"><center>F1指标</span></div></li><li>AUC指标、ROC曲线，面积越大模型效果越好。<div class="img-wrap"><div class="img-bg"><img class="img" src="https://blogpic-5qb.pages.dev/img/sc_swe/keyan/AUC指标和ROC曲线.png" alt="<center>AUC指标和ROC曲线"/></div><span class="image-caption"><center>AUC指标和ROC曲线</span></div></li><li>多分类问题怎么办？<br> OVR策略（one vs rest）<br> OVR输出概率，看看输入的东西属于什么的概率最大，就当做哪一类。<br> 详细来说，就是将某一类样本当做一类，其他当做其他类，再分别对所有类别做如此操作，得出P1 P2 P3,最后哪个概率大就是那个。<br> 实际上，在python里面都会简单化。  <div class="img-wrap"><div class="img-bg"><img class="img" src="https://blogpic-5qb.pages.dev/img/sc_swe/keyan/多分类.png" alt="<center>多分类"/></div><span class="image-caption"><center>多分类</span></div></li><li>多分类评估指标<br> 宏方法：分别建模、计算指标、取平均数<br> 微方法：建模、矩阵内计算平均值、计算各指标  <div class="img-wrap"><div class="img-bg"><img class="img" src="https://blogpic-5qb.pages.dev/img/sc_swe/keyan/多分类评估.png" alt="<center>多分类评估"/></div><span class="image-caption"><center>多分类评估</span></div></li></ol>]]></content>
+      
+      
+      <categories>
+          
+          <category> 辉夜の编程之路 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 人工智能 </tag>
+            
+            <tag> 机器学习 </tag>
+            
+            <tag> 分类模型 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>逻辑回归1</title>
       <link href="/2025/03/29/LogisticRegression1/"/>
       <url>/2025/03/29/LogisticRegression1/</url>
       
-        <content type="html"><![CDATA[<h3 id="逻辑斯特回归是什么？"><a href="#逻辑斯特回归是什么？" class="headerlink" title="逻辑斯特回归是什么？"></a>逻辑斯特回归是什么？</h3><ol><li>不同于线性回归，逻辑回归是用来分类的。<br> 典型数据集——鸢尾花卉数据集，用于实验逻辑回归代码，实验分类算法。<div class="img-wrap"><div class="img-bg"><img class="img" src="https://blogpic-5qb.pages.dev/img/sc_swe/keyan/典型数据集.png" alt="<center>典型数据集"/></div><span class="image-caption"><center>典型数据集</span></div></li><li>如何将线性回归的方法改造成可以处理分类问题的方法？<br> 如图，f(X)即为线性回归得到的模型函数，由图可看出，y在0-1之间，可以看做概率，也可以看做小于0.5是一类，大于0.5是另一类，可用来做分类。<br> 问题被简化了，只需要将f(x)外面套上一个函数即可分类。<ul><li>类似于升降维度，<div class="img-wrap"><div class="img-bg"><img class="img" src="https://blogpic-5qb.pages.dev/img/sc_swe/keyan/逻辑斯特回归.png" alt="<center>逻辑斯特回归"/></div><span class="image-caption"><center>逻辑斯特回归</span></div></li></ul></li><li>几何角度的理解：<br> f(x) = 0，是分界常数，将数据分为了两类，一类的yprob大于0.5，一类小于0.5。</li></ol><h3 id="如何计算逻辑斯特回归？"><a href="#如何计算逻辑斯特回归？" class="headerlink" title="如何计算逻辑斯特回归？"></a>如何计算逻辑斯特回归？</h3><ol><li>使用MSE？<br> 实测效果并不好，太多局部最低点。</li><li></li></ol>]]></content>
+        <content type="html"><![CDATA[<h3 id="逻辑斯特回归是什么？"><a href="#逻辑斯特回归是什么？" class="headerlink" title="逻辑斯特回归是什么？"></a>逻辑斯特回归是什么？</h3><ol><li>不同于线性回归，逻辑回归是用来分类的。<br> 典型数据集——鸢尾花卉数据集，用于实验逻辑回归代码，实验分类算法。<div class="img-wrap"><div class="img-bg"><img class="img" src="https://blogpic-5qb.pages.dev/img/sc_swe/keyan/典型数据集.png" alt="<center>典型数据集"/></div><span class="image-caption"><center>典型数据集</span></div></li><li>如何将线性回归的方法改造成可以处理分类问题的方法？<br> 如图，f(X)即为线性回归得到的模型函数，由图可看出，y在0-1之间，可以看做概率，也可以看做小于0.5是一类，大于0.5是另一类，可用来做分类。<br> 问题被简化了，只需要将f(x)外面套上一个函数即可分类。<ul><li>类似于升降维度，<div class="img-wrap"><div class="img-bg"><img class="img" src="https://blogpic-5qb.pages.dev/img/sc_swe/keyan/逻辑斯特回归.png" alt="<center>逻辑斯特回归"/></div><span class="image-caption"><center>逻辑斯特回归</span></div></li></ul></li><li>几何角度的理解：<br> f(x) = 0，是分界常数，将数据分为了两类，一类的yprob大于0.5，一类小于0.5。</li></ol><h3 id="如何计算逻辑斯特回归？"><a href="#如何计算逻辑斯特回归？" class="headerlink" title="如何计算逻辑斯特回归？"></a>如何计算逻辑斯特回归？</h3><ol><li>使用MSE？<br> 实测效果并不好，太多局部最优解。  </li><li>使用极大似然估计：<br> 计算所有样本发生某种情况的概率，也就是独立同分布，比如，可以同时算出A是1的概率P和A是0的概率1-P，取所有ABCD…判断正确的概率，相乘，使这个乘积最大就是拟合最好的情况（ABCD…都有正确的分类）。<br> 为了方便计算所以套了个log。<br> 最后红色的函数越小，拟合结果越好。<div class="img-wrap"><div class="img-bg"><img class="img" src="https://blogpic-5qb.pages.dev/img/sc_swe/keyan/极大似然估计.png" alt="<center>极大似然估计"/></div><span class="image-caption"><center>极大似然估计</span></div></li><li>完整策略<br> 只要找到策略函数最小时的系数就可以了。<br> 同样，需要正则化，C越大，模型越复杂，C越小，模型越简单。  <div class="img-wrap"><div class="img-bg"><img class="img" src="https://blogpic-5qb.pages.dev/img/sc_swe/keyan/逻辑斯特正则化.png" alt="<center>逻辑斯特回归"/></div><span class="image-caption"><center>逻辑斯特回归</span></div>  </li><li>梯度下降法<br> 和之前一样。  <div class="img-wrap"><div class="img-bg"><img class="img" src="https://blogpic-5qb.pages.dev/img/sc_swe/keyan/逻辑斯特梯度下降.png" alt="<center>逻辑斯特梯度下降"/></div><span class="image-caption"><center>逻辑斯特梯度下降</span></div></li></ol><h3 id="真实情况"><a href="#真实情况" class="headerlink" title="真实情况"></a>真实情况</h3><ol><li>往往无法做到线性可分，即一条线完美分开所有的两种类目。而太复杂又会发生过拟合。因此要调节C。</li><li>非线性问题，决策线是一个圆。<br> 可以对原来的x进行数据处理，全部平方。  <div class="img-wrap"><div class="img-bg"><img class="img" src="https://blogpic-5qb.pages.dev/img/sc_swe/keyan/非线性问题.png" alt="<center>非线性问题"/></div><span class="image-caption"><center>非线性问题</span></div></li></ol>]]></content>
       
       
       <categories>
