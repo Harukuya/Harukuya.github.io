@@ -4,11 +4,24 @@
   
     
     <entry>
-      <title>特征工程3</title>
-      <link href="/2025/04/04/FeatureEngineering3/"/>
-      <url>/2025/04/04/FeatureEngineering3/</url>
+      <title>DimensionalityReduction2</title>
+      <link href="/2025/04/05/DimensionalityReduction2/"/>
+      <url>/2025/04/05/DimensionalityReduction2/</url>
       
         <content type="html"><![CDATA[]]></content>
+      
+      
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>降维1</title>
+      <link href="/2025/04/05/DimensionalityReduction1/"/>
+      <url>/2025/04/05/DimensionalityReduction1/</url>
+      
+        <content type="html"><![CDATA[<h3 id="为什么要降维？（PCA）"><a href="#为什么要降维？（PCA）" class="headerlink" title="为什么要降维？（PCA）"></a>为什么要降维？（PCA）</h3><ol><li>节省存储空间</li><li>加速计算速度。维度越少计算量也越少。</li><li>取出冗杂特征，去掉相关性太强的两个特征，避免一种特征权重太大。</li><li>便于观察数据信息，比如四维降到二维、三维。</li><li>特征太多容易引起过拟合。</li><li>信息丢失少，同时可以降低维度。</li></ol><h3 id="PCA降维"><a href="#PCA降维" class="headerlink" title="PCA降维"></a>PCA降维</h3><ol><li>最近重构性：所有样本点到这个超平面的距离足够近。</li><li>最大可分性：所有样本点投影到超平面后，投影尽可能分开。</li><li>实际上满足一个也会同时满足另一个。</li></ol><h3 id="理论展示"><a href="#理论展示" class="headerlink" title="理论展示"></a>理论展示</h3><p>…</p>]]></content>
       
       
       <categories>
@@ -24,9 +37,86 @@
             
             <tag> 机器学习 </tag>
             
-            <tag> 回归模型 </tag>
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>聚类2</title>
+      <link href="/2025/04/05/Clustering2/"/>
+      <url>/2025/04/05/Clustering2/</url>
+      
+        <content type="html"><![CDATA[<h3 id="前期准备"><a href="#前期准备" class="headerlink" title="前期准备"></a>前期准备</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 以下代码是导入这个数据集</span></span><br><span class="line"><span class="comment"># 注意data返回的是一个字典</span></span><br><span class="line"><span class="keyword">from</span> sklearn.datasets <span class="keyword">import</span> load_iris</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"></span><br><span class="line">data = load_iris()</span><br><span class="line">x = data[<span class="string">&#x27;data&#x27;</span>]</span><br><span class="line">y = data[<span class="string">&#x27;target&#x27;</span>]</span><br><span class="line">iris = pd.DataFrame(x,columns = [<span class="string">&#x27;Sepal.Length&#x27;</span>, <span class="string">&#x27;Sepal.Width&#x27;</span>, <span class="string">&#x27;Petal.Length&#x27;</span>, <span class="string">&#x27;Petal.Width&#x27;</span>]) <span class="comment"># 加一下列名</span></span><br><span class="line">iris[<span class="string">&#x27;Species&#x27;</span>] = y</span><br><span class="line"></span><br><span class="line"><span class="comment"># 提取数据，提取前两列的数据作为例子</span></span><br><span class="line">X = iris[[<span class="string">&#x27;Sepal.Length&#x27;</span>,<span class="string">&#x27;Sepal.Width&#x27;</span>]]</span><br><span class="line"><span class="comment"># 标准化一下</span></span><br><span class="line">Xstd = (X - X.mean()) / X.std()</span><br><span class="line">Xstd</span><br></pre></td></tr></table></figure><h3 id="确定K值"><a href="#确定K值" class="headerlink" title="确定K值"></a>确定K值</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">手肘法：</span></span><br><span class="line"><span class="string">判断标准——明显的拐点，曲率最大的地方</span></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="keyword">from</span> sklearn.cluster <span class="keyword">import</span> KMeans <span class="comment"># 导入聚类模块</span></span><br><span class="line"></span><br><span class="line">model = KMeans(n_clusters = <span class="number">2</span>) <span class="comment"># 设置聚成两类</span></span><br><span class="line">model.fit(Xstd)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 取出所有聚类中心均值向量的总和</span></span><br><span class="line">model.inertia_</span><br><span class="line"></span><br><span class="line">result_list = [] <span class="comment"># 存储所有聚类中心均值向量的总和</span></span><br><span class="line"><span class="comment"># 假设分类类别是2-11</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">2</span>,<span class="number">12</span>):</span><br><span class="line">    <span class="comment"># 新建聚类模型，改变聚类中心个数</span></span><br><span class="line">    model = KMeans(n_clusters = i,random_state = <span class="number">1</span>) <span class="comment"># 设置种子，防止种子带来的随机性</span></span><br><span class="line">    <span class="comment"># 训练模型</span></span><br><span class="line">    model.fit(Xstd)</span><br><span class="line">    <span class="comment"># 取出所有聚类中心均值向量的总和</span></span><br><span class="line">    result_list.append(model.inertia_)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 手肘图</span></span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line">xs = <span class="built_in">list</span>(<span class="built_in">range</span>(<span class="number">2</span>,<span class="number">12</span>))</span><br><span class="line">plt.plot(xs, result_list)</span><br><span class="line">plt.show() <span class="comment"># 找到变平滑的那个k</span></span><br><span class="line"></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">轮廓系数：</span></span><br><span class="line"><span class="string">轮廓系数越大越好。</span></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="keyword">from</span> sklearn <span class="keyword">import</span> metrics</span><br><span class="line"><span class="comment"># 假设分类类别是2-11</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">2</span>,<span class="number">12</span>):</span><br><span class="line">    <span class="comment"># 新建聚类模型，改变聚类中心个数</span></span><br><span class="line">    model = KMeans(n_clusters = i,random_state = <span class="number">1</span>)</span><br><span class="line">    <span class="comment"># 训练模型</span></span><br><span class="line">    model.fit(Xstd)</span><br><span class="line">    <span class="comment"># 获取kmeans聚类的结果</span></span><br><span class="line">    labels = model.labels_</span><br><span class="line">    <span class="comment"># 计算轮廓系数</span></span><br><span class="line">    res = metrics.silhouette_score(Xstd,labels)</span><br><span class="line">    <span class="built_in">print</span>(i,<span class="string">&#x27;:&#x27;</span>,res)</span><br><span class="line">    </span><br><span class="line"><span class="comment"># 综合两种方式选择一个合适的K。</span></span><br><span class="line"></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">展示一下结果（K=3）</span></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="comment"># 新建聚类模型，改变聚类中心个数</span></span><br><span class="line">model = KMeans(n_clusters = <span class="number">3</span>,random_state = <span class="number">1</span>)</span><br><span class="line"><span class="comment"># 训练模型</span></span><br><span class="line">model.fit(Xstd)</span><br><span class="line"><span class="comment"># 获取kmeans聚类的结果</span></span><br><span class="line">labels = model.labels_</span><br><span class="line"></span><br><span class="line"><span class="comment">#绘制下散点图</span></span><br><span class="line">iris[<span class="string">&#x27;labels&#x27;</span>] = labels</span><br><span class="line"></span><br><span class="line"><span class="built_in">list</span>(<span class="built_in">set</span>(<span class="built_in">list</span>(iris[<span class="string">&#x27;Species&#x27;</span>]))) <span class="comment"># 确定是什么类</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 真实的结果散点图</span></span><br><span class="line"><span class="keyword">for</span> label <span class="keyword">in</span> <span class="built_in">list</span>(<span class="built_in">set</span>(<span class="built_in">list</span>(iris[<span class="string">&#x27;Species&#x27;</span>]))):</span><br><span class="line">    df = iris[iris[<span class="string">&#x27;Species&#x27;</span>] == label]</span><br><span class="line">    plt.plot(df[<span class="string">&#x27;Sepal.Length&#x27;</span>],df[<span class="string">&#x27;Sepal.Width&#x27;</span>],<span class="string">&#x27;o&#x27;</span>,label = label)</span><br><span class="line">plt.legend()</span><br><span class="line">plt.show()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 聚类的结果散点图</span></span><br><span class="line"><span class="keyword">for</span> label <span class="keyword">in</span> <span class="built_in">list</span>(<span class="built_in">set</span>(<span class="built_in">list</span>(iris[<span class="string">&#x27;labels&#x27;</span>]))):</span><br><span class="line">    df = iris[iris[<span class="string">&#x27;labels&#x27;</span>] == label]</span><br><span class="line">    plt.plot(df[<span class="string">&#x27;Sepal.Length&#x27;</span>],df[<span class="string">&#x27;Sepal.Width&#x27;</span>],<span class="string">&#x27;o&#x27;</span>,label = label)</span><br><span class="line">plt.legend()</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>]]></content>
+      
+      
+      <categories>
+          
+          <category> 辉夜の编程之路 </category>
+          
+      </categories>
+      
+      
+        <tags>
             
-            <tag> 分类模型 </tag>
+            <tag> 人工智能 </tag>
+            
+            <tag> 机器学习 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>聚类1</title>
+      <link href="/2025/04/05/Clustering1/"/>
+      <url>/2025/04/05/Clustering1/</url>
+      
+        <content type="html"><![CDATA[<h3 id="聚类是什么？（kmeans）"><a href="#聚类是什么？（kmeans）" class="headerlink" title="聚类是什么？（kmeans）"></a>聚类是什么？（kmeans）</h3><ol><li>不同于前面的监督学习（有类别作为参考），聚类是无监督学习，算法可以自己将相似的样本分为一类。</li><li>分类可以对不同类别进行针对性的操作。</li></ol><h3 id="如何做到？"><a href="#如何做到？" class="headerlink" title="如何做到？"></a>如何做到？</h3><ol><li>找到k个聚类中心。</li><li>将点按照距离分为k类。<ul><li>欧氏距离：根号下…，用的最多。</li><li>余弦距离</li><li>马氏距离</li></ul></li><li>策略：计算所有点到相应聚类中心的距离，求和，取最小。一般可以用迭代的方式。<div class="img-wrap"><div class="img-bg"><img class="img" src="https://blogpic-5qb.pages.dev/img/sc_swe/keyan/kmeans策略.png" alt="<center>策略"/></div><span class="image-caption"><center>策略</span></div>  </li><li>具体方法：<br>不断寻找新的聚类中心，但有缺点：聚类中心到底需要几个？初始化，局部最优问题？<div class="img-wrap"><div class="img-bg"><img class="img" src="https://blogpic-5qb.pages.dev/img/sc_swe/keyan/具体分类方法.png" alt="<center>具体"/></div><span class="image-caption"><center>具体</span></div>  </li></ol><h3 id="解决细节问题"><a href="#解决细节问题" class="headerlink" title="解决细节问题"></a>解决细节问题</h3><ol><li>K值的确定：<br> 肘方法（elbow方法）<br> k选择肘图转折点对应的k值即可。  </li><li>局部最优问题：<br> K-Means++算法。（sklearn里面大多用这个算法）  <div class="img-wrap"><div class="img-bg"><img class="img" src="https://blogpic-5qb.pages.dev/img/sc_swe/keyan/kmeans++.png" alt="<center>kmeans++算法"/></div><span class="image-caption"><center>kmeans++算法</span></div>  </li></ol>]]></content>
+      
+      
+      <categories>
+          
+          <category> 辉夜の编程之路 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 人工智能 </tag>
+            
+            <tag> 机器学习 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>特征工程3</title>
+      <link href="/2025/04/04/FeatureEngineering3/"/>
+      <url>/2025/04/04/FeatureEngineering3/</url>
+      
+        <content type="html"><![CDATA[<ul><li>样本可能会出现不均衡的情况，需要视情况进行处理,将不均衡的样本变得均衡。  </li></ul><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 做一个不均衡的样本集</span></span><br><span class="line">datas = pd.DataFrame(x)</span><br><span class="line">datas[<span class="string">&#x27;y&#x27;</span>] = y</span><br><span class="line">datas</span><br><span class="line"></span><br><span class="line">dfs = pd.concat([datas.iloc[<span class="number">50</span>:<span class="number">100</span>],datas.iloc[<span class="number">100</span>:<span class="number">110</span>]])</span><br><span class="line">dfs</span><br><span class="line"></span><br><span class="line">dfs.groupby(<span class="string">&#x27;y&#x27;</span>).size()</span><br><span class="line"></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">过采样：</span></span><br><span class="line"><span class="string">填充数据，但容易过拟合，只能在训练集进行操作！</span></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="comment"># 随机抽取并扩充训练集中的1类数据</span></span><br><span class="line"><span class="keyword">from</span> collections <span class="keyword">import</span> Counter <span class="comment"># 计算每一类有多少</span></span><br><span class="line"><span class="keyword">from</span> imblearn.over_sampling <span class="keyword">import</span> RandomOverSampler</span><br><span class="line"></span><br><span class="line">x = dfs.drop(<span class="string">&#x27;y&#x27;</span>,axis = <span class="number">1</span>) <span class="comment"># 去掉y</span></span><br><span class="line">y = dfs[<span class="string">&#x27;y&#x27;</span>] <span class="comment"># 单独拎出来</span></span><br><span class="line"></span><br><span class="line">ros = RandomOverSampler(random_state = <span class="number">0</span>)</span><br><span class="line">x_,y_ = ros.fit_sample(x,y) <span class="comment"># 进行过采样</span></span><br><span class="line"></span><br><span class="line">Counter(y_)</span><br><span class="line"></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">欠采样：</span></span><br><span class="line"><span class="string">删除数据，容易欠拟合，同样，只能在训练集中操作。</span></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="keyword">from</span> imblearn.under_sampling <span class="keyword">import</span> RandomUnderSampler</span><br><span class="line">x = dfs.drop(<span class="string">&#x27;y&#x27;</span>,axis = <span class="number">1</span>) <span class="comment"># 去掉y</span></span><br><span class="line">y = dfs[<span class="string">&#x27;y&#x27;</span>] <span class="comment"># 单独拎出来</span></span><br><span class="line">rus = RandomUnderSampler(random_state = <span class="number">0</span>)</span><br><span class="line">x_,y_ = rus.fit_sample(x,y)</span><br><span class="line">Counter(y_)</span><br></pre></td></tr></table></figure>]]></content>
+      
+      
+      <categories>
+          
+          <category> 辉夜の编程之路 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 人工智能 </tag>
+            
+            <tag> 机器学习 </tag>
             
         </tags>
       
@@ -39,7 +129,7 @@
       <link href="/2025/04/04/FeatureEngineering2/"/>
       <url>/2025/04/04/FeatureEngineering2/</url>
       
-        <content type="html"><![CDATA[<h2 id="零、为什么要做特征选择"><a href="#零、为什么要做特征选择" class="headerlink" title="零、为什么要做特征选择"></a>零、为什么要做特征选择</h2><p>如前文所述，特征的选择可以提高模型的上限。</p><h2 id="一、特征选择"><a href="#一、特征选择" class="headerlink" title="一、特征选择"></a>一、特征选择</h2><h3 id="Filter：过滤法"><a href="#Filter：过滤法" class="headerlink" title="Filter：过滤法"></a>Filter：过滤法</h3><ul><li>过滤法，按照发散性或者相关性对各个特征进行评分，设定阈值或者待选择阈值的个数，选择特征。  </li></ul><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">方差选择法：</span></span><br><span class="line"><span class="string">计算各个特征的方差，根据阈值，选择方差大于阈值的特征。使用feature_selection库的VarianceThreshold类来选择特征</span></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="keyword">from</span> sklearn.feature_selection <span class="keyword">import</span> VarianceThreshold</span><br><span class="line"></span><br><span class="line"><span class="comment"># 方差选择法，返回值是特征筛选后的结果</span></span><br><span class="line"><span class="comment"># 实例化这个工具</span></span><br><span class="line">xs = VarianceThreshold(threshold = <span class="number">0.5</span>).fit_transform(x)</span><br><span class="line">xs</span><br><span class="line"></span><br><span class="line">np.var(x,axis = <span class="number">0</span>)</span><br><span class="line"></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">卡方检验：</span></span><br><span class="line"><span class="string">经典卡方检验是检验定性自变量对定性因变量的相关性。假设自变量有N种取值，因变量有M种，考虑自变量等于i且因变量等于j的样本频数的观察值与期望的差距。χ² = ∑((A - E)² / E)</span></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="keyword">from</span> sklearn.feature_selection <span class="keyword">import</span> SelectKBest</span><br><span class="line"><span class="keyword">from</span> sklearn.feature_selection <span class="keyword">import</span> chi2</span><br><span class="line"></span><br><span class="line"><span class="comment"># 选择K个最好的特征，返回的就是选择后的特征</span></span><br><span class="line">xs = SelectKBest(chi2,k = <span class="number">2</span>).fit_transform(x,y)</span><br><span class="line">xs</span><br></pre></td></tr></table></figure><h3 id="Wrapper：包装法"><a href="#Wrapper：包装法" class="headerlink" title="Wrapper：包装法"></a>Wrapper：包装法</h3><ul><li>根据目标函数（通常是预测效果评分），每次选择若干特征，或者排除若干特征。  </li></ul><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">递归特征消除法：</span></span><br><span class="line"><span class="string">用一个基模型来进行多轮训练，每轮训练后，消除若干权值系数的特征，再基于新的特征集进行下一轮训练</span></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="keyword">from</span> sklearn.feature_selection <span class="keyword">import</span> RFE</span><br><span class="line"><span class="keyword">from</span> sklearn.linear_model <span class="keyword">import</span> LogisticRegression</span><br><span class="line"></span><br><span class="line"><span class="comment"># 递归消除法，返回值也是选择后的数据</span></span><br><span class="line">xs = RFE(estimator = LogisticRegression(),n_features_to_select = <span class="number">2</span>).fit_transform(x,y)</span><br><span class="line">xs</span><br></pre></td></tr></table></figure><h3 id="Embedded：嵌入法"><a href="#Embedded：嵌入法" class="headerlink" title="Embedded：嵌入法"></a>Embedded：嵌入法</h3><ul><li>先使用某些机器学习的算法和模型进行训练，得到各个特征的权值系数，根据系数从大到小选择特征。类似于Filter方法，但是是通过训练来确定特征的优劣  </li></ul><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">基于惩罚项的特征选择法：</span></span><br><span class="line"><span class="string">使用带惩罚项的基模型，除了筛选出特征外，同时也进行了降维</span></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="keyword">from</span> sklearn.feature_selection <span class="keyword">import</span> SelectFromModel</span><br><span class="line"><span class="keyword">from</span> sklearn.linear_model <span class="keyword">import</span> LogisticRegression</span><br><span class="line"></span><br><span class="line"><span class="comment"># 使用带L2惩罚性的逻辑回归作为及础模型的特征选择</span></span><br><span class="line">xs = SelectFromModel(LogisticRegression(penalty = <span class="string">&#x27;l2&#x27;</span>,C = <span class="number">0.1</span>)).fit_transform(x,y)</span><br><span class="line">xs</span><br><span class="line"></span><br><span class="line"><span class="comment"># 直接使用我们的带惩罚性的逻辑回归，看看每个特征的权重顺序</span></span><br><span class="line">clf = LogisticRegression(penalty = <span class="string">&#x27;l2&#x27;</span>,C = <span class="number">0.1</span>)</span><br><span class="line">clf.fit(x,y)<span class="comment"># 训练模型</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看下我们的模型的特征重要性评估</span></span><br><span class="line">importances = clf.coef_</span><br><span class="line"><span class="built_in">abs</span>(importances[<span class="number">0</span>])</span><br><span class="line"></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">基于树模型的特征选择法：</span></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="keyword">from</span> sklearn.feature_selection <span class="keyword">import</span> SelectFromModel</span><br><span class="line"><span class="keyword">from</span> sklearn.ensemble <span class="keyword">import</span> RandomForestClassifier</span><br><span class="line"></span><br><span class="line"><span class="comment"># 使用带L2惩罚性的随机森林作为及础模型的特征选择</span></span><br><span class="line">xs = SelectFromModel(RandomForestClassifier()).fit_transform(x,y)</span><br><span class="line">xs</span><br><span class="line"></span><br><span class="line"><span class="comment"># 训练随机森林看结果</span></span><br><span class="line">rfr = RandomForestClassifier()</span><br><span class="line">rfr.fit(x,y)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看下我们的模型的特征重要性评估</span></span><br><span class="line">importances = rfr.feature_importances_</span><br><span class="line">importances</span><br></pre></td></tr></table></figure>]]></content>
+        <content type="html"><![CDATA[<h2 id="零、为什么要做特征选择"><a href="#零、为什么要做特征选择" class="headerlink" title="零、为什么要做特征选择"></a>零、为什么要做特征选择</h2><ul><li>如前文所述，特征的选择可以提高模型的上限。</li><li>并且，可以剔除掉不需要用的特征，以提高训练速度。</li></ul><h2 id="一、特征选择"><a href="#一、特征选择" class="headerlink" title="一、特征选择"></a>一、特征选择</h2><h3 id="Filter：过滤法"><a href="#Filter：过滤法" class="headerlink" title="Filter：过滤法"></a>Filter：过滤法</h3><ul><li>过滤法，按照发散性或者相关性对各个特征进行评分，设定阈值或者待选择阈值的个数，选择特征。  </li></ul><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">方差选择法：</span></span><br><span class="line"><span class="string">计算各个特征的方差，根据阈值，选择方差大于阈值的特征，这样的数据包含更多的信息。使用feature_selection库的VarianceThreshold类来选择特征。</span></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="keyword">from</span> sklearn.feature_selection <span class="keyword">import</span> VarianceThreshold</span><br><span class="line"></span><br><span class="line"><span class="comment"># 方差选择法，返回值是特征筛选后的结果</span></span><br><span class="line"><span class="comment"># 实例化这个工具</span></span><br><span class="line">xs = VarianceThreshold(threshold = <span class="number">0.5</span>).fit_transform(x) <span class="comment"># 但是阈值设置多少合适呢？见后。</span></span><br><span class="line">xs</span><br><span class="line"></span><br><span class="line">np.var(x,axis = <span class="number">0</span>) <span class="comment"># 计算每一列的方差，验证</span></span><br><span class="line"></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">卡方检验：</span></span><br><span class="line"><span class="string">经典卡方检验是检验定性自变量对定性因变量的相关性。假设自变量有N种取值，因变量有M种，考虑自变量等于i且因变量等于j的样本频数的观察值与期望的差距。χ² = ∑((A - E)² / E)。</span></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="keyword">from</span> sklearn.feature_selection <span class="keyword">import</span> SelectKBest</span><br><span class="line"><span class="keyword">from</span> sklearn.feature_selection <span class="keyword">import</span> chi2 <span class="comment"># 指标</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 选择K个最好的特征，返回的就是选择后的特征</span></span><br><span class="line">xs = SelectKBest(chi2,k = <span class="number">2</span>).fit_transform(x,y)</span><br><span class="line">xs</span><br></pre></td></tr></table></figure><h3 id="Wrapper：包装法"><a href="#Wrapper：包装法" class="headerlink" title="Wrapper：包装法"></a>Wrapper：包装法</h3><ul><li>根据目标函数（通常是预测效果评分），每次选择若干特征，或者排除若干特征。  </li></ul><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">递归特征消除法：</span></span><br><span class="line"><span class="string">用一个基模型来进行多轮训练，每轮训练后，消除若干权值系数的特征，再基于新的特征集进行下一轮训练</span></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="keyword">from</span> sklearn.feature_selection <span class="keyword">import</span> RFE</span><br><span class="line"><span class="keyword">from</span> sklearn.linear_model <span class="keyword">import</span> LogisticRegression <span class="comment"># 基模型</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 递归消除法，返回值也是选择后的数据</span></span><br><span class="line">xs = RFE(estimator = LogisticRegression(),n_features_to_select = <span class="number">2</span>).fit_transform(x,y) <span class="comment"># 基模型，保留特征数量</span></span><br><span class="line">xs</span><br></pre></td></tr></table></figure><h3 id="Embedded：嵌入法"><a href="#Embedded：嵌入法" class="headerlink" title="Embedded：嵌入法"></a>Embedded：嵌入法</h3><ul><li>先使用某些机器学习的算法和模型进行训练，得到各个特征的权值系数，根据系数从大到小选择特征。类似于Filter方法，但是是通过训练来确定特征的优劣。</li><li>嵌入法只有部分模型，比如l1，l2正则化，树模型可以做，包装法什么模型都可以做。  </li></ul><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">基于惩罚项的特征选择法：</span></span><br><span class="line"><span class="string">使用带惩罚项的基模型，也就是l1l2逻辑回归，除了筛选出特征外，同时也进行了降维，筛掉了不需要的维度。</span></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="keyword">from</span> sklearn.feature_selection <span class="keyword">import</span> SelectFromModel</span><br><span class="line"><span class="keyword">from</span> sklearn.linear_model <span class="keyword">import</span> LogisticRegression</span><br><span class="line"></span><br><span class="line"><span class="comment"># 使用带L2惩罚项的逻辑回归作为基模型的特征选择</span></span><br><span class="line">xs = SelectFromModel(LogisticRegression(penalty = <span class="string">&#x27;l2&#x27;</span>,C = <span class="number">0.1</span>)).fit_transform(x,y) <span class="comment">#l1会报错，需要修改计算方式</span></span><br><span class="line">xs</span><br><span class="line"></span><br><span class="line"><span class="comment"># 直接使用我们的带惩罚性的逻辑回归，看看每个特征的权重顺序</span></span><br><span class="line">clf = LogisticRegression(penalty = <span class="string">&#x27;l2&#x27;</span>,C = <span class="number">0.1</span>)</span><br><span class="line">clf.fit(x,y) <span class="comment"># 训练模型</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看下我们的模型的特征重要性评估</span></span><br><span class="line">importances = clf.coef_</span><br><span class="line"><span class="built_in">abs</span>(importances[<span class="number">0</span>]) <span class="comment"># 绝对值越大，特征权重越重要</span></span><br><span class="line"></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">基于树模型的特征选择法：</span></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="keyword">from</span> sklearn.feature_selection <span class="keyword">import</span> SelectFromModel</span><br><span class="line"><span class="keyword">from</span> sklearn.ensemble <span class="keyword">import</span> RandomForestClassifier</span><br><span class="line"></span><br><span class="line"><span class="comment"># 使用带L2惩罚性的随机森林作为及础模型的特征选择</span></span><br><span class="line">xs = SelectFromModel(RandomForestClassifier()).fit_transform(x,y)</span><br><span class="line">xs</span><br><span class="line"></span><br><span class="line"><span class="comment"># 训练随机森林看结果</span></span><br><span class="line">rfr = RandomForestClassifier()</span><br><span class="line">rfr.fit(x,y)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看下我们的模型的特征重要性评估</span></span><br><span class="line">importances = rfr.feature_importances_</span><br><span class="line">importances <span class="comment"># 加起来会等于1，真正的权重</span></span><br></pre></td></tr></table></figure>]]></content>
       
       
       <categories>
@@ -54,10 +144,6 @@
             <tag> 人工智能 </tag>
             
             <tag> 机器学习 </tag>
-            
-            <tag> 回归模型 </tag>
-            
-            <tag> 分类模型 </tag>
             
         </tags>
       
@@ -86,10 +172,6 @@
             
             <tag> 机器学习 </tag>
             
-            <tag> 回归模型 </tag>
-            
-            <tag> 分类模型 </tag>
-            
         </tags>
       
     </entry>
@@ -116,10 +198,6 @@
             <tag> 人工智能 </tag>
             
             <tag> 机器学习 </tag>
-            
-            <tag> 回归模型 </tag>
-            
-            <tag> 分类模型 </tag>
             
         </tags>
       
@@ -310,10 +388,6 @@
             
             <tag> 机器学习 </tag>
             
-            <tag> 回归模型 </tag>
-            
-            <tag> 分类模型 </tag>
-            
         </tags>
       
     </entry>
@@ -340,10 +414,6 @@
             <tag> 人工智能 </tag>
             
             <tag> 机器学习 </tag>
-            
-            <tag> 回归模型 </tag>
-            
-            <tag> 分类模型 </tag>
             
         </tags>
       
@@ -372,10 +442,6 @@
             
             <tag> 机器学习 </tag>
             
-            <tag> 回归模型 </tag>
-            
-            <tag> 分类模型 </tag>
-            
         </tags>
       
     </entry>
@@ -402,10 +468,6 @@
             <tag> 人工智能 </tag>
             
             <tag> 机器学习 </tag>
-            
-            <tag> 回归模型 </tag>
-            
-            <tag> 分类模型 </tag>
             
         </tags>
       
@@ -434,10 +496,6 @@
             
             <tag> 机器学习 </tag>
             
-            <tag> 回归模型 </tag>
-            
-            <tag> 分类模型 </tag>
-            
         </tags>
       
     </entry>
@@ -464,8 +522,6 @@
             <tag> 人工智能 </tag>
             
             <tag> 机器学习 </tag>
-            
-            <tag> 分类模型 </tag>
             
         </tags>
       
@@ -494,8 +550,6 @@
             
             <tag> 机器学习 </tag>
             
-            <tag> 分类模型 </tag>
-            
         </tags>
       
     </entry>
@@ -522,8 +576,6 @@
             <tag> 人工智能 </tag>
             
             <tag> 机器学习 </tag>
-            
-            <tag> 分类模型 </tag>
             
         </tags>
       
@@ -552,8 +604,6 @@
             
             <tag> 机器学习 </tag>
             
-            <tag> 回归模型 </tag>
-            
         </tags>
       
     </entry>
@@ -580,8 +630,6 @@
             <tag> 人工智能 </tag>
             
             <tag> 机器学习 </tag>
-            
-            <tag> 回归模型 </tag>
             
         </tags>
       
@@ -610,8 +658,6 @@
             
             <tag> 机器学习 </tag>
             
-            <tag> 回归模型 </tag>
-            
         </tags>
       
     </entry>
@@ -638,8 +684,6 @@
             <tag> 人工智能 </tag>
             
             <tag> 机器学习 </tag>
-            
-            <tag> 回归模型 </tag>
             
         </tags>
       
@@ -668,8 +712,6 @@
             
             <tag> 机器学习 </tag>
             
-            <tag> 回归模型 </tag>
-            
         </tags>
       
     </entry>
@@ -696,8 +738,6 @@
             <tag> 人工智能 </tag>
             
             <tag> 机器学习 </tag>
-            
-            <tag> 回归模型 </tag>
             
         </tags>
       
