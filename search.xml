@@ -4,13 +4,27 @@
   
     
     <entry>
-      <title>DimensionalityReduction2</title>
+      <title>降维2</title>
       <link href="/2025/04/05/DimensionalityReduction2/"/>
       <url>/2025/04/05/DimensionalityReduction2/</url>
       
-        <content type="html"><![CDATA[]]></content>
+        <content type="html"><![CDATA[<h3 id="降维代码"><a href="#降维代码" class="headerlink" title="降维代码"></a>降维代码</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">准备工作</span></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="comment"># 以下代码是导入这个数据集</span></span><br><span class="line"><span class="comment"># 注意data返回的是一个字典</span></span><br><span class="line"><span class="keyword">from</span> sklearn.decomposition <span class="keyword">import</span> PCA <span class="comment"># PCA库</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="keyword">from</span> sklearn.datasets <span class="keyword">import</span> load_boston</span><br><span class="line"><span class="keyword">from</span> sklearn.linear_model <span class="keyword">import</span> LinearRegression <span class="comment"># 线性回归库</span></span><br><span class="line"><span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> mean_squared_error <span class="comment"># 计算mse</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 获取特征和结果</span></span><br><span class="line">data = load_boston()</span><br><span class="line">x = data[<span class="string">&#x27;data&#x27;</span>]</span><br><span class="line">y = data[<span class="string">&#x27;target&#x27;</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 一定要划分训练集和测试集</span></span><br><span class="line"><span class="keyword">from</span> sklearn.model_selection <span class="keyword">import</span> train_test_split</span><br><span class="line">X_train,X_test,y_train,y_test = train_test_split(x,y,test_size=<span class="number">0.1</span>)</span><br><span class="line"></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">PCA预处理，查看累计贡献率，确认降到几维</span></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="comment"># 实例化PCA</span></span><br><span class="line">pca = PCA()</span><br><span class="line"><span class="comment"># 训练模型</span></span><br><span class="line">pca.fit(X_train,y_train)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 各自的方差贡献率，查看降维后每个维度的方差贡献率，但没啥用说是</span></span><br><span class="line">ratio = pca.explained_variance_ratio_</span><br><span class="line">ratio</span><br><span class="line"><span class="comment"># 累计贡献率，返回降到一维、二维、三维、四维...时的累计贡献率，用于选择降到几维合适</span></span><br><span class="line">cum_ratio = ratio.cumsum()</span><br><span class="line">cum_ratio</span><br><span class="line"><span class="comment"># 画图展示</span></span><br><span class="line">xs = <span class="built_in">list</span>(<span class="built_in">range</span>(<span class="number">1</span>, <span class="built_in">len</span>(cum_ratio)+<span class="number">1</span>))</span><br><span class="line">plt.plot(xs,cum_ratio)</span><br><span class="line">plt.xlabel(<span class="string">&#x27;number of components&#x27;</span>)</span><br><span class="line">plt.ylabel(<span class="string">&#x27;cum_explained_variance_ratio&#x27;</span>)</span><br><span class="line">plt.grid()</span><br><span class="line">plt.show() <span class="comment"># 一般来讲降到0.9、0.8就可以</span></span><br><span class="line"></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">PCA正式处理，查看降维后训练的模型效果</span></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="comment"># 降维</span></span><br><span class="line">pca = PCA(n_components = <span class="number">2</span>) <span class="comment"># 降到2维，当设置维度设置成和原来一样时，可以去除多重共线性。</span></span><br><span class="line"><span class="comment"># 训练模型</span></span><br><span class="line">pca.fit(X_train)</span><br><span class="line"><span class="comment"># 对训练集和测试集进行降维</span></span><br><span class="line">train_pca = pca.transform(X_train)</span><br><span class="line">test_pca = pca.transform(X_test)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 实例化线性回归模型</span></span><br><span class="line">model = LinearRegression()</span><br><span class="line">model.fit(train_pca,y_train)</span><br><span class="line"><span class="comment"># 对降维后的数据进行与预测</span></span><br><span class="line">train_predict = model.predict(train_pca)</span><br><span class="line">test_predict = model.predict(test_pca)</span><br><span class="line"><span class="comment"># 就看训练集和测试集的MSE表现情况</span></span><br><span class="line">mean_squared_error(y_train,train_predict)</span><br><span class="line">mean_squared_error(y_test,test_predict)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 没有降维前的数据进行线性回归模型</span></span><br><span class="line"><span class="comment"># 实例化线性回归模型</span></span><br><span class="line">model = LinearRegression()</span><br><span class="line">model.fit(X_train,y_train)</span><br><span class="line"><span class="comment"># 对降维后的数据进行与预测</span></span><br><span class="line">train_predict = model.predict(X_train)</span><br><span class="line">test_predict = model.predict(X_test)</span><br><span class="line"><span class="comment"># 就看训练集和测试集的MSE表现情况</span></span><br><span class="line">mean_squared_error(y_train,train_predict)</span><br><span class="line">mean_squared_error(y_test,test_predict)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 会发现虽然累计贡献率在0.9以上，但维度没有特别高时，降维后影响很大，这说明不需要降维，本身数据的信息就不多。</span></span><br></pre></td></tr></table></figure>]]></content>
       
       
+      <categories>
+          
+          <category> 辉夜の编程之路 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 人工智能 </tag>
+            
+            <tag> 机器学习 </tag>
+            
+        </tags>
       
     </entry>
     
@@ -21,7 +35,7 @@
       <link href="/2025/04/05/DimensionalityReduction1/"/>
       <url>/2025/04/05/DimensionalityReduction1/</url>
       
-        <content type="html"><![CDATA[<h3 id="为什么要降维？（PCA）"><a href="#为什么要降维？（PCA）" class="headerlink" title="为什么要降维？（PCA）"></a>为什么要降维？（PCA）</h3><ol><li>节省存储空间</li><li>加速计算速度。维度越少计算量也越少。</li><li>取出冗杂特征，去掉相关性太强的两个特征，避免一种特征权重太大。</li><li>便于观察数据信息，比如四维降到二维、三维。</li><li>特征太多容易引起过拟合。</li><li>信息丢失少，同时可以降低维度。</li></ol><h3 id="PCA降维"><a href="#PCA降维" class="headerlink" title="PCA降维"></a>PCA降维</h3><ol><li>最近重构性：所有样本点到这个超平面的距离足够近。</li><li>最大可分性：所有样本点投影到超平面后，投影尽可能分开。</li><li>实际上满足一个也会同时满足另一个。</li></ol><h3 id="理论展示"><a href="#理论展示" class="headerlink" title="理论展示"></a>理论展示</h3><p>…</p>]]></content>
+        <content type="html"><![CDATA[<h3 id="为什么要降维？（PCA）"><a href="#为什么要降维？（PCA）" class="headerlink" title="为什么要降维？（PCA）"></a>为什么要降维？（PCA）</h3><ol><li>节省存储空间</li><li>加速计算速度。维度越少计算量也越少。</li><li>取出冗杂特征，去掉相关性太强的两个特征，避免一种特征权重太大。</li><li>便于观察数据信息，比如四维降到二维、三维。</li><li>特征太多容易引起过拟合。</li><li>信息丢失少，同时可以降低维度。</li></ol><h3 id="PCA降维"><a href="#PCA降维" class="headerlink" title="PCA降维"></a>PCA降维</h3><ol><li>最近重构性：所有样本点到这个超平面的距离足够近。</li><li>最大可分性：所有样本点投影到超平面后，投影尽可能分开。</li><li>实际上满足一个也会同时满足另一个。</li></ol><h3 id="理论展示"><a href="#理论展示" class="headerlink" title="理论展示"></a>理论展示</h3><div class="img-wrap"><div class="img-bg"><img class="img" src="https://blogpic-5qb.pages.dev/img/sc_swe/keyan/PCA1.png" alt="<center>1"/></div><span class="image-caption"><center>1</span></div>  <div class="img-wrap"><div class="img-bg"><img class="img" src="https://blogpic-5qb.pages.dev/img/sc_swe/keyan/PCA2.png" alt="<center>2"/></div><span class="image-caption"><center>2</span></div>  <div class="img-wrap"><div class="img-bg"><img class="img" src="https://blogpic-5qb.pages.dev/img/sc_swe/keyan/PCA3.png" alt="<center>3"/></div><span class="image-caption"><center>3</span></div>  <div class="img-wrap"><div class="img-bg"><img class="img" src="https://blogpic-5qb.pages.dev/img/sc_swe/keyan/PCA1.png" alt="<center>4"/></div><span class="image-caption"><center>4</span></div>  ]]></content>
       
       
       <categories>
@@ -999,6 +1013,60 @@
             <tag> 编程 </tag>
             
             <tag> numpy库 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>theweytoscience</title>
+      <link href="/2025/03/17/theweytoscience/"/>
+      <url>/2025/03/17/theweytoscience/</url>
+      
+        <content type="html"><![CDATA[<h3 id="为什么要科研？"><a href="#为什么要科研？" class="headerlink" title="为什么要科研？"></a>为什么要科研？</h3><p>将课本知识真正应用于实际，从想法的诞生到实际的应用，将内在的学识用论文表现出来，证明对这个领域的了解与懂得。这是GPA所无法带来的。</p><hr><h3 id="科研流程："><a href="#科研流程：" class="headerlink" title="科研流程："></a>科研流程：</h3><ol><li>总体思路：大胆猜想，小心求证。</li><li>猜想要勇于创新。求证要推理严密，证据详实。论述要言简意赅，深入彻底。</li><li>选定课题→数据与方法→分析与探索→阐释与讨论→权威评议</li></ol><hr><h4 id="direction-选定课题："><a href="#direction-选定课题：" class="headerlink" title="direction 选定课题："></a>direction 选定课题：</h4><ol><li>了解研究领域，梳理研究现状，发现研究方向。提出猜想，要新，但不要过于超前。</li><li>综述只是1.1，好的方向应：重要的热点，创新是灵魂，讨论可行性（技术可行性、数据可行性）</li></ol><hr><h4 id="method-数据与方法："><a href="#method-数据与方法：" class="headerlink" title="method 数据与方法："></a>method 数据与方法：</h4><ol><li>数据收集方法：数据库、实验、调查<br> 1.1 数据收集：数据库、实验、调查、实验流程、调查方法。要注意数据收集时要合理，全面。避免有偏见趋势的数据。</li><li>数据分析方法：理论分析、统计分析、算法分析<br> 2.1 数据分析：合适的数学工具，恰当的前提假设，合理的归纳演绎（检验）</li></ol><hr><h4 id="analysis-分析与探索："><a href="#analysis-分析与探索：" class="headerlink" title="analysis 分析与探索："></a>analysis 分析与探索：</h4><ol><li>使用软件是必须的分析方法，软件要可靠、适用。</li><li>人工智能常用：python、matlab。功能：清洗数据、统计检验、构建模型、可视化、复用。<div class="img-wrap"><div class="img-bg"><img class="img" src="https://blogpic-5qb.pages.dev/img/sc_swe/keyan/sftwarelist.png" alt="<center>软件列表"/></div><span class="image-caption"><center>软件列表</span></div></li><li>选择软件一定要满足“可靠”与“适用”，学习成本适中，可靠度高，可直接使用的模块多，语言好理解等。要将注意力放到“科研怎么做”上，而不是“代码怎么写”。</li></ol><hr><h4 id="discussion-阐释与讨论："><a href="#discussion-阐释与讨论：" class="headerlink" title="discussion 阐释与讨论："></a>discussion 阐释与讨论：</h4><ol><li>讨论，展示功底和才华。将成果展现在论文中，说服读者，深入彻底。对自己和同类研究进行批判和自我批判，进行辩证逻辑思考。提出未来方向。</li><li>如何说服别人？足够多的高质量证据，精当简洁的英文使用，禁止学术造假。</li></ol><hr><h4 id="review-权威评议："><a href="#review-权威评议：" class="headerlink" title="review 权威评议："></a>review 权威评议：</h4><ol><li>评议：大佬的认可，将自己的成果和逻辑展现给全世界。</li></ol>]]></content>
+      
+      
+      <categories>
+          
+          <category> 辉夜の科研之路 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 科研 </tag>
+            
+            <tag> 科研概述 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>机器学习简介</title>
+      <link href="/2025/03/17/IntroductiontoMachineLearning/"/>
+      <url>/2025/03/17/IntroductiontoMachineLearning/</url>
+      
+        <content type="html"><![CDATA[<h2 id="机器学习基本概念"><a href="#机器学习基本概念" class="headerlink" title="机器学习基本概念"></a>机器学习基本概念</h2><h3 id="一、机器学习是什么？"><a href="#一、机器学习是什么？" class="headerlink" title="一、机器学习是什么？"></a>一、机器学习是什么？</h3><ol><li>机器学习：研究计算机怎样模拟或实现人类的学习行为，以获取新的知识或技能，重新组织已有的组织结构使之不断改善自身的性能。<blockquote><p>比如认识“猫”，见得多了就知道是什么了</p></blockquote></li><li>理论：统计学、信息论、决策论、最优化、矩阵论、数据结构、分布式理论等。工具：python包：numpy、pandas、sklearn、matplotlib等、spark（分布式，多台机子计算一个问题）、mlib、hive等。</li></ol><h3 id="二、解决的问题"><a href="#二、解决的问题" class="headerlink" title="二、解决的问题"></a>二、解决的问题</h3><ol><li>数据挖掘，记录一个页面中用户的操作，判断是否为潜在客户。</li><li>计算机视觉，识别事物，图像处理。</li><li>自然语言处理，给一句中文，判断表达的情感，根据评论找出产品缺陷。</li><li>语音处理，小爱同学，语音导航。</li><li>推荐系统，电商平台推荐商品。<blockquote><p>以数据挖掘为例：<br>   医院中：病人数据→预测患病可能。<br>   电商网站：用户浏览记录→推荐商品。<br>   餐馆：往日点餐→未来食材准备。</p>   <div class="img-wrap"><div class="img-bg"><img class="img" src="https://blogpic-5qb.pages.dev/img/sc_swe/keyan/expml.png" alt="<center>机器学习举例"/></div><span class="image-caption"><center>机器学习举例</span></div><p>   难度越高，需要的f越复杂</p></blockquote></li></ol><h3 id="三、思路与基本步骤"><a href="#三、思路与基本步骤" class="headerlink" title="三、思路与基本步骤"></a>三、思路与基本步骤</h3><ol><li><p>机器学习示意</p><div class="img-wrap"><div class="img-bg"><img class="img" src="https://blogpic-5qb.pages.dev/img/sc_swe/keyan/机器学习示意图.png" alt="<center>机器学习示意图"/></div><span class="image-caption"><center>机器学习示意图</span></div><p>通过训练集训练f，用验证集进行检验，最后用测试集进行测试。</p></li><li><p>基本步骤<br> 2.1 分析问题→获取数据→清洗数据（数据探索）→特征工程（筛选那些数据对训练有帮助，根据已有特征构造想新特征等）→构建模型→模型调参→模型上线</p></li><li><p>分析问题<br> 3.1 将数据结构化，二维表结构，行列式，包含feature特征列(属性)、label标签列、sample样本列。有feature、label为监督学习，只通过feature来学习模型是无监督学习。  </p><blockquote><p>无监督学习，比如通过数据区分玩家类型（频率高、金额大和频率低、金额小），以类聚，发现数据本身的特点。<br> 3.2 监督学习问题一：<code>回归问题</code><br> label是连续值，线性回归是最简单的机器学习。  </p> <div class="img-wrap"><div class="img-bg"><img class="img" src="https://blogpic-5qb.pages.dev/img/sc_swe/keyan/回归.png" alt="<center>回归问题"/></div><span class="image-caption"><center>回归问题</span></div>  <p> 3.3 监督学习问题二：<code>分类问题</code>  </p><pre><code> 3.3.1 二分类问题，判断yes or no.   3.3.2 多分类问题，判断图片中的数字是几。   3.3.3 多标签的二分类、多分类。   3.3.4 从图像角度    &#123;% image https://blogpic-5qb.pages.dev/img/sc_swe/keyan/图像角度.png, alt=<center>从图像角度 %&#125;  </code></pre><p> 3.4 无监督学习：  </p><pre><code> 3.4.1 数据没有标签怎么办？`聚类`。可能会有一些离群点，可以检测出来。   3.4.2 `降维问题`将1000组数据生成500组新的数据，1000维降到500维但仍然保持完整的信息，可以提高计算效率    &#123;% image https://blogpic-5qb.pages.dev/img/sc_swe/keyan/降维.png, alt=<center>降维 %&#125;   3.4.3 更多的时候，非监督学习用于数据预处理阶段，让建模过程更流畅。</code></pre></blockquote></li></ol><h3 id="四、对应的岗位"><a href="#四、对应的岗位" class="headerlink" title="四、对应的岗位"></a>四、对应的岗位</h3><p>BI分析师（做图表等，做一些决断）、ETL工程师（清洗数据）、数据挖掘工程师、数据分析师、AI算法工程师（优化算法，加速）</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 辉夜の科研之路 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 机器学习 </tag>
+            
+            <tag> 科研 </tag>
             
         </tags>
       
