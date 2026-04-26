@@ -215,10 +215,11 @@
   border: var(--border-style);
 }
 
-/* 文章页、归档页、普通页面 */
+/* 文章页、归档页、普通页面、分类页 */
 div#post,
 div#page,
-div#archive {
+div#archive,
+div#category {
   background: var(--trans-light);
   backdrop-filter: var(--backdrop-filter);
   border: var(--border-style);
@@ -240,7 +241,8 @@ div#archive {
 [data-theme="dark"] #aside-content .card-widget,
 [data-theme="dark"] div#post,
 [data-theme="dark"] div#archive,
-[data-theme="dark"] div#page {
+[data-theme="dark"] div#page,
+[data-theme="dark"] div#category {
   background: var(--trans-dark);
 }
 
@@ -763,4 +765,85 @@ body::-webkit-scrollbar {
 }
 [data-theme="dark"] #welcome-info {
   background: #ffb74caf;
+}
+
+/* categoryBar 小卡片：背景图自适应填满 + hover 同时放大并变模糊 */
+li.categoryBar-list-item {
+  position: relative !important;
+  overflow: hidden !important;
+  /* 隐藏原生 bg-size 的 hover 放大（会和下面的 ::before 冲突） */
+  background-size: cover !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+}
+
+/* ::before 复制一份背景图覆盖在原图之上，单独承担放大 + 模糊动画 */
+li.categoryBar-list-item::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: inherit;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  border-radius: 10px;
+  transition: transform 0.5s ease, filter 0.5s ease;
+  pointer-events: none;
+  z-index: 0;
+}
+
+li.categoryBar-list-item:hover::before {
+  transform: scale(1.1);
+  filter: blur(5px);
+}
+
+/* 文字保持在最上层，不受模糊影响 */
+li.categoryBar-list-item > a,
+li.categoryBar-list-item > span {
+  position: relative;
+  z-index: 1;
+}
+
+/* categoryBar 大卡片：底部补 10px，让两行小卡片上下对称（top 10 = bottom 10） */
+/* 插件 CSS 在 custom.css 之后加载，用 #categoryBar 提高特异度才能覆盖插件的 margin shorthand */
+#categoryBar ul.categoryBar-list {
+  margin-bottom: 10px !important;
+}
+
+/* 文章缩略图圆角：右侧「最新文章」和分类页文章列表的小封面图 */
+/* 容器加圆角 + overflow:hidden，hover 缩放时把溢出的图片裁掉 */
+.card-recent-post a.thumbnail,
+a.article-sort-item-img {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* 页脚版权移到最下面（计时器/名言之后），并统一行间距 = 37px */
+#footer {
+  margin-top: 30px !important;          /* gap1（分页块底 → 「本店」顶）= 40 + 30 = 70px */
+  padding: 0 0 37px 0 !important;       /* 「©」底 → 页面底 = 37px */
+}
+#footer-wrap {
+  display: flex;
+  flex-direction: column;
+  padding: 0 20px !important;           /* 移除原 40px 上下 padding，保留左右 20px */
+}
+#footer-wrap > .copyright {
+  order: 1;
+  margin: 31px 0 0 !important;          /* 31 + workboard 自带 6px 行盒底部空白 = 37px */
+}
+#workboard {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+/* 隐藏 workboard 顶部空 img + 首 br，让「本店」行紧贴 workboard 顶 */
+#workboard > .boardsign,
+#workboard > .boardsign + br {
+  display: none !important;
+}
+
+/* 分类页分页当前页：移除 zoomIn 动画，补圆角 */
+#pagination .page-number.current {
+  animation: none !important;
+  border-radius: 8px !important;
 }
