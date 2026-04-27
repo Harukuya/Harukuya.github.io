@@ -1,3 +1,7 @@
+/* 苹果风圆润字体 —— Nunito（通过国内镜像加载，只影响英文/数字部分）
+   @import 必须放在 CSS 文件最开头，否则浏览器会忽略 */
+@import url('https://fonts.loli.net/css2?family=Nunito:wght@400;700&display=swap');
+
 :root {
   --trans-light: rgba(255, 255, 255, 0.75);
   --trans-dark: rgba(25, 25, 25, 0.75);
@@ -629,6 +633,11 @@ body::-webkit-scrollbar {
   text-shadow: 0 0 2px rgb(255, 158, 53) !important;
 }
 
+/* site-title 使用 Nunito 圆润字体 */
+#site-title {
+  font-family: 'Nunito', 'YSHST', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Lato, Roboto, 'PingFang SC', 'Microsoft JhengHei', 'Microsoft YaHei', sans-serif;
+}
+
 /* 闪烁变动颜色连续渐变 */
 #site-name,
 #site-title,
@@ -639,20 +648,39 @@ body::-webkit-scrollbar {
   transition: text-shadow 1s linear !important;
 }
 
-/* 日间模式不生效 */
-[data-theme="light"] #site-name,
-[data-theme="light"] #site-title,
-[data-theme="light"] #site-subtitle,
-[data-theme="light"] #post-info {
-  animation: none;
+/* 浮动效果（仅在主页生效） */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
 }
-/* 夜间模式生效 */
-[data-theme="dark"] #site-name,
-[data-theme="dark"] #site-title {
-  animation: light_15px 10s linear infinite;
+
+@keyframes shadow {
+  0%, 100% { filter: drop-shadow(4px 4px 6px rgba(0, 0, 0, 0.60)); }
+  50% { filter: drop-shadow(2px 2px 14px rgba(0, 0, 0, 0.10)); }
 }
-[data-theme="dark"] #site-subtitle {
-  animation: light_10px 10s linear infinite;
+
+body:has(#recent-posts) #site-title {
+  animation: float 6s ease-in-out infinite, shadow 6s ease-in-out infinite;
+}
+
+body:has(#recent-posts) #site-subtitle {
+  animation: float 6s ease-in-out 0.5s infinite, shadow 6s ease-in-out 0.5s infinite;
+}
+
+/* 日间模式关闭霓虹灯，保留浮动（仅主页标题和格言） */
+[data-theme="light"] body:has(#recent-posts) #site-title {
+  animation: float 6s ease-in-out infinite, shadow 6s ease-in-out infinite;
+}
+[data-theme="light"] body:has(#recent-posts) #site-subtitle {
+  animation: float 6s ease-in-out 0.5s infinite, shadow 6s ease-in-out 0.5s infinite;
+}
+
+/* 夜间模式霓虹灯 + 浮动叠加（仅主页） */
+[data-theme="dark"] body:has(#recent-posts) #site-title {
+  animation: light_15px 10s linear infinite, float 6s ease-in-out infinite, shadow 6s ease-in-out infinite;
+}
+[data-theme="dark"] body:has(#recent-posts) #site-subtitle {
+  animation: light_10px 10s linear infinite, float 6s ease-in-out 0.5s infinite, shadow 6s ease-in-out 0.5s infinite;
 }
 [data-theme="dark"] #post-info {
   animation: light_5px 10s linear infinite;
