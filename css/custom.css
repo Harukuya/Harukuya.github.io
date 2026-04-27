@@ -223,7 +223,8 @@
 div#post,
 div#page,
 div#archive,
-div#category {
+div#category,
+div#tag {
   background: var(--trans-light);
   backdrop-filter: var(--backdrop-filter);
   border: var(--border-style);
@@ -246,7 +247,8 @@ div#category {
 [data-theme="dark"] div#post,
 [data-theme="dark"] div#archive,
 [data-theme="dark"] div#page,
-[data-theme="dark"] div#category {
+[data-theme="dark"] div#category,
+[data-theme="dark"] div#tag {
   background: var(--trans-dark);
 }
 
