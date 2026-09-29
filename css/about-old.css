@@ -1,0 +1,646 @@
+/**
+ * About 页面专用样式
+ * 覆盖 Butterfly 默认布局，实现全自定义 about 页
+ */
+
+/* ========== 隐藏 Butterfly 默认元素 ========== */
+body:has(#about-page) #sidebar,
+body:has(#about-page) #page-header,
+body:has(#about-page) .page-header,
+body:has(#about-page) #nav,
+body:has(#about-page) #rightside,
+body:has(#about-page) #pagination,
+body:has(#about-page) .js-pjax,
+body:has(#about-page) #aside-content {
+  display: none !important;
+}
+
+/* 保留内容区全宽，移除 Butterfly 默认 padding */
+body:has(#about-page) #content-inner {
+  padding: 0 !important;
+  max-width: 100% !important;
+}
+
+body:has(#about-page) #body-wrap {
+  background: transparent !important;
+}
+
+body:has(#about-page) main#content-inner.layout {
+  padding: 0 !important;
+}
+
+/* ========== CSS 变量 ========== */
+#about-page {
+  --about-bg: #0f0f1a;
+  --about-bg-rgb: 15, 15, 26;
+  --about-card-bg: rgba(255, 255, 255, 0.06);
+  --about-card-border: rgba(255, 255, 255, 0.08);
+  --about-text: #f1f5f9;
+  --about-text-secondary: #94a3b8;
+  --about-accent: #667eea;
+  --about-radius: 16px;
+  --about-card-radius: 14px;
+  font-family: 'Nunito', 'YoonSunHwaMinChae', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  color: var(--about-text);
+  background: var(--about-bg);
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* ========== 右上角导航 ========== */
+.about-nav {
+  position: fixed;
+  top: 24px;
+  right: 32px;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.about-nav-home {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--about-text);
+  text-decoration: none;
+  font-size: 14px;
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 100px;
+  transition: all 0.3s ease;
+}
+
+.about-nav-home:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+}
+
+.about-nav-time {
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+  color: var(--about-text-secondary);
+  font-family: 'Courier New', monospace;
+  letter-spacing: 1px;
+}
+
+/* ========== Hero 区域 ========== */
+#about-hero {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.about-hero-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.about-hero-bg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.about-hero-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: linear-gradient(
+    to bottom,
+    rgba(var(--about-bg-rgb), 0.3) 0%,
+    rgba(var(--about-bg-rgb), 0.5) 50%,
+    rgba(var(--about-bg-rgb), 0.8) 100%
+  );
+}
+
+.about-hero-content {
+  position: relative;
+  z-index: 3;
+  text-align: center;
+  max-width: 800px;
+  padding: 0 24px;
+}
+
+/* 打字机区域 - 位置可通过以下属性调整 */
+#about-typewriter {
+  position: relative;
+  /* 调整打字机位置：改这里 */
+  margin-top: 0;
+}
+
+.about-typewriter-lines {
+  font-size: clamp(1.5rem, 4vw, 2.5rem);
+  font-weight: 600;
+  line-height: 1.6;
+  color: var(--about-text);
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  min-height: 3em;
+}
+
+.about-typewriter-lines .ti-cursor {
+  color: var(--about-accent);
+  font-weight: 300;
+}
+
+.about-typewriter-source {
+  margin-top: 16px;
+  font-size: 1rem;
+  color: var(--about-text-secondary);
+  opacity: 0;
+  transition: opacity 0.8s ease;
+}
+
+/* ========== 大块区域 ========== */
+.about-block {
+  position: relative;
+  z-index: 5;
+  padding: 100px 24px;
+  background: var(--about-bg);
+}
+
+.about-block-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.about-block-title {
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: 600;
+  margin-bottom: 40px;
+  text-align: center;
+  color: var(--about-text);
+}
+
+/* Block 2、3 初始隐藏，由 GSAP 控制浮现 */
+#block-2,
+#block-3 {
+  opacity: 0;
+  transform: translateY(40px);
+}
+
+/* ========== 卡片网格 ========== */
+.about-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+/* ========== 卡片基础样式 ========== */
+.about-card {
+  background: var(--about-card-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--about-card-border);
+  border-radius: var(--about-card-radius);
+  padding: 24px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.about-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+}
+
+.card-title {
+  font-size: 14px;
+  color: var(--about-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 16px;
+}
+
+/* ========== GitHub 卡片 ========== */
+.about-card-github .card-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.card-avatar img {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.card-name {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.card-bio {
+  font-size: 13px;
+  color: var(--about-text-secondary);
+  margin-top: 2px;
+}
+
+.github-stats {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 20px;
+}
+
+.stat-item {
+  text-align: center;
+}
+
+.stat-num {
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.stat-label {
+  font-size: 12px;
+  color: var(--about-text-secondary);
+  margin-top: 2px;
+}
+
+.github-chart img {
+  width: 100%;
+  border-radius: 8px;
+  opacity: 0.8;
+}
+
+/* ========== 音乐播放器卡片 ========== */
+.about-card-music .music-player {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.music-cover {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  border-radius: 12px;
+  overflow: hidden;
+  margin: 0 auto;
+}
+
+.music-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.music-play-btn {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  width: 36px;
+  height: 36px;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.music-play-btn:hover {
+  transform: scale(1.1);
+}
+
+.music-play-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.music-info {
+  text-align: center;
+}
+
+.music-name {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.music-artist {
+  font-size: 13px;
+  color: var(--about-text-secondary);
+  margin-top: 2px;
+}
+
+.music-progress {
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.music-progress-fill {
+  width: 35%;
+  height: 100%;
+  background: linear-gradient(90deg, var(--about-accent), #764ba2);
+  border-radius: 2px;
+}
+
+.music-time {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--about-text-secondary);
+}
+
+/* ========== 数据卡片 ========== */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.stats-item {
+  text-align: center;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 10px;
+}
+
+.stats-num {
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--about-accent);
+}
+
+.stats-label {
+  font-size: 12px;
+  color: var(--about-text-secondary);
+  margin-top: 4px;
+}
+
+/* ========== 技能标签卡片 ========== */
+.skills-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.skill-tag {
+  padding: 6px 14px;
+  border-radius: 100px;
+  font-size: 13px;
+  font-weight: 500;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+  cursor: default;
+}
+
+.skill-tag:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* 根据 data-color 显示彩色左边框 */
+.skill-tag::before {
+  content: '';
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 6px;
+  background: attr(data-color);
+}
+
+/* 由于 attr() 在 CSS 中不支持用于 background，我们用 JS 或以下 fallback */
+.skill-tag[data-color="#3776ab"]::before { background: #3776ab; }
+.skill-tag[data-color="#f7df1e"]::before { background: #f7df1e; }
+.skill-tag[data-color="#e34c26"]::before { background: #e34c26; }
+.skill-tag[data-color="#2496ed"]::before { background: #2496ed; }
+.skill-tag[data-color="#61dafb"]::before { background: #61dafb; }
+.skill-tag[data-color="#cc6699"]::before { background: #cc6699; }
+.skill-tag[data-color="#339933"]::before { background: #339933; }
+.skill-tag[data-color="#ff6f00"]::before { background: #ff6f00; }
+.skill-tag[data-color="#00d8ff"]::before { background: #00d8ff; }
+
+/* ========== 项目卡片 ========== */
+.about-card-project {
+  padding: 0;
+  overflow: hidden;
+}
+
+.project-image {
+  width: 100%;
+  height: 160px;
+  overflow: hidden;
+}
+
+.project-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.about-card-project:hover .project-image img {
+  transform: scale(1.05);
+}
+
+.project-info {
+  padding: 20px;
+}
+
+.project-name {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.project-desc {
+  font-size: 13px;
+  color: var(--about-text-secondary);
+  line-height: 1.5;
+  margin-bottom: 12px;
+}
+
+.project-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.project-tag {
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  background: rgba(102, 126, 234, 0.15);
+  color: var(--about-accent);
+}
+
+/* ========== 联系方式卡片 ========== */
+.contact-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.contact-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--about-text);
+  text-decoration: none;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  transition: all 0.3s ease;
+}
+
+.contact-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+  transform: translateX(4px);
+}
+
+/* ========== 兴趣卡片 ========== */
+.interests-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.interest-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  transition: all 0.3s ease;
+}
+
+.interest-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.interest-icon {
+  font-size: 20px;
+}
+
+.interest-name {
+  font-size: 13px;
+  color: var(--about-text-secondary);
+}
+
+/* ========== 分割展开区域 ========== */
+.about-split {
+  position: relative;
+  height: 100vh;
+  overflow: hidden;
+  background: var(--about-bg);
+}
+
+.about-split-stage {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+}
+
+.about-split-image {
+  position: relative;
+  z-index: 1;
+  max-width: 60%;
+  max-height: 50vh;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+}
+
+.about-split-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.about-split-text {
+  position: relative;
+  z-index: 1;
+  font-size: clamp(1rem, 2.5vw, 1.5rem);
+  color: var(--about-text);
+  text-align: center;
+  max-width: 600px;
+  padding: 0 24px;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+  min-height: 2em;
+}
+
+.about-split-line {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scaleX(0);
+  width: 100%;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.85);
+  z-index: 4;
+  transform-origin: center;
+}
+
+.about-split-mask {
+  position: absolute;
+  left: 0;
+  right: 0;
+  background: var(--about-bg);
+  z-index: 3;
+}
+
+.about-split-mask-top {
+  top: 0;
+  height: 50%;
+}
+
+.about-split-mask-bottom {
+  bottom: 0;
+  height: 50%;
+}
+
+/* ========== 页脚适配 ========== */
+body:has(#about-page) #footer {
+  position: relative;
+  z-index: 5;
+  margin-top: 0 !important;
+}
+
+/* ========== 响应式 ========== */
+@media (max-width: 768px) {
+  .about-nav {
+    top: 16px;
+    right: 16px;
+  }
+
+  .about-block {
+    padding: 60px 16px;
+  }
+
+  .about-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .about-split-image {
+    max-width: 85%;
+  }
+
+  .interests-list {
+    grid-template-columns: 1fr;
+  }
+
+  .github-stats {
+    gap: 16px;
+  }
+}
