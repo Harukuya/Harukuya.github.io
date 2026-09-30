@@ -2368,8 +2368,11 @@
     if (!cafeBg) { btn.hidden = true; return; }
     var anims = [], FADE = reduceMotion ? 1 : 450, topTimer = 0;
 
+    // 要淡出的：body 下除了背景层、脚本，以及跟手的咖啡杯光标、防 F12 的提示纸条（这两个纯享时也得看得见）
     function others() {
-      return [].filter.call(document.body.children, function (el) { return el.id !== 'ab-backdrop' && el.tagName !== 'SCRIPT'; });
+      return [].filter.call(document.body.children, function (el) {
+        return el.id !== 'ab-backdrop' && el.tagName !== 'SCRIPT' && !el.classList.contains('ab-cup-cursor') && !el.classList.contains('ab-toast');
+      });
     }
     function enter() {
       if (solo.on) return;
