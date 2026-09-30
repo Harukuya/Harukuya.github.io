@@ -237,7 +237,7 @@
       else if (opts.onSoloExit) opts.onSoloExit();
     });
     box.addEventListener('pointermove', function (e) {
-      if (solo) box.style.cursor = hitAt(e.clientX, e.clientY) ? 'pointer' : '';
+      if (solo) box.style.cursor = hitAt(e.clientX, e.clientY) ? 'var(--ab-cursor-hand)' : ''; // 能点的东西上换成页面的像素小手
     });
 
     // ---------- 分割段的遮罩板 ----------

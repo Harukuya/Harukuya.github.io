@@ -1066,6 +1066,44 @@
     io.observe(card);
   }
 
+  // ========== 光标：一只咖啡杯 ==========
+  // 鼠标第一次动的时候接管系统光标（html.ab-cup-on：系统光标换成透明图，见 about.css），画面上一只杯子跟着鼠标走（每次移动直接跟到位）；
+  // 按住鼠标一直左右摇，松开后等这一下摇完（回到正中）再停；杯口平时冒淡淡的热气，移到能点的东西上（它的 cursor 后备值是 pointer）热气变浓、杯子稍微放大；
+  // 鼠标离开页面时藏起来。只在用鼠标的设备上；减少动态效果时不接管，用 CSS 里那张静止的杯子光标。
+  // 位置写在 translate 属性上（不写 transform）：放大 / 摇动用的 scale、rotate 在里层，互不影响
+  function initCursor() {
+    if (reduceMotion || !window.matchMedia('(pointer: fine)').matches) return;
+    var box = document.createElement('div');
+    box.className = 'ab-cup-cursor';
+    box.setAttribute('aria-hidden', 'true');
+    box.innerHTML = '<span class="ab-cup-cursor-cup"><span class="ab-cup-cursor-steam"></span></span><span class="ab-cup-cursor-bean"></span>';
+    document.body.appendChild(box);
+    var cup = box.firstChild, held = false;
+    document.addEventListener('mousemove', function (e) {
+      box.style.translate = e.clientX + 'px ' + e.clientY + 'px';
+      if (!box.classList.contains('is-on')) {
+        document.documentElement.classList.add('ab-cup-on');
+        box.classList.add('is-on');
+      }
+    }, { passive: true });
+    document.addEventListener('mouseover', function (e) {
+      var c = e.target.nodeType === 1 ? getComputedStyle(e.target).cursor : '';
+      box.classList.toggle('is-hover', /pointer\s*$/.test(c));
+    });
+    document.documentElement.addEventListener('mouseleave', function () { box.classList.remove('is-on'); });
+    document.addEventListener('mousedown', function (e) {
+      if (e.button !== 0) return;
+      held = true;
+      box.classList.add('is-shake');
+    });
+    document.addEventListener('mouseup', function () { held = false; });
+    window.addEventListener('blur', function () { held = false; }); // 按住拖出窗口再松开，也算松开
+    // 松开后不立刻停（会从半空跳回 0°）：等这一下摇完、回到正中再停
+    cup.addEventListener('animationiteration', function (e) {
+      if (e.animationName === 'ab-cup-shake' && !held) box.classList.remove('is-shake');
+    });
+  }
+
   // ========== 摄影磁贴：照片轮换 ==========
   // 每 4.5 秒交叉淡入下一张（当前那张慢慢推近），右下角小圆点跟着走；悬停时暂停，离开视野时也不转
 
@@ -1095,7 +1133,7 @@
     });
   }
 
-  // ========== 胡思乱想：便签本翻页 ==========
+  // ========== 头脑风暴：便签本翻页 ==========
   // 进来时随机翻到某一页；页脚细线（CSS 动画 9s）走完 → 把这页往上翻过去：克隆当前页盖在最上面做翻页动画，
   // 底下这页直接换成下一条。悬停 / 离开视野 / 切到别的标签页时细线停住；「翻一页」手动翻。减少动态：不翻，直接换字
 
@@ -1610,6 +1648,16 @@
   function initMemoBook() {
     var book = document.getElementById('memo-book');
     if (!book) return;
+    // 线上先合着（回忆还在整理，正在准备中）；本机调试（和防 F12 同一个判断）照常翻开
+    var host = location.hostname;
+    if (!(host === 'localhost' || host === '127.0.0.1' || host === '[::1]' || host === '::1' || /\.localhost$/.test(host))) {
+      book.classList.add('is-closed');
+      book.setAttribute('aria-label', '回忆录（正在准备中）');
+      book.removeAttribute('tabindex');
+      var sec = document.getElementById('block-5');
+      if (sec) sec.classList.add('is-memo-closed');
+      return;
+    }
     var pages = book.querySelector('.mj-pages'), spreads = [].slice.call(book.querySelectorAll('.mj-spread'));
     var count = book.querySelector('.mj-count'), prevBtn = book.querySelector('.mj-prev'), nextBtn = book.querySelector('.mj-next');
     var n = spreads.length, k = 0, busy = false, narrow = window.matchMedia('(max-width: 768px)');
@@ -2374,6 +2422,7 @@
     initBadge();
     initPlayer();
     initIntroLetter();
+    initCursor();
     initPhotoTile();
     initMuse();
     loadLedger().then(function (d) {
