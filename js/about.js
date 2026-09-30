@@ -43,7 +43,7 @@
     }
   };
 
-  // 回忆录：与书架上每本书的 data-memoir 序号一一对应（index.pug 的 MEMOIRS）
+  // 回忆录：手帐本每个跨页右页的故事，按序号与 index.pug 的 MEMOIRS 一一对应（lines 一行一段，source 写在末尾）
   var MEMOIR_QUOTES = [
     { lines: ['占位回忆 01：', '之后把照片和这段话换成真实的。'], source: '回忆 01' },
     { lines: ['占位回忆 02：', '某次展子的下午。'], source: '回忆 02' },
@@ -77,10 +77,12 @@
   document.documentElement.classList.add(animOn ? 'ab-anim' : 'ab-fallback');
 
   // 右上角的锁：锁着（默认）= 不放分割段嵌入图（钉住时长为 0，几块内容直接接着往下滚）；解开 = 分割段照常展开。
-  // 选择记在本机（localStorage，存 'open' 表示解开）；html.ab-locked 让 CSS 把嵌入图 / 遮罩板整个藏掉。见 initLock
+  // 选择只记在当前标签页（sessionStorage，存 'open' 表示解开）：刷新 / 后退回来保持原样（滚动位置的恢复也按这个状态算），
+  // 新打开页面一律锁着。以前记在 localStorage 里的那条（会让之后每次打开都是解开的）顺手清掉。html.ab-locked 让 CSS 把嵌入图 / 遮罩板整个藏掉。见 initLock
   var LOCK_KEY = 'about-splits';
   var locked = true;
-  try { locked = localStorage.getItem(LOCK_KEY) !== 'open'; } catch (e) { /* 存储不可用：按默认锁着 */ }
+  try { locked = sessionStorage.getItem(LOCK_KEY) !== 'open'; } catch (e) { /* 存储不可用：按默认锁着 */ }
+  try { localStorage.removeItem(LOCK_KEY); } catch (e) { /* 忽略 */ }
   document.documentElement.classList.toggle('ab-locked', locked);
 
   // Hero 的状态（动画模式，见 initHeroVoyage）：'hero' 在 hero 上（跟着滚轮来回）| 'auto' 退场自动播放中 |
@@ -508,7 +510,8 @@
       if (bar) bar.style.setProperty('--ab-progress', p.toFixed(4));
       if (cup) {
         cup.style.setProperty('--ab-progress', p.toFixed(4));
-        cup.title = '已读 ' + Math.round(p * 100) + '%';
+        var readTip = '已读 ' + Math.round(p * 100) + '%';
+        if (cup.getAttribute('data-tip') !== readTip) { cup.setAttribute('data-tip', readTip); cup.setAttribute('aria-label', readTip); }
       }
 
       // 页眉：Hero 滚过 60% 后浮现（动画模式：hero 退场播完、拆掉之后才浮现）；收起时顺带收回播放器面板
@@ -616,8 +619,7 @@
       var tip = locked ? '已上锁：不显示嵌入图（点击解锁）' : '已解锁：显示嵌入图（点击上锁）';
       btn.classList.toggle('is-unlocked', !locked);
       btn.setAttribute('aria-pressed', String(locked));
-      btn.title = tip;
-      btn.setAttribute('aria-label', tip);
+      btn.setAttribute('aria-label', tip);   // 只给读屏用；不设 title（不要鼠标悬停的提示框）
     }
 
     // 屏幕上方（顶在屏幕中线以上）最靠下的那一块，和它的顶此刻在屏幕上的位置；正在分开的分割段里 → 接缝下面那块、顶在屏幕中央
@@ -640,7 +642,7 @@
     function toggle() {
       var a = anchor();
       locked = !locked;
-      try { localStorage.setItem(LOCK_KEY, locked ? 'shut' : 'open'); } catch (e) { /* 不记也能用 */ }
+      try { sessionStorage.setItem(LOCK_KEY, locked ? 'shut' : 'open'); } catch (e) { /* 不记也能用 */ }
       document.documentElement.classList.toggle('ab-locked', locked);
       paint();
       if (!locked) preloadSplits();
@@ -835,6 +837,11 @@
       }, 650);
     };
 
+    // 弹一下播完就把 is-pop 去掉：ScrollTrigger 刷新时会把钉住的那一对块移出文档再放回去，类还在的话"弹一下"会从头再播一遍
+    card.addEventListener('animationend', function (e) {
+      if (e.animationName === 'ab-pop') card.classList.remove('is-pop');
+    });
+
     card.addEventListener('pointerdown', function (e) {
       if (e.button !== 0 || e.target.closest('a, button')) return; // 社交按钮照常点击
       card.setPointerCapture(e.pointerId);
@@ -908,82 +915,155 @@
     layout();
   }
 
-  // ========== 回忆录书架：抽出书 + 视差 ==========
-  // 抽出 / 侧转两段动画由 CSS 负责（悬停 / 键盘聚焦），侧过来时直接盖住右边的书（不挤邻居）。
-  // 这里只把鼠标在书上的位置写成 --px/--py（−1~1），驱动封面照片的反向视差；点开进 lightbox（书的类名沿用 .ab-cone）
-
-  var memoir = { open: function () {} };
-
-  function initShelf() {
-    var mat = document.getElementById('memoir-mat');
-    if (!mat) return;
-    var canHover = window.matchMedia('(hover: hover)').matches;
-
-    [].forEach.call(mat.querySelectorAll('.ab-cone'), function (cone) {
-      var face = cone.querySelector('.ab-cone-face');
-      if (canHover) {
-        cone.addEventListener('pointermove', function (e) {
-          // 按书未旋转时的封面尺寸换算（不随抽出后的投影变化，避免视差自激抖动）
-          var r = cone.getBoundingClientRect();
-          var nx = (e.clientX - r.left - 12) / (face.offsetWidth || 1) * 2 - 1;
-          var ny = (e.clientY - r.top) / (r.height || 1) * 2 - 1;
-          cone.style.setProperty('--px', Math.max(-1, Math.min(1, nx)).toFixed(3));
-          cone.style.setProperty('--py', Math.max(-1, Math.min(1, ny)).toFixed(3));
-        });
-        cone.addEventListener('pointerleave', function () {
-          cone.style.setProperty('--px', '0');
-          cone.style.setProperty('--py', '0');
-        });
-      }
-      cone.addEventListener('click', function () { memoir.open(cone); });
-      cone.addEventListener('keydown', function (e) {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          memoir.open(cone);
-        }
-      });
-    });
-  }
-
-  // ========== 格言卡：词句浮现 + 提灯 + 点击放萤火虫 ==========
-  // 进入视野 → .is-in（CSS 按 --i 逐词错开亮起）；鼠标在卡上 → --mx/--my 跟随、--lamp 亮起；
-  // 点一下 → 从点击处放出 7 只萤火虫往上飘散（动画结束后移除）
-
-  function initLumen() {
-    var card = document.getElementById('about-lumen');
+  // ========== 自我介绍信笺：收着的信，点一下从信封里抽出来 ==========
+  // 平时信纸下半截插在信封里，只露出信头、称呼和前几行。收起时的块高按工牌算：两栏时让下面 GitHub 打卡本的下沿和工牌下沿差不多齐，
+  // 单栏（手机）时露 400 左右。点信纸 / 信封正中朝下的小三角：信封往下退、信纸整张露出来，再盖到信封前面、信封缩回去一截；
+  // 再点（这时朝上）或在信纸以外的地方按一下收起，反过来。信纸插在信封里 = 裁掉信封口以下的部分（信封口 = 块高 − ENV，about.css .ab-letter-env）。
+  // 展开 / 收起之后块高变了：刷新 ScrollTrigger（分割段、跳章的位置跟着变）。
+  // 动画模式下：第一次进入视野时信纸从信封口升到收着的位置；第一次展开时格言一行一行写出来。其余情况直接切换、格言直接在。
+  function initIntroLetter() {
+    var card = document.getElementById('ab-letter');
     if (!card) return;
-    if (!animOn || !('IntersectionObserver' in window)) card.classList.add('is-in');
-    else {
-      var io = new IntersectionObserver(function (entries) {
-        entries.forEach(function (en) {
-          if (en.isIntersecting) { card.classList.add('is-in'); io.disconnect(); }
-        });
-      }, { threshold: 0.6 });
-      io.observe(card);
-    }
-    if (reduceMotion) return;
-    card.addEventListener('pointermove', function (e) {
-      var r = card.getBoundingClientRect();
-      card.style.setProperty('--mx', (e.clientX - r.left).toFixed(0) + 'px');
-      card.style.setProperty('--my', (e.clientY - r.top).toFixed(0) + 'px');
-      card.style.setProperty('--lamp', '1');
-    });
-    card.addEventListener('pointerleave', function () { card.style.setProperty('--lamp', '0'); });
-    var layer = card.querySelector('.about-lumen-flies') || card;
-    card.addEventListener('click', function (e) {
-      var r = card.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;
-      for (var i = 0; i < 7; i++) {
-        var f = document.createElement('span'), a = -Math.PI / 2 + (Math.random() - 0.5) * 2.2, d = 50 + Math.random() * 70;
-        f.className = 'about-lumen-burst';
-        f.style.setProperty('--bx', x + 'px');
-        f.style.setProperty('--by', y + 'px');
-        f.style.setProperty('--tx', (Math.cos(a) * d).toFixed(0) + 'px');
-        f.style.setProperty('--ty', (Math.sin(a) * d - 20).toFixed(0) + 'px');
-        f.style.setProperty('--t', (1.4 + Math.random() * 0.9).toFixed(2) + 's');
-        f.addEventListener('animationend', function () { this.remove(); });
-        layer.appendChild(f);
+    var paper = card.querySelector('.ab-letter-paper');
+    var motto = card.querySelectorAll('.ab-letter-motto span');
+    var btn = card.querySelector('.ab-letter-toggle');
+    var idcard = document.getElementById('idcard');
+    var heat = document.querySelector('.about-profile-main .about-heatmap-panel');
+    var ENV = 74, UNDER = 30;                  // 信封高 / 展开时信纸盖住信封上沿的那一截
+    var smooth = animOn && !!paper.animate;
+    var open = false, busy = false, signed = !smooth, foldH = 0;
+    var inOut3 = function (u) { return u < 0.5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2; };
+    var out2 = function (u) { return 1 - (1 - u) * (1 - u); };
+
+    function fullH() { return paper.offsetHeight + ENV - UNDER; }
+    function calcFold() {
+      var cr = card.getBoundingClientRect(), h;
+      if (idcard && heat && idcard.getBoundingClientRect().right <= cr.left) {
+        var gap = parseFloat(getComputedStyle(card).marginBottom) + parseFloat(getComputedStyle(heat).marginTop);
+        h = idcard.getBoundingClientRect().bottom - cr.top - gap - heat.offsetHeight;
+      } else {
+        h = 400 + ENV - UNDER;
       }
+      return Math.round(Math.max(240, Math.min(fullH(), h)));
+    }
+    // 块高设成 H（null = 按内容）；cut：信纸在信封口处裁开（插在信封里），否则整张盖在信封前面
+    function setBox(H, cut) {
+      card.style.height = H == null ? '' : H + 'px';
+      paper.style.clipPath = cut ? 'inset(-40px -40px ' + Math.max(0, paper.offsetHeight - (H - ENV)) + 'px -40px)' : '';
+    }
+    // 标成展开 / 收着（isOpen）：信走到头了才标——三角跟着信封走到底（顶）再转过去（朝上 / 朝下由 CSS 按 is-folded 画，带转动过渡）
+    function label(isOpen) {
+      card.classList.toggle('is-folded', !isOpen);
+      if (btn) {
+        btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        btn.setAttribute('aria-label', isOpen ? '收起信' : '展开信');
+      }
+    }
+    function refresh() { if (animOn) ScrollTrigger.refresh(); }
+    // 走到头：先刷新 ScrollTrigger（它会把钉住的那一对块移出文档再放回去，放回去的元素不走过渡），
+    // 再读一次三角现在的样子（定下转动的起点），然后才换方向，三角才是转过去的
+    function arrive(isOpen) {
+      refresh();
+      if (btn) getComputedStyle(btn, '::before').transform;
+      label(isOpen);
+    }
+    function tween(a, b, dur, ease, fn, done) {
+      var t0 = performance.now();
+      requestAnimationFrame(function f(now) {
+        var u = Math.min(1, (now - t0) / dur);
+        fn(a + (b - a) * ease(u));
+        if (u < 1) requestAnimationFrame(f); else done();
+      });
+    }
+    // 格言一行一行从左往右写出来（裁切框四周放宽半个字高，花体的起笔、字脚伸出行盒也不被裁）
+    function sign() {
+      if (signed) return;
+      signed = true;
+      card.classList.add('is-signed');
+      [].forEach.call(motto, function (line, i) {
+        line.animate([{ clipPath: 'inset(-0.5em 100% -0.5em -0.5em)' }, { clipPath: 'inset(-0.5em -0.5em -0.5em -0.5em)' }], { duration: 1200, easing: 'cubic-bezier(0.45, 0.05, 0.4, 1)', delay: 150 + i * 1250, fill: 'backwards' });
+      });
+    }
+    function toggle() {
+      if (busy) return;
+      if (!smooth) {
+        open = !open;
+        setBox(open ? null : foldH, !open);
+        label(open);
+        refresh();
+        return;
+      }
+      busy = true;
+      var out = paper.offsetHeight + ENV; // 信封口正好退到信纸下沿：信纸整张露出来
+      if (!open) {
+        tween(foldH, out, 640, inOut3, function (h) { setBox(h, true); }, function () {
+          tween(out, out - UNDER, 260, out2, function (h) { setBox(h, false); }, function () {
+            setBox(null, false);
+            busy = false;
+            open = true;
+            arrive(true);
+            sign();
+          });
+        });
+      } else {
+        tween(out - UNDER, out, 200, out2, function (h) { setBox(h, false); }, function () {
+          tween(out, foldH, 580, inOut3, function (h) { setBox(h, true); }, function () {
+            open = busy = false;
+            arrive(false);
+          });
+        });
+      }
+    }
+    // 窗口宽度 / 字体变了：重新算收起的高度；信纸高度变了（字体后加载、换行）也要重新裁，裁切线才一直在信封口上
+    function refit() {
+      if (busy || open) return;
+      var h = calcFold();
+      setBox(h, true);
+      if (h !== foldH) {
+        foldH = h;
+        refresh();
+      }
+    }
+
+    foldH = calcFold();
+    if (foldH >= fullH() - 40) {
+      // 信本来就不长，不用收
+      card.classList.add('is-out', 'is-signed');
+      return;
+    }
+    card.classList.add('is-foldable');
+    setBox(foldH, true);
+    label(false);
+    if (btn) btn.addEventListener('click', function (e) { e.stopPropagation(); toggle(); });
+    paper.addEventListener('click', function () { if (!open) toggle(); });
+    // 展开着的时候，在信纸以外的地方：鼠标一按下就收回去；触屏点一下才收（免得一碰屏幕滚动就收了）。
+    // 鼠标按下就收：长按工牌变挂式时，信在按住的那几秒里就收好了，不会等松手才收、挂起来以后版面再动。
+    // 点信纸本身不收；小三角自己处理（按下时不收，点击不冒泡到这里）
+    document.addEventListener('pointerdown', function (e) {
+      if (e.pointerType === 'mouse' && e.button === 0 && open && !busy && !paper.contains(e.target) && !(btn && btn.contains(e.target))) toggle();
     });
+    document.addEventListener('click', function (e) {
+      if (open && !busy && !paper.contains(e.target)) toggle();
+    });
+    var rt = 0;
+    window.addEventListener('resize', function () { clearTimeout(rt); rt = setTimeout(refit, 200); });
+    if (document.fonts) document.fonts.ready.then(refit);
+    if (window.ResizeObserver) new ResizeObserver(function () { if (!open && !busy) setBox(foldH, true); }).observe(paper);
+
+    if (!smooth || !('IntersectionObserver' in window)) {
+      card.classList.add('is-out', 'is-signed');
+      return;
+    }
+    // 第一次进入视野：信纸从信封口升到收着的位置（裁切线始终钉在信封口上：下面裁掉 P − 露出的高度 + 位移）
+    var io = new IntersectionObserver(function (entries) {
+      if (!entries[0].isIntersecting) return;
+      io.disconnect();
+      var slot = foldH - ENV, P = paper.offsetHeight;
+      var at = function (ty) { return { transform: 'translateY(' + ty + 'px)', clipPath: 'inset(-40px -40px ' + (P - slot + ty) + 'px -40px)' }; };
+      card.classList.add('is-out');
+      paper.animate([at(slot), at(0)], { duration: 1100, easing: 'cubic-bezier(0.25, 0.1, 0.3, 1)' });
+    }, { threshold: 0.3 });
+    io.observe(card);
   }
 
   // ========== 摄影磁贴：照片轮换 ==========
@@ -1522,143 +1602,98 @@
       });
   }
 
-  // ========== Block 4：回忆录 lightbox ==========
+  // ========== 回忆录：手帐本翻页 ==========
+  // 一段回忆一个跨页（左页照片、右页故事，故事文字按 MEMOIR_QUOTES 填）。往后翻：右页绕书脊翻到左边——
+  // 把当前右页和下一跨页的左页各克隆一份，做成一张两面的「纸」转 180°；底下同时露出「当前左页 + 下一跨页右页」，
+  // 转完换成下一跨页。往前翻反过来。点右半边 / 下一页 / → 往后，左半边 / 上一页 / ← 往前；手机上下两页，直接切换
 
-  function initMemoir() {
-    var box = document.getElementById('about-lightbox');
-    if (!box) return;
-    var cardEl = box.querySelector('.about-lightbox-card');
-    var tiltEl = box.querySelector('.about-lightbox-tilt');
-    var glareEl = box.querySelector('.about-lightbox-glare');
-    var imgEl = document.getElementById('lightbox-img');
-    var capEl = document.getElementById('lightbox-cap');
-    var dateEl = document.getElementById('lightbox-date');
-    var backdrop = box.querySelector('.about-lightbox-backdrop');
-    var closeBtn = box.querySelector('.about-lightbox-close');
-    var current = null;
+  function initMemoBook() {
+    var book = document.getElementById('memo-book');
+    if (!book) return;
+    var pages = book.querySelector('.mj-pages'), spreads = [].slice.call(book.querySelectorAll('.mj-spread'));
+    var count = book.querySelector('.mj-count'), prevBtn = book.querySelector('.mj-prev'), nextBtn = book.querySelector('.mj-next');
+    var n = spreads.length, k = 0, busy = false, narrow = window.matchMedia('(max-width: 768px)');
+    if (!n) return;
 
-    // 每张拍立得的摆放角度写在行内 --r（见 index.pug 的 MEMOIRS）
-    function cardRot(card) {
-      return parseFloat(card.style.getPropertyValue('--r')) || 0;
-    }
-
-    function textOf(card, sel) {
-      var el = card.querySelector(sel);
-      return el ? el.textContent : '';
-    }
-
-    // nx/ny ∈ [0,1]：鼠标位置 → 卡片角度 + 反光强度（向右上倾时最亮）
-    function setTilt(nx, ny) {
-      var ry = (nx - 0.5) * 16;
-      var rx = (0.5 - ny) * 12;
-      tiltEl.style.transform = 'rotateX(' + rx.toFixed(2) + 'deg) rotateY(' + ry.toFixed(2) + 'deg)';
-      var glow = Math.max(0, ry / 16) * Math.max(0, rx / 12);
-      glareEl.style.opacity = (0.07 + glow * 0.28).toFixed(3);
-      glareEl.style.transform = 'translateX(' + ((nx - 0.5) * 55).toFixed(1) + '%)';
-    }
-
-    function onMove(e) {
-      setTilt(e.clientX / window.innerWidth, e.clientY / window.innerHeight);
-    }
-
-    // 取出 / 放回动画的起止：书架上的书取封面（3D 投影后的包围盒），便利贴取整张
-    function srcOf(card) {
-      return card.classList.contains('ab-cone') ? card.querySelector('.ab-cone-face') || card : card;
-    }
-
-    function open(card) {
-      if (current) return;
-      current = card;
-      var idx = parseInt(card.dataset.memoir, 10) || 0;
-      var isCone = card.classList.contains('ab-cone');
-      imgEl.src = card.querySelector('img').src;
-      imgEl.style.objectPosition = card.querySelector('img').style.objectPosition;
-      if (capEl) capEl.textContent = card.dataset.cap || textOf(card, '.about-memoir-cap');
-      if (dateEl) dateEl.textContent = card.dataset.date || textOf(card, '.about-memoir-date');
-      // 从书架上的书打开：lightbox 换成同一张封面（书皮底色 --lc、稀有度色 --rk、书的种类 data-rank）
-      box.classList.toggle('is-cone', isCone);
-      if (isCone) {
-        var cs = getComputedStyle(card);
-        box.style.setProperty('--rk', cs.getPropertyValue('--rk').trim());
-        box.style.setProperty('--lc', cs.getPropertyValue('--lc').trim());
-        box.dataset.rank = card.dataset.rank || '';
-      }
-      // 横版照片用横版 lightbox（与卡片同比例，取出动画不变形）；书一律竖版；须在测量目标位置前切换
-      box.classList.toggle('is-landscape', !isCone && card.classList.contains('is-landscape'));
-      box.classList.add('is-open');
-      box.setAttribute('aria-hidden', 'false');
-      document.body.style.overflow = 'hidden';
-
-      if (animOn) {
-        // 取出动画：从原位（含当前旋转姿态）飞到中右侧
-        var src = srcOf(card).getBoundingClientRect();
-        var dst = cardEl.getBoundingClientRect();
-        var m = new DOMMatrix(getComputedStyle(card).transform);
-        var fromRot = Math.atan2(m.b, m.a) * 180 / Math.PI;
-        card.style.visibility = 'hidden';
-        gsap.fromTo(cardEl,
-          {
-            x: src.left - dst.left,
-            y: src.top - dst.top,
-            scaleX: src.width / dst.width,
-            scaleY: src.height / dst.height,
-            rotation: fromRot
-          },
-          { x: 0, y: 0, scaleX: 1, scaleY: 1, rotation: 0, duration: 0.65, ease: 'power3.inOut' }
-        );
-        gsap.fromTo(backdrop, { opacity: 0 }, { opacity: 1, duration: 0.4, ease: 'none' });
-        setTilt(0.5, 0.5);
-        window.addEventListener('mousemove', onMove);
-      }
-      typeInto('lightbox-text', MEMOIR_QUOTES[idx % MEMOIR_QUOTES.length]);
-    }
-
-    function close() {
-      if (!current) return;
-      var card = current;
-      current = null;
-      window.removeEventListener('mousemove', onMove);
-      resetType('lightbox-text');
-
-      function done() {
-        box.classList.remove('is-open');
-        box.setAttribute('aria-hidden', 'true');
-        document.body.style.overflow = '';
-        card.style.visibility = '';
-        if (hasAnimLibs) gsap.set(cardEl, { clearProps: 'transform' });
-        tiltEl.style.transform = '';
-        glareEl.style.opacity = '0';
-      }
-
-      if (animOn) {
-        tiltEl.style.transform = '';
-        glareEl.style.opacity = '0';
-        gsap.killTweensOf(cardEl);
-        gsap.set(cardEl, { x: 0, y: 0, scaleX: 1, scaleY: 1, rotation: 0 });
-        var src = srcOf(card).getBoundingClientRect();
-        var dst = cardEl.getBoundingClientRect();
-        gsap.to(cardEl, {
-          x: src.left - dst.left,
-          y: src.top - dst.top,
-          scaleX: src.width / dst.width,
-          scaleY: src.height / dst.height,
-          rotation: cardRot(card),
-          duration: 0.5,
-          ease: 'power3.inOut',
-          onComplete: done
-        });
-        gsap.to(backdrop, { opacity: 0, duration: 0.4, ease: 'none' });
-      } else {
-        done();
-      }
-    }
-
-    memoir.open = open;
-    backdrop.addEventListener('click', close);
-    closeBtn.addEventListener('click', close);
-    document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape') close();
+    [].forEach.call(book.querySelectorAll('.mj-text'), function (el) {
+      var q = MEMOIR_QUOTES[(parseInt(el.dataset.memoir, 10) || 0) % MEMOIR_QUOTES.length];
+      q.lines.forEach(function (line) {
+        var p = document.createElement('p');
+        p.textContent = line;
+        el.appendChild(p);
+      });
+      var src = document.createElement('p');
+      src.className = 'mj-src';
+      src.textContent = '—— ' + q.source;
+      el.appendChild(src);
     });
+
+    function paint() {
+      spreads.forEach(function (s, i) {
+        s.classList.toggle('is-on', i === k);
+        s.classList.remove('show-left', 'show-right');
+      });
+      count.textContent = pad2(k + 1) + ' / ' + pad2(n);
+      prevBtn.disabled = k === 0;
+      nextBtn.disabled = k === n - 1;
+    }
+
+    function go(dir) {
+      var to = k + dir;
+      if (busy || to < 0 || to >= n) return;
+      if (reduceMotion || narrow.matches || !pages.animate) { k = to; paint(); return; }
+      busy = true;
+      var cur = spreads[k], nxt = spreads[to], fwd = dir > 0;
+      var leaf = document.createElement('div');
+      leaf.className = 'mj-leaf ' + (fwd ? 'is-fwd' : 'is-back');
+      var front = (fwd ? cur.querySelector('.mj-right') : cur.querySelector('.mj-left')).cloneNode(true);
+      var back = (fwd ? nxt.querySelector('.mj-left') : nxt.querySelector('.mj-right')).cloneNode(true);
+      front.classList.add('mj-face', 'mj-front');
+      back.classList.add('mj-face', 'mj-back');
+      leaf.appendChild(front);
+      leaf.appendChild(back);
+      // 底下：往后翻 = 当前左页 + 下一跨页右页；往前翻 = 上一跨页左页 + 当前右页
+      cur.classList.remove('is-on');
+      cur.classList.add(fwd ? 'show-left' : 'show-right');
+      nxt.classList.add(fwd ? 'show-right' : 'show-left');
+      pages.appendChild(leaf);
+      var ang = fwd ? -180 : 180;
+      var anim = leaf.animate([{ transform: 'rotateY(0deg)' }, { transform: 'rotateY(' + ang + 'deg)' }], { duration: 760, easing: 'cubic-bezier(0.45, 0.05, 0.35, 1)', fill: 'forwards' });
+      // 翻起来的时候纸面暗一点，快躺平时再亮回来
+      var t0 = performance.now();
+      (function shade() {
+        var p = Math.min(1, (performance.now() - t0) / 760), v = Math.sin(Math.PI * p);
+        front.style.setProperty('--shade', v.toFixed(3));
+        back.style.setProperty('--shade', v.toFixed(3));
+        if (p < 1 && leaf.parentNode) requestAnimationFrame(shade);
+      })();
+      anim.onfinish = function () {
+        leaf.remove();
+        k = to;
+        paint();
+        busy = false;
+      };
+    }
+
+    prevBtn.addEventListener('click', function () { go(-1); });
+    nextBtn.addEventListener('click', function () { go(1); });
+    book.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowRight') { e.preventDefault(); go(1); }
+      else if (e.key === 'ArrowLeft') { e.preventDefault(); go(-1); }
+    });
+    // 点右半边往后、左半边往前；横着划一下也行
+    var down = null;
+    pages.addEventListener('pointerdown', function (e) { down = { x: e.clientX, y: e.clientY }; });
+    pages.addEventListener('pointerup', function (e) {
+      if (!down) return;
+      var dx = e.clientX - down.x, dy = e.clientY - down.y;
+      down = null;
+      if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) { go(dx < 0 ? 1 : -1); return; }
+      if (Math.abs(dx) > 8 || Math.abs(dy) > 8 || narrow.matches) return;
+      var r = pages.getBoundingClientRect();
+      go(e.clientX > r.left + r.width / 2 ? 1 : -1);
+    });
+    paint();
   }
 
   // ========== Hero 退场 / 返回（动画模式）==========
@@ -1725,12 +1760,13 @@
     // 各组直接按离原位的距离摆：fr[i] = GROUPS 第 i 组移出去的比例（0 = 原位，1 = 屏幕外），view = 星体位移（px），
     // fade = 标题 / 微尘的透明度；hide = 已经移出屏幕的组停画（往下退场时要；返回时各层挂载时就画好了，原样平移进来，
     // 不来回停画、重画——重新显示时整层同步重画会卡住那一帧，正在移动的星体就跟着顿一下）
-    function place(fr, view, fade, hide) {
+    function place(fr, view, fade, hide, fx) {
       var X = outX();
+      if (fx === undefined) fx = fade;
       fadeEls.forEach(function (el) { el.style.opacity = fade > 0.999 ? '' : fade; });
       if (hint) hint.style.filter = fade < 1 ? 'opacity(' + fade.toFixed(3) + ')' : '';
-      if (els.fx) els.fx.style.opacity = fade > 0.999 ? '' : fade;
-      if (hide) setOff(['fx'], fade <= 0);
+      if (els.fx) els.fx.style.opacity = fx > 0.999 ? '' : fx;
+      if (hide) setOff(['fx'], fx <= 0);
       GROUPS.forEach(function (g, i) {
         shift(g.names, g.dir * X * fr[i]);
         if (hide) setOff(g.names, fr[i] >= 1);
@@ -1742,7 +1778,7 @@
     // 滚动进度 v（0 ~ 1）→ 各层位置；view 不传就按 v 算
     function apply(v, view) {
       if (v > 0.25 && pixelHero) pixelHero.fillSky();   // 舱壁挪开之前先把窗外以外的星星补上（这时还被挡着，看不出来）
-      place(GROUPS.map(function (g) { return easeIn(seg(v, g.a, g.b)); }), view !== undefined ? view : viewAt(v), 1 - seg(v, 0, 0.16), true);
+      place(GROUPS.map(function (g) { return easeIn(seg(v, g.a, g.b)); }), view !== undefined ? view : viewAt(v), 1 - seg(v, 0, 0.16), true, 1 - seg(v, 0, 0.15));
     }
 
     // ---------- 跟着滚轮（钉住期间）----------
@@ -1753,9 +1789,6 @@
       s += (target - s) * 0.16;   // 像 scrub 一样追一下滚轮，动作不生硬
       if (Math.abs(target - s) < 0.0006) s = target;
       apply(s);
-      // 星体开始移动后冻住像素 hero（舱室和摆设这时都已移出屏幕，只剩星空和星体）：景色每秒十几次的重画会卡住某些帧，
-      // 移动中的星体就会一顿一顿；往回滚到星体归位前再放开
-      if (pixelHero) pixelHero.setRunning(s < VIEW_A);
       if (target >= 1) { startAuto(); return; }
       if (s !== target) wake();
     }
@@ -1824,24 +1857,27 @@
       lock(true);
       preloadEarth();
       makeStage();
-      // 接下来一直在自动动：像素 hero 冻住（景色不再每秒十几次重画），主线程只管移动和穿梭，星体走得匀
-      if (pixelHero) pixelHero.setRunning(false);
-      var s0 = s, X = outX(), x0 = viewAt(s0), spaceOff = false, viewOff = false;
+      var s0 = s, X = outX(), vw = window.innerWidth, spaceOff = false, viewOff = false;
       play(function (t, dt) {
-        // 0 ~ 0.3 s：把滚动那段收尾（s → 1）；星体从当前位置一条曲线接着往左移出（起步就带着速度，中途不停）
-        var u = seg(t, 0, 0.9);
-        apply(lerp(s0, 1, easeOut(seg(t, 0, 0.3))), lerp(x0, -X, u * (0.3 + 0.7 * u)));
-        if (!viewOff && t > 0.9) { viewOff = true; setOff(VIEW, true); }
-        // 星空：先盖上一层同样的星（透明底），再压暗成深空，然后加速成光迹
-        var speed = t < 0.7 ? 0 : t < 1.95 ? 0.05 + 3.3 * Math.pow(seg(t, 0.7, 1.95), 3) : lerp(3.35, 0.22, easeOut(seg(t, 1.95, 2.5)));
+        // 0 ~ 0.3 s：把滚动那段收尾（s → 1）；之后星体继续往左移出。各层都是完全移出屏幕之后才停画（setOff），移动途中照常在动
+        var v = lerp(s0, 1, easeOut(seg(t, 0, 0.3)));
+        var vx = t < 0.3 ? undefined : lerp(-0.5 * vw, -X, easeIn(seg(t, 0.3, 0.95)));
+        apply(v, vx);
+        if (!viewOff && t > 0.95) { viewOff = true; setOff(VIEW, true); }
+        // 星空：先盖上一层同样的星（透明底），再压暗成深空，然后加速成光迹，一闪（1.85 ~ 2.35 s）
+        // 闪白一退（2.3 s 时只剩不到 3%）地球就整个在那儿了——像穿越出来一眼就找到了它，不淡入；
+        // 出现后先慢慢靠近，再越推越快（半径按对数走 u^2.6），星星跟着一起加速
+        var EARTH_ON = 2.3, u = seg(t, EARTH_ON, 4.3);
+        var speed = t < 0.7 ? 0 : t < 1.95 ? 0.05 + 3.3 * Math.pow(seg(t, 0.7, 1.95), 3)
+          : t < EARTH_ON ? lerp(3.35, 0.12, easeOut(seg(t, 1.95, EARTH_ON))) : 0.12 + 3 * Math.pow(u, 2.2);
         var dark = seg(t, 0.75, 1.3);
         if (!spaceOff && dark >= 1) { spaceOff = true; setOff(['space'], true); }
         var flash = t < 2.05 ? seg(t, 1.85, 2.05) : 1 - easeOut(seg(t, 2.05, 2.35));
-        var e = t < 2 ? 0 : EARTH0 * Math.pow(EARTH1 / EARTH0, Math.pow(seg(t, 2, 4.05), 1.25));
+        var e = t < EARTH_ON ? 0 : EARTH0 * Math.pow(EARTH1 / EARTH0, Math.pow(u, 2.6));
         if (stage) stage.draw({ t: t, dt: dt, stars: seg(t, 0.2, 0.7), speed: speed, dark: dark, glow: seg(t, 1.2, 1.95) * (1 - seg(t, 2, 2.3)), flash: flash, earth: e });
         // 推近到一定程度：整个 hero 淡掉，露出底下的博客背景（咖啡厅）
-        hero.style.opacity = 1 - seg(t, 3.5, 4.1);
-        if (t >= 4.1) { teardown(0); return false; }
+        hero.style.opacity = 1 - seg(t, 3.75, 4.3);
+        if (t >= 4.3) { teardown(0); return false; }
       });
     }
 
@@ -1915,11 +1951,12 @@
       hero.style.opacity = 0;
       initPixelHero();
       collect();
-      // 返回全程冻住像素 hero（挂载时每层都画好了，只是平移进来），播完再放开
+      // 地球拉远那段（画面被穿梭画布整个盖着）先冻住像素 hero，让地球动画独占主线程；
+      // 1 秒时放开——星体、舱室露出来之前就已经在动了（挂载时每层都画好，之后只平移进来，不来回停画重画）
       if (pixelHero) { pixelHero.fillSky(); pixelHero.setRunning(false); }
       place([1, 1, 1, 1, 1], -outX(), 0, false);
       makeStage();
-      var X = outX(), swapped = false;
+      var X = outX(), swapped = false, live = false;
       preloadEarth();
       play(function (t, dt) {
         hero.style.opacity = seg(t, 0, 0.4);
@@ -1938,6 +1975,7 @@
         var speed = t < 1.4 ? -0.18 : t < 1.95 ? -(0.05 + 3 * Math.sin(Math.PI * seg(t, 1.4, 1.95))) : 0;
         var flash = t < 1.45 ? 0.7 * seg(t, 1.35, 1.45) : 0.7 * (1 - seg(t, 1.45, 1.65));
         var dark = 1 - seg(t, 1.8, 2.2);
+        if (!live && t >= 1) { live = true; if (pixelHero) pixelHero.setRunning(true); }
         if (stage) stage.draw({ t: t, dt: dt, stars: 1 - seg(t, 1.95, 2.4), speed: speed, dark: dark, glow: seg(t, 1.4, 1.65) * (1 - seg(t, 1.8, 2.05)), flash: flash, earth: e });
         // 星体：一条缓出曲线从左边一路移回原位（中途不停）；舱壁 / 地面随后合拢，再是前景摆设，最后标题回来
         function back(a, b) { return 1 - easeOut3(seg(t, a, b)); }
@@ -2332,11 +2370,10 @@
     initRuntime();
     initHeatmap();
     initHeroType();
-    initMemoir();
+    initMemoBook();
     initBadge();
     initPlayer();
-    initShelf();
-    initLumen();
+    initIntroLetter();
     initPhotoTile();
     initMuse();
     loadLedger().then(function (d) {

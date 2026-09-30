@@ -87,20 +87,52 @@
   // 霓虹：左边一只咖啡杯（橙），右边两行 3×5 像素字放大（青色 TECH、粉色 CAFE）；亮芯 + 彩色外圈 + 光晕；白天也开着但很淡。
   // mx = 整块招牌的水平中心，top = 最上沿（杯子上的热气）。灯管本身（不亮时的玻璃管）画进 B，亮光画进单独的层：
   // 杯子进 ctx.N、字进 ctx.N2（挂载时各一块画布，各闪各的，不会一起闪；关掉招牌时连光晕一起灭）
+  // 字的光晕沿着灯管走：每个像素按离最近那格灯管的距离平滑变淡（透明度连续，不分档、不抖动）——字中间也有光，
+  // 不像原来那样绕整个词画一圈、正中留个空洞
+  function tubeHalo(E, m, x0, y0, col, amax, R) {
+    var lit = [];
+    for (var yy = 0; yy < m.h; yy++) for (var xx = 0; xx < m.w; xx++) if (m.get(xx, yy)) lit.push(xx, yy);
+    for (var gy = -R; gy < m.h + R; gy++) {
+      for (var gx = -R; gx < m.w + R; gx++) {
+        if (m.get(gx, gy)) continue;   // 灯管本身另画
+        var best = R * R + 1;
+        for (var k = 0; k < lit.length; k += 2) {
+          var dx = lit[k] - gx, dy = lit[k + 1] - gy, d2 = dx * dx + dy * dy;
+          if (d2 < best) best = d2;
+        }
+        if (best > R * R) continue;
+        var f = 1 - Math.sqrt(best) / (R + 1);
+        E.px(x0 + gx, y0 + gy, col, amax * f * f);
+      }
+    }
+  }
+  // 平滑的圆形光（中心最亮、往外连续变淡，不抖动）
+  function softGlow(E, cx, cy, r, col, amax) {
+    for (var y = Math.floor(cy - r); y <= cy + r; y++) {
+      for (var x = Math.floor(cx - r); x <= cx + r; x++) {
+        var d = Math.hypot(x + 0.5 - cx, y + 0.5 - cy);
+        if (d >= r) continue;
+        var f = 1 - d / r;
+        E.px(x, y, col, amax * f * f);
+      }
+    }
+  }
+
   function neon(B, ctx, mx, top, gs) {
     var T = ctx.T, a = 0.35 + 0.65 * T.neon, cu = gs * 2, E = ctx.N, E2 = ctx.N2 || ctx.N;
     var total = 24 * gs + textWidth('TECH', gs) + 2, x = Math.round(mx - total / 2), y = top + 6 * gs;
-    function word(str, x0, y0, core, col) {
+    function word(str) {
       var m = new PX.Raster(Math.ceil(textWidth(str, gs)) + 2, 5 * gs + 2, 0, 0);
       drawText(m, 1, 1, str, '#ffffff', gs);
+      return m;
+    }
+    function tubes(m, x0, y0, core, col) {
       for (var yy = 0; yy < m.h; yy++) for (var xx = 0; xx < m.w; xx++) {
         if (!m.get(xx, yy)) continue;
         var edge = !m.get(xx - 1, yy) || !m.get(xx + 1, yy) || !m.get(xx, yy - 1) || !m.get(xx, yy + 1);
         B.px(x0 + xx, y0 + yy, '#8a8290');                         // 灯管本身（不亮时是灰白的玻璃管）
         E2.px(x0 + xx, y0 + yy, edge ? col : core, a);
       }
-      E2.glow(x0 + m.w / 2, y0 + m.h / 2, m.w * 0.3, m.w * 0.9, col, 0.22 * T.neon + 0.03);
-      return m.w;
     }
     // 咖啡杯：杯身 + 把手 + 两缕热气（热气在最上面）
     var cy = y + 2 * gs;
@@ -113,12 +145,14 @@
       }
     });
     E.glow(x + 4 * cu, cy + 3 * cu, 3 * cu, 14 * cu, '#ff9a3a', 0.2 * T.neon + 0.03);
-    var tx = x + 12 * cu;
-    word('TECH', tx, y - gs * 2, '#e8fffb', '#40e0d0');
-    word('CAFE', tx, y + gs * 5, '#ffe9f4', '#ff5fb0');
+    var tx = x + 12 * cu, mT = word('TECH'), mC = word('CAFE'), yT = y - gs * 2, yC = y + gs * 5;
+    // 字那层（ctx.N2）从下往上：招牌照在砖墙上的一片粉光（跟着字一起闪、关掉招牌时一起灭，不进光照图）→ 两个词的光晕 → 灯管
+    softGlow(E2, mx, y + gs * 4, 30 * gs, '#ff6ab8', 0.1 * T.neon);
+    tubeHalo(E2, mT, tx, yT, '#40e0d0', 0.3 * T.neon + 0.04, 3 * gs);
+    tubeHalo(E2, mC, tx, yC, '#ff5fb0', 0.3 * T.neon + 0.04, 3 * gs);
+    tubes(mT, tx, yT, '#e8fffb', '#40e0d0');
+    tubes(mC, tx, yC, '#ffe9f4', '#ff5fb0');
     cafeHot(ctx, 'neon', [[x, top], [tx + textWidth('TECH', gs) + 2, y + gs * 10 + 2]], 3);
-    // 招牌照在砖墙上的（粉色）光跟着字那层（关掉招牌时一起灭），不进光照图
-    E2.glow(mx, y + gs * 4, 6 * gs, 30 * gs, '#ff6ab8', 0.1 * T.neon);
   }
 
   // 软木板：木框 + 软木（深浅斑点），钉着三张拍立得（窗外的海 / 樱花 / 夜空）、一张黄便签、一张票根，图钉红 / 青 / 黄

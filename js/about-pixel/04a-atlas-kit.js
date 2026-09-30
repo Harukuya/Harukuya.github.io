@@ -1,8 +1,8 @@
 // Fixed-view atlas parts, sampled onto the existing pixel grid. Local assets only.
 (function (PX) {
   'use strict';
-  PX.need('04a-atlas-kit', ['advectCells', 'advectPrep', 'advectSrc', 'clamp']);
-  var advectCells = PX.advectCells, advectPrep = PX.advectPrep, advectSrc = PX.advectSrc, clamp = PX.clamp, assets = {}, fits = {};
+  PX.need('04a-atlas-kit', ['Raster', 'advectCells', 'advectPrep', 'advectSrc', 'clamp']);
+  var Raster = PX.Raster, advectCells = PX.advectCells, advectPrep = PX.advectPrep, advectSrc = PX.advectSrc, clamp = PX.clamp, assets = {}, fits = {};
 
   function atlasLoad(names) {
     return Promise.all(names.map(function (name) {
@@ -70,6 +70,50 @@
 
   function atlasPoint(F, x, y) { return [F.x + x * F.s, F.y + y * F.s]; }
 
+  // fx.cacheKey：这一笔逐像素都不随时间变（没有 offset / shade / flow / wave / advect，fx.opacity 只看 u、v），只有整体透明度 fx.alpha 会变——
+  // 第一次把每个像素的目标位置、颜色、透明度（贴图 × opacity）算好存起来，之后每次只乘 fx.alpha 再混合。
+  // 顺序、公式和逐像素现算完全一样，画出来一个字节都不差；cacheKey 由调用方保证「opacity 不随时间变」
+  var ZERO_OFFSET = [0, 0], prepared = {}, preparedOrder = [];
+  function prepare(fx, name, A, w, h, x0, y0) {
+    var key = fx.cacheKey + '|' + name + '|' + w + 'x' + h + '|' + x0 + ',' + y0 + '|' + !!fx.detail + !!fx.direct;
+    if (prepared[key]) return prepared[key];
+    var d = A.d, list = [];
+    for (var y = 0; y < h; y++) {
+      for (var x = 0; x < w; x++) {
+        var i = (y * w + x) * 4, alpha = d[i + 3] / 255;
+        if (!alpha) continue;
+        if (fx.opacity) alpha *= fx.opacity(x / w, y / h);
+        if (!(alpha > 0)) continue;   // 透明度 0 的像素 px 本来就什么都不写
+        list.push(x0 + x, y0 + y, d[i], d[i + 1], d[i + 2], alpha);
+      }
+    }
+    preparedOrder.push(key);
+    if (preparedOrder.length > 24) delete prepared[preparedOrder.shift()];
+    return (prepared[key] = new Float64Array(list));
+  }
+  function drawPrepared(r, P, fa) {
+    var n = P.length, j;
+    if (r.px !== Raster.prototype.px || !r.d) {   // px 被换掉的（blockRaster 等）照旧调它自己的 px
+      var c = [0, 0, 0];
+      for (j = 0; j < n; j += 6) { c[0] = P[j + 2]; c[1] = P[j + 3]; c[2] = P[j + 4]; r.px(P[j], P[j + 1], c, P[j + 5] * fa); }
+      return;
+    }
+    // 普通缓冲：和 Raster.px 同一个公式（目标坐标本来就是整数）
+    var D = r.d, W = r.w, H = r.h, ox = r.ox, oy = r.oy;
+    for (j = 0; j < n; j += 6) {
+      var tx = P[j] + ox, ty = P[j + 1] + oy;
+      if (tx < 0 || ty < 0 || tx >= W || ty >= H) continue;
+      var a = P[j + 5] * fa, o = (ty * W + tx) * 4;
+      if (a >= 1) { D[o] = P[j + 2]; D[o + 1] = P[j + 3]; D[o + 2] = P[j + 4]; D[o + 3] = 255; continue; }
+      if (a <= 0) continue;
+      var da = D[o + 3] / 255, oa = a + da * (1 - a);
+      D[o] = (P[j + 2] * a + D[o] * da * (1 - a)) / oa;
+      D[o + 1] = (P[j + 3] * a + D[o + 1] * da * (1 - a)) / oa;
+      D[o + 2] = (P[j + 4] * a + D[o + 2] * da * (1 - a)) / oa;
+      D[o + 3] = oa * 255;
+    }
+  }
+
   function atlasDraw(r, F, name, rect, fx) {
     fx = fx || {};
     var w = Math.max(1, Math.round(rect[2] * F.s)), h = Math.max(1, Math.round(rect[3] * F.s));
@@ -77,8 +121,10 @@
     if (!A) return;
     var at = atlasPoint(F, rect[0], rect[1]);
     var x0 = Math.round(at[0] + (fx.dx || 0)), y0 = Math.round(at[1] + (fx.dy || 0)), d = A.d;
+    if (fx.cacheKey) { drawPrepared(r, prepare(fx, name, A, w, h, x0, y0), fx.alpha === undefined ? 1 : fx.alpha); return; }
     // fx.advect（见 03-advect）：物质沿方向流动；mix = 1 时透明度也跟着流，所以原本透明的像素也要算
     var adv = fx.advect ? advectPrep(fx.advect) : null, advAll = !!(adv && adv.mix === 1), cells = advAll ? advectCells(A, adv.len, adv) : null;
+    var rgb = [0, 0, 0];
     for (var y = 0; y < h; y++) {
       var shift = fx.wave ? Math.round(Math.sin(y * 0.09 + fx.time) * fx.wave) : 0;
       for (var x = 0; x < w; x++) {
@@ -94,7 +140,7 @@
           }
           if (!alpha) continue;
         }
-        var offset = fx.offset ? fx.offset(u, v) : [0, 0];
+        var offset = fx.offset ? fx.offset(u, v) : ZERO_OFFSET;
         var px = x0 + x + shift + offset[0], py = y0 + y + offset[1];
         // Flow changes texture inside the stable silhouette, not camera orientation.
         if (fx.flow && (!fx.flowMask || fx.flowMask(u, v, [d[i], d[i + 1], d[i + 2]]))) {
@@ -103,8 +149,9 @@
           if (d[candidate + 3] > 80 && (!fx.flowMask || fx.flowMask(sx / w, v,
             [d[candidate], d[candidate + 1], d[candidate + 2]]))) k = candidate;
         }
-        var c = [d[k], d[k + 1], d[k + 2]];
-        if (fx.shade) c = fx.shade(c, u, v, px, py);
+        // 颜色放在同一个数组里传给 shade / px（它们都是当场读完、不留着），不用每个像素新建
+        rgb[0] = d[k]; rgb[1] = d[k + 1]; rgb[2] = d[k + 2];
+        var c = fx.shade ? fx.shade(rgb, u, v, px, py) : rgb;
         if (fx.opacity) alpha *= fx.opacity(u, v);
         alpha *= fx.alpha === undefined ? 1 : fx.alpha;
         r.px(px, py, c, alpha);

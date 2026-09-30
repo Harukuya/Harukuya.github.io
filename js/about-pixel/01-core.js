@@ -169,16 +169,32 @@
     }
   };
   // 抖动光晕：r0 → r1 由 amax 衰减到 0，量化成 3 档再抖动
+  // 普通缓冲：逐像素的混合直接写在循环里（和 px 同一个公式、同样的越界判断；x / y 本来就是整数，不用取整），不再每个像素调一次 px；
+  // px 被换掉的（比如 08-amphoreus 的 blockRaster，一个像素写成 k×k 一块）照旧调它自己的 px
   Raster.prototype.glow = function (cx, cy, r0, r1, c, amax, sy) {
     sy = sy || 1;
+    var fast = this.px === Raster.prototype.px && this.d;
+    var cc = hex(c), D = this.d, W = this.w, H = this.h, ox = this.ox, oy = this.oy;
     for (var y = Math.floor(cy - r1 * sy); y <= cy + r1 * sy; y++) {
+      var ty = y + oy;
       for (var x = Math.floor(cx - r1); x <= cx + r1; x++) {
         var dx = x + 0.5 - cx, dy = (y + 0.5 - cy) / sy, dd = Math.sqrt(dx * dx + dy * dy);
         if (dd < r0 || dd > r1) continue;
         var t = 1 - (dd - r0) / (r1 - r0);
         var v = t * t * 3, lv = Math.floor(v), f = v - lv;
         if (dith(x, y, f)) lv++;
-        if (lv > 0) this.px(x, y, c, amax * lv / 3);
+        if (lv <= 0) continue;
+        if (!fast) { this.px(x, y, c, amax * lv / 3); continue; }
+        var tx = x + ox;
+        if (tx < 0 || ty < 0 || tx >= W || ty >= H) continue;
+        var a = amax * lv / 3, o = (ty * W + tx) * 4;
+        if (a >= 1) { D[o] = cc[0]; D[o + 1] = cc[1]; D[o + 2] = cc[2]; D[o + 3] = 255; continue; }
+        if (a <= 0) continue;
+        var da = D[o + 3] / 255, oa = a + da * (1 - a);
+        D[o] = (cc[0] * a + D[o] * da * (1 - a)) / oa;
+        D[o + 1] = (cc[1] * a + D[o + 1] * da * (1 - a)) / oa;
+        D[o + 2] = (cc[2] * a + D[o + 2] * da * (1 - a)) / oa;
+        D[o + 3] = oa * 255;
       }
     }
   };
@@ -194,16 +210,42 @@
     this.disc(x1, y1, w1 / 2, c);
   };
   // 把另一块缓冲贴上来（alpha 叠加），可垂直翻转、整体透明度、逐行透明度
+  // 普通缓冲：逐像素的混合直接写在循环里（和 px 同一个公式、同样的取整和越界判断），不再每个像素建一个颜色数组、调一次 px；
+  // px 被换掉的照旧逐像素调它自己的 px
   Raster.prototype.blit = function (src, dx, dy, alpha, flipY, rowAlpha) {
     alpha = alpha === undefined ? 1 : alpha;
+    if (this.px !== Raster.prototype.px || !this.d) {
+      for (var y2 = 0; y2 < src.h; y2++) {
+        var sy2 = flipY ? src.h - 1 - y2 : y2, ra2 = rowAlpha ? rowAlpha(y2) : 1;
+        if (ra2 <= 0) continue;
+        for (var x2 = 0; x2 < src.w; x2++) {
+          var i2 = (sy2 * src.w + x2) * 4, a2 = src.d[i2 + 3];
+          if (!a2) continue;
+          this.px(dx + x2, dy + y2, [src.d[i2], src.d[i2 + 1], src.d[i2 + 2]], a2 / 255 * alpha * ra2);
+        }
+      }
+      return;
+    }
+    var D = this.d, W = this.w, H = this.h, ox = this.ox, oy = this.oy, S = src.d, sw = src.w;
     for (var y = 0; y < src.h; y++) {
       var sy = flipY ? src.h - 1 - y : y;
       var ra = rowAlpha ? rowAlpha(y) : 1;
       if (ra <= 0) continue;
-      for (var x = 0; x < src.w; x++) {
-        var i = (sy * src.w + x) * 4, a = src.d[i + 3];
-        if (!a) continue;
-        this.px(dx + x, dy + y, [src.d[i], src.d[i + 1], src.d[i + 2]], a / 255 * alpha * ra);
+      var ty = Math.round(dy + y) + oy;
+      if (ty < 0 || ty >= H) continue;
+      for (var x = 0; x < sw; x++) {
+        var i = (sy * sw + x) * 4, sa = S[i + 3];
+        if (!sa) continue;
+        var tx = Math.round(dx + x) + ox;
+        if (tx < 0 || tx >= W) continue;
+        var a = sa / 255 * alpha * ra, o = (ty * W + tx) * 4;
+        if (a >= 1) { D[o] = S[i]; D[o + 1] = S[i + 1]; D[o + 2] = S[i + 2]; D[o + 3] = 255; continue; }
+        if (a <= 0) continue;
+        var da = D[o + 3] / 255, oa = a + da * (1 - a);
+        D[o] = (S[i] * a + D[o] * da * (1 - a)) / oa;
+        D[o + 1] = (S[i + 1] * a + D[o + 1] * da * (1 - a)) / oa;
+        D[o + 2] = (S[i + 2] * a + D[o + 2] * da * (1 - a)) / oa;
+        D[o + 3] = oa * 255;
       }
     }
   };

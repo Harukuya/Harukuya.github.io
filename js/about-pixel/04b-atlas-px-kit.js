@@ -216,6 +216,26 @@
     return rows;
   }
 
+  // fx.cacheKey：这一笔逐像素都不随时间变（没有 advect / offset / flow / shade / opacity / wave），只有整体透明度 fx.alpha 会变——
+  // 第一次把有东西的像素（位置、颜色、贴图透明度）按原来的扫描顺序记下来，之后每次只乘 fx.alpha、分档、再调 px。
+  // 顺序、公式和逐像素现算完全一样，画出来一个字节都不差（见 04a 的同名开关）
+  var prepared = {}, preparedOrder = [];
+  function prepareStyled(fx, A, w, h, x0, y0, key) {
+    if (prepared[key]) return prepared[key];
+    var d = A.d, rows = A.rows || (A.rows = rowSpans(A)), list = [];
+    for (var y = 0; y < h; y++) {
+      var xb = Math.min(rows[2 * y + 1], w - 1);
+      for (var x = rows[2 * y]; x <= xb; x++) {
+        var i = (y * w + x) * 4, alpha = d[i + 3] / 255;
+        if (!alpha) continue;
+        list.push(x0 + x, y0 + y, d[i], d[i + 1], d[i + 2], alpha);
+      }
+    }
+    preparedOrder.push(key);
+    if (preparedOrder.length > 24) delete prepared[preparedOrder.shift()];
+    return (prepared[key] = new Float64Array(list));
+  }
+
   // 画一个零件：参数和素材版的 atlasDraw 一样，多一个 style
   function pxAtlasDraw(r, F, name, rect, style, fx) {
     var w = Math.max(1, Math.round(rect[2] * F.s)), h = Math.max(1, Math.round(rect[3] * F.s));
@@ -224,6 +244,36 @@
     fx = fx || {};
     var at = pxAtlasPoint(F, rect[0], rect[1]);
     var x0 = Math.round(at[0] + (fx.dx || 0)), y0 = Math.round(at[1] + (fx.dy || 0)), d = A.d;
+    if (fx.cacheKey) {
+      var P = prepareStyled(fx, A, w, h, x0, y0, fx.cacheKey + '|' + name + '|' + w + 'x' + h + '|' + x0 + ',' + y0), n = P.length, fa = fx.alpha === undefined ? 1 : fx.alpha, c = [0, 0, 0];
+      // 画到 08-amphoreus 的 blockRaster 上（一个像素写成 k×k 一块）：按它的 px 同一个算法直接写，不再每个像素调一次
+      var blk = r.block, BD, BW, BH, K, BX, BY;
+      if (blk) { BD = blk.d; BW = blk.w; BH = blk.h; K = blk.k; BX = blk.ox; BY = blk.oy; }
+      for (var j = 0; j < n; j += 6) {
+        var a = P[j + 5] * fa;
+        if (a <= 0) continue;
+        if (a < 1 && !A.smooth) a = Math.round(a * 8) / 8;
+        if (!(a > 0)) continue;
+        if (!blk) { c[0] = P[j + 2]; c[1] = P[j + 3]; c[2] = P[j + 4]; r.px(P[j], P[j + 1], c, a); continue; }
+        var cr = P[j + 2], cg = P[j + 3], cb = P[j + 4], bx0 = P[j] * K + BX, by0 = P[j + 1] * K + BY, solid = a >= 1;
+        for (var jj = 0; jj < K; jj++) {
+          var yy = by0 + jj;
+          if (yy < 0 || yy >= BH) continue;
+          for (var ii = 0; ii < K; ii++) {
+            var xx = bx0 + ii;
+            if (xx < 0 || xx >= BW) continue;
+            var o = (yy * BW + xx) * 4;
+            if (solid) { BD[o] = cr; BD[o + 1] = cg; BD[o + 2] = cb; BD[o + 3] = 255; continue; }
+            var da = BD[o + 3] / 255, oa = a + da * (1 - a);
+            BD[o] = (cr * a + BD[o] * da * (1 - a)) / oa;
+            BD[o + 1] = (cg * a + BD[o + 1] * da * (1 - a)) / oa;
+            BD[o + 2] = (cb * a + BD[o + 2] * da * (1 - a)) / oa;
+            BD[o + 3] = oa * 255;
+          }
+        }
+      }
+      return;
+    }
     // fx.advect（见 03-advect）：物质沿方向流动；mix = 1 时透明度也跟着流，所以原本透明的像素也要算
     var adv = fx.advect ? advectPrep(fx.advect) : null, advAll = !!(adv && adv.mix === 1), cells = advAll ? advectCells(A, adv.len, adv) : null;
     var rows = A.rows || (A.rows = rowSpans(A)), rgb = [0, 0, 0];

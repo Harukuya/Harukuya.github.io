@@ -71,11 +71,11 @@
       var a = ray[0], length = ray[1] * F.s, start = (0.25 + (t * 0.04 + i * 0.13) % 0.65) * length;
       r.line(C[0] + Math.cos(a) * start, C[1] + Math.sin(a) * start, C[0] + Math.cos(a) * (start + length * 0.15), C[1] + Math.sin(a) * (start + length * 0.15), ray[2], 0.5);
     });
-    pxAtlasDraw(r, F, 'amphoreus-star', starRect(at, 500), STAR, { alpha: 0.94 });
+    pxAtlasDraw(r, F, 'amphoreus-star', starRect(at, 500), STAR, { alpha: 0.94, cacheKey: 'amphoreus-star' });
     var k = overlayAlpha(t);
     if (k > 0.03) {
       r.glow(C[0], C[1], 8 * F.s, 92 * F.s, '#e8fff0', 0.3 * k);
-      pxAtlasDraw(r, F, 'amphoreus-star', starRect(at, 600), STAR, { alpha: k });
+      pxAtlasDraw(r, F, 'amphoreus-star', starRect(at, 600), STAR, { alpha: k, cacheKey: 'amphoreus-star' });
     }
     r.disc(C[0], C[1], Math.max(1.5, 7.2 * F.s), '#ffffff');
   }
@@ -85,8 +85,9 @@
     var C = F.lightCenter, pulse = 0.5 + 0.5 * Math.sin(t * 0.75);
     if (!front) {
       // 玻璃带后面（景色层）：平滑的淡蓝辉光 + 柔光
-      pxAtlasDraw(r, F, 'amphoreus-light-1', [C[0] - 420, C[1] - 420, 840, 840], HAZE, { alpha: 0.75 + pulse * 0.05 });
-      pxAtlasDraw(r, F, 'amphoreus-halo', [C[0] - 175, C[1] - 175, 350, 350], HALO, { alpha: 0.2 + pulse * 0.015 });
+      // 这两笔逐像素都不随时间变，只有整体透明度在呼吸：打开 cacheKey（见 04b）
+      pxAtlasDraw(r, F, 'amphoreus-light-1', [C[0] - 420, C[1] - 420, 840, 840], HAZE, { alpha: 0.75 + pulse * 0.05, cacheKey: 'amphoreus-haze' });
+      pxAtlasDraw(r, F, 'amphoreus-halo', [C[0] - 175, C[1] - 175, 350, 350], HALO, { alpha: 0.2 + pulse * 0.015, cacheKey: 'amphoreus-halo' });
       return;
     }
     // 彩色辐条：轮廓不动，颜色和浓淡沿着往外流（mix 0.5），像光一股股往外涌（横向蓝光单独画，见 amphoreusBeam）

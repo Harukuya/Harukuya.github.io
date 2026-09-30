@@ -79,6 +79,8 @@
         }
       }
     };
+    // 给 04b 的缓存路径直接按块写用（和上面 px 同一个算法）
+    B.block = { d: D, w: W, h: H, k: k, ox: r.ox, oy: r.oy };
     return B;
   }
   PX.provide('08-amphoreus', { drawAmphoreusBig: drawAmphoreusBig, drawAmphoreusBackdrop: drawAmphoreusBackdrop,
