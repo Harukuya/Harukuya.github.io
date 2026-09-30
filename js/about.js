@@ -1079,24 +1079,30 @@
     box.innerHTML = '<span class="ab-cup-cursor-cup"><span class="ab-cup-cursor-steam"></span></span><span class="ab-cup-cursor-bean"></span>';
     document.body.appendChild(box);
     var cup = box.firstChild, held = false;
-    document.addEventListener('mousemove', function (e) {
+    // 听 pointer 事件（只认鼠标 / 笔，不认触摸），不听 mouse 事件：拖挂式工牌时它在按下那一刻 preventDefault，
+    // 按照规定整个按住期间都不再发 mousemove / mouseup，杯子就停在原地不跟了；pointer 事件照发
+    function mouse(e) { return e.pointerType !== 'touch'; }
+    document.addEventListener('pointermove', function (e) {
+      if (!mouse(e)) return;
       box.style.translate = e.clientX + 'px ' + e.clientY + 'px';
       if (!box.classList.contains('is-on')) {
         document.documentElement.classList.add('ab-cup-on');
         box.classList.add('is-on');
       }
     }, { passive: true });
-    document.addEventListener('mouseover', function (e) {
+    document.addEventListener('pointerover', function (e) {
+      if (!mouse(e)) return;
       var c = e.target.nodeType === 1 ? getComputedStyle(e.target).cursor : '';
       box.classList.toggle('is-hover', /pointer\s*$/.test(c));
     });
-    document.documentElement.addEventListener('mouseleave', function () { box.classList.remove('is-on'); });
-    document.addEventListener('mousedown', function (e) {
-      if (e.button !== 0) return;
+    document.documentElement.addEventListener('pointerleave', function (e) { if (mouse(e)) box.classList.remove('is-on'); });
+    document.addEventListener('pointerdown', function (e) {
+      if (!mouse(e) || e.button !== 0) return;
       held = true;
       box.classList.add('is-shake');
     });
-    document.addEventListener('mouseup', function () { held = false; });
+    document.addEventListener('pointerup', function () { held = false; });
+    document.addEventListener('pointercancel', function () { held = false; });
     window.addEventListener('blur', function () { held = false; }); // 按住拖出窗口再松开，也算松开
     // 松开后不立刻停（会从半空跳回 0°）：等这一下摇完、回到正中再停
     cup.addEventListener('animationiteration', function (e) {
