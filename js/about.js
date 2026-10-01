@@ -8,13 +8,13 @@
 
   // ========== 内容数据（改文案只动这一区） ==========
 
-  // Hero 打字机：随机顺序轮播（打完停顿后删除换下一条）；写成函数的条目在轮到它时才生成（比如按当前时间问好）
+  // Hero 打字机：轮播（打完停顿后删除换下一条）。第一条固定先出现（问好，这里是后厨），之后随机；写成函数的条目在轮到它时才生成（比如按当前时间问好）
   var HERO_QUOTES = [
+    function () { return heroGreeting() + '好，这里是 TechCafe 的后厨。'; },
     '“愿此行，终抵群星。”',
     'Dream Big.',
     '“飞萤扑火，向死而生”',
     '关于店长的一切，从这里开始。',
-    function () { return heroGreeting() + '好，这里是 TechCafe 的后厨。'; },
     '不论各位的世界有没有昼夜的概念，首先祝大家早上中午晚上好~'
   ];
 
@@ -185,11 +185,16 @@
     box.className = 'about-typewriter-lines';
     el.appendChild(box);
 
-    var quotes = HERO_QUOTES.slice();
-    for (var i = quotes.length - 1; i > 0; i--) {
-      var j = Math.floor(Math.random() * (i + 1));
-      var t = quotes[i]; quotes[i] = quotes[j]; quotes[j] = t;
+    // 播放顺序：第一条固定是 HERO_QUOTES[0]（问好），其余几条洗乱接在后面；一轮放完整个重新洗一遍再放
+    // （这时问好那句也一起参与随机），新一轮的第一条不和刚放完的那条重复
+    function shuffle(a) {
+      for (var i = a.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var t = a[i]; a[i] = a[j]; a[j] = t;
+      }
+      return a;
     }
+    var quotes = [HERO_QUOTES[0]].concat(shuffle(HERO_QUOTES.slice(1)));
     function text(q) { return typeof q === 'function' ? q() : q; }
 
     if (reduceMotion) {
@@ -240,7 +245,13 @@
     }
 
     function typeQuote() {
-      var str = text(quotes[qi % quotes.length]);
+      if (qi >= quotes.length) {
+        var last = quotes[quotes.length - 1];
+        quotes = shuffle(HERO_QUOTES.slice());
+        if (quotes[0] === last) quotes.push(quotes.shift());
+        qi = 0;
+      }
+      var str = text(quotes[qi]);
       qi++;
       fontsReady(str, function () { typeUnits(str.match(UNIT) || []); });
     }
