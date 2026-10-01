@@ -49,13 +49,13 @@
     { name: 'luofu-detail', rect: [260, 65, 600, 250], opacity: railMask },
     { name: 'luofu-detail', rect: [130, 20, 600, 280], opacity: arcMask }
   ];
-  var railLift = 60;
+  var railLift = 60, railForward = 35;
   function xianzhouDetail(r, F, t) {
     detailParts.forEach(function (part) {
       atlasDraw(r, F, part.name, part.rect, {
         detail: !!F.detail,
-        // Lift only the rear rail above the hull rim; retain the arc's placement.
-        dx: PX.xianzhouRibbonOffset[0] * F.s,
+        // Place the rear rail above the hull rim and slightly toward the bow.
+        dx: (PX.xianzhouRibbonOffset[0] - (part === detailParts[0] ? railForward : 0)) * F.s,
         dy: (PX.xianzhouRibbonOffset[1] - (part === detailParts[0] ? railLift : 0)) * F.s,
         opacity: part.opacity,
         shade: function (c, u, v) {
