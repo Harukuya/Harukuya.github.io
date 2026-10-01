@@ -617,6 +617,18 @@ body::-webkit-scrollbar {
   background-color: transparent;
 }
 
+/* 整页最右边的滚动条不显示（2026-10-01）：页面照常能滚，只是不画那条；
+   只管整页（html），代码块、侧栏这些里面自己的滚动条不受影响 */
+html {
+  scrollbar-width: none;
+}
+
+html::-webkit-scrollbar {
+  display: none;
+  width: 0 !important;
+  height: 0 !important;
+}
+
 ::-moz-selection {
   color: #fff;
   background-color: var(--theme-color);

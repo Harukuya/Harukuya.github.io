@@ -10,7 +10,7 @@
 
   // Hero 打字机：随机顺序轮播（打完停顿后删除换下一条）；写成函数的条目在轮到它时才生成（比如按当前时间问好）
   var HERO_QUOTES = [
-    '“愿此行，终抵群星”',
+    '“愿此行，终抵群星。”',
     'Dream Big.',
     '“飞萤扑火，向死而生”',
     '关于店长的一切，从这里开始。',
@@ -70,9 +70,14 @@
 
   var hasAnimLibs = typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined';
   var hasTypeIt = typeof TypeIt !== 'undefined';
-  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // 「减少动态效果」的判定先停用（2026-10-01，用户要求不管系统开没开都按有动态效果走），下面依赖它的分支都原样留着；
+  // 要恢复就把下一行的注释去掉、删掉再下一行（about.css 末尾那段 @media (prefers-reduced-motion) 也一起恢复）
+  // var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var reduceMotion = false;
   var isMobile = window.matchMedia('(max-width: 768px)').matches;
   var animOn = hasAnimLibs && !reduceMotion && !isMobile;
+  // Hero 穿梭（退场 / 返回，见 initHeroVoyage）：电脑上随动画模式一起开；手机上其余部分照旧走降级，只把这一段单独打开（2026-10-01）
+  var voyageOn = hasAnimLibs && !reduceMotion;
 
   document.documentElement.classList.add(animOn ? 'ab-anim' : 'ab-fallback');
 
@@ -85,18 +90,39 @@
   try { localStorage.removeItem(LOCK_KEY); } catch (e) { /* 忽略 */ }
   document.documentElement.classList.toggle('ab-locked', locked);
 
-  // Hero 的状态（动画模式，见 initHeroVoyage）：'hero' 在 hero 上（跟着滚轮来回）| 'auto' 退场自动播放中 |
-  // 'gone' hero 已拆掉、页顶就是第一部分 | 'back' 正在倒着播回 hero。
+  // Hero 的状态（动画模式，见 initHeroVoyage）：'intro' 进页面的入场（等加载完、各层从左右划进来）| 'hero' 在 hero 上（跟着滚轮来回）|
+  // 'auto' 退场自动播放中 | 'gone' hero 已拆掉、页顶就是第一部分 | 'back' 正在倒着播回 hero。
   // 刷新 / 后退回来时，离开前 hero 已经拆掉的话就直接从拆掉的状态开始（html.ab-hero-gone 让 CSS 把 hero 藏掉，像素 hero 也不挂载）
   var HERO_GONE_KEY = 'about-hero-gone';
   var heroState = 'hero';
-  if (animOn) {
+  if (voyageOn) {
     try {
       var navEntry = performance.getEntriesByType ? performance.getEntriesByType('navigation')[0] : null;
       if (navEntry && (navEntry.type === 'reload' || navEntry.type === 'back_forward') && sessionStorage.getItem(HERO_GONE_KEY) === '1') heroState = 'gone';
     } catch (e) { /* 存储不可用：从 hero 开始 */ }
   }
   document.documentElement.classList.toggle('ab-hero-gone', heroState === 'gone');
+
+  // 进页面的入场（initHeroVoyage 的 startIntro）：从 hero 开始、又不用恢复滚动位置（刷新 / 后退回到页面中间）时才播。
+  // 开了「减少动态效果」也播（用户要的）：这时只播入场，hero 不钉住、不走穿梭，照旧随页面滚走
+  // head 里的小脚本先给 html 加了 ab-pre（hero 上的标题、下滑提示、右上角按钮先藏着，见 about.css）：不播入场就马上去掉；
+  // 打字机等 introReady（入场播到标题那一步）才开打
+  var SCROLL_KEY = 'about-scroll-y';
+  var heroIntro = hasAnimLibs && heroState === 'hero';
+  if (heroIntro) {
+    try {
+      var navEntry2 = performance.getEntriesByType ? performance.getEntriesByType('navigation')[0] : null;
+      if (navEntry2 && (navEntry2.type === 'reload' || navEntry2.type === 'back_forward') && (parseInt(sessionStorage.getItem(SCROLL_KEY), 10) || 0) > 0) heroIntro = false;
+    } catch (e) { /* 存储不可用：照常入场 */ }
+  }
+  var introGo = function () {};
+  var introReady = new Promise(function (r) { introGo = r; });
+  function introSkip() {
+    heroIntro = false;
+    document.documentElement.classList.remove('ab-pre');
+    introGo();
+  }
+  if (!heroIntro) introSkip();
 
   // ========== 打字机 ==========
 
@@ -242,7 +268,7 @@
         setTimeout(typeQuote, GAP);
       })();
     }
-    setTimeout(typeQuote, 350);
+    introReady.then(function () { setTimeout(typeQuote, 350); });   // 入场时等各层划进来、标题到位再开打
   }
 
   // ========== 滚动数字时钟（MAC 风：数字纵向滚动切换） ==========
@@ -341,7 +367,6 @@
   // 浏览器自带的滚动恢复发生得太早：分割段还没把页面撑高、字体与图片未就绪，会落到错误位置。
   // 改为手动：离开时记下位置；回来时等字体与图片就绪、分割段重新测量后再跳回，期间用纸色遮罩盖住
 
-  var SCROLL_KEY = 'about-scroll-y';
   if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
 
   function initScrollMemory() {
@@ -373,10 +398,10 @@
     // 最多等 3 秒，慢网下不至于一直盖着
     Promise.race([Promise.all([loaded, fonts]), wait(3000)]).then(function () {
       // 字体换上后文字高度会变：无论是否恢复位置都重新测量一次分割段
-      if (animOn) ScrollTrigger.refresh();
+      if (voyageOn) ScrollTrigger.refresh();
       if (saved > 0) {
         window.scrollTo(0, saved);
-        if (animOn) ScrollTrigger.update();
+        if (voyageOn) ScrollTrigger.update();
       }
       director.request();
       if (flip && saved > 0) {
@@ -514,8 +539,8 @@
         if (cup.getAttribute('data-tip') !== readTip) { cup.setAttribute('data-tip', readTip); cup.setAttribute('aria-label', readTip); }
       }
 
-      // 页眉：Hero 滚过 60% 后浮现（动画模式：hero 退场播完、拆掉之后才浮现）；收起时顺带收回播放器面板
-      var barOn = animOn ? heroState === 'gone' : y > hero.offsetHeight * 0.6;
+      // 页眉：Hero 滚过 60% 后浮现（有 hero 穿梭时：hero 退场播完、拆掉之后才浮现）；收起时顺带收回播放器面板
+      var barOn = voyageOn ? heroState === 'gone' : y > hero.offsetHeight * 0.6;
       document.body.classList.toggle('ab-bar-on', barOn);
       if (!barOn) player.close();
 
@@ -525,8 +550,8 @@
       document.body.classList.toggle('ab-chrome-away', away);
       if (away) player.close();
 
-      // 降级模式的 Hero 洗白（动画模式交给 GSAP）
-      if (!animOn && wash) wash.style.opacity = Math.min(1, y / hero.offsetHeight).toFixed(3);
+      // 降级模式的 Hero 洗白（有 hero 穿梭时不洗白，hero 播完整个淡掉）
+      if (!voyageOn && wash) wash.style.opacity = Math.min(1, y / hero.offsetHeight).toFixed(3);
 
       setChapter(currentChapter(blocks), director.chapter === 0);
 
@@ -545,7 +570,7 @@
       var pin = animOn ? cafePinState(y) : '';
       if (cafeBg) {
         cafeBg.mirror(cafePanels, pin !== '');
-        cafeBg.setRunning(pin !== 'in' && (animOn ? heroState !== 'hero' : y > hero.offsetHeight * 0.5));
+        cafeBg.setRunning(pin !== 'in' && (voyageOn ? heroState !== 'hero' && heroState !== 'intro' : y > hero.offsetHeight * 0.5));
       }
     }
 
@@ -1140,36 +1165,41 @@
   }
 
   // ========== 头脑风暴：便签本翻页 ==========
-  // 进来时随机翻到某一页；页脚细线（CSS 动画 9s）走完 → 把这页往上翻过去：克隆当前页盖在最上面做翻页动画，
-  // 底下这页直接换成下一条。悬停 / 离开视野 / 切到别的标签页时细线停住；「翻一页」手动翻。减少动态：不翻，直接换字
+  // 进来时随机翻到某一页。不自动翻：点「翻一页」随机换到另一条（不会抽到当前这条）——克隆当前页盖在最上面做翻页动画，
+  // 底下这页直接换成抽到的那条。左下角「已探索 N%」+ 进度条：这次看过几条 / 一共几条（只记在内存里，刷新从头算）。
+  // 减少动态：不翻，直接换字
 
   function initMuse() {
     var box = document.getElementById('muse');
     if (!box) return;
     var pad = box.querySelector('.about-muse-pad'), sheet = box.querySelector('.about-muse-sheet');
     var texts = [].slice.call(box.querySelectorAll('.about-muse-text'));
-    var num = box.querySelector('.about-muse-i'), bar = box.querySelector('.about-muse-timer i'), btn = box.querySelector('.about-muse-next');
+    var pct = box.querySelector('.about-muse-pct'), bar = box.querySelector('.about-muse-progress i'), btn = box.querySelector('.about-muse-next');
     var n = texts.length;
     if (n < 2) return;
-    var k = 0, hover = false, seen = !('IntersectionObserver' in window), busy = false;
+    var k = 0, busy = false, explored = {}, count = 0;
     function set(i) {
       texts[k].classList.remove('is-on');
       texts[k].setAttribute('aria-hidden', 'true');
       k = i;
       texts[k].classList.add('is-on');
       texts[k].removeAttribute('aria-hidden');
-      num.textContent = pad2(k + 1);
+      if (!explored[k]) {
+        explored[k] = true;
+        count++;
+        pct.textContent = Math.round(count / n * 100);
+        bar.style.setProperty('--p', (count / n).toFixed(4));
+      }
     }
-    function hold() { box.classList.toggle('is-hold', hover || !seen || document.hidden); }
-    function restart() {
-      box.classList.remove('is-run');
-      void bar.offsetWidth;
-      box.classList.add('is-run');
+    // 随机抽一条，但不抽当前这条
+    function pick() {
+      var j = Math.floor(Math.random() * (n - 1));
+      return j >= k ? j + 1 : j;
     }
     function flip() {
       if (busy) return;
-      var next = (k + 1) % n;
-      if (reduceMotion) { set(next); restart(); return; }
+      var next = pick();
+      if (reduceMotion) { set(next); return; }
       busy = true;
       var leaf = sheet.cloneNode(true);
       leaf.classList.add('is-leaf');
@@ -1177,7 +1207,6 @@
       leaf.inert = true;
       pad.appendChild(leaf);
       set(next);
-      restart();
       leaf.addEventListener('animationend', function (e) {
         if (e.target !== leaf || e.animationName !== 'ab-muse-flip') return;
         leaf.remove();
@@ -1185,16 +1214,7 @@
       });
     }
     set(Math.floor(Math.random() * n));
-    bar.addEventListener('animationend', flip);
     if (btn) btn.addEventListener('click', flip);
-    pad.addEventListener('pointerenter', function () { hover = true; hold(); });
-    pad.addEventListener('pointerleave', function () { hover = false; hold(); });
-    document.addEventListener('visibilitychange', hold);
-    if ('IntersectionObserver' in window) {
-      new IntersectionObserver(function (entries) { seen = entries[0].isIntersecting; hold(); }).observe(pad);
-    }
-    hold();
-    restart();
   }
 
   // ========== 写作账本 + 今日特调 ==========
@@ -1759,7 +1779,8 @@
   // 往上滚：到第一部分顶上就停住，不会马上回去。在顶上继续往上滚（新的一下——滚到顶那一下的惯性不算），
   //   页眉下面冒出「继续上滑 · 返回舰桥」和一个小圈，攒满一圈才倒着播回 hero（同一个场景，约 3.5 秒）；停手小圈会慢慢退回去。
   // 刷新 / 后退回来时如果 hero 已经拆掉，就直接从拆掉的状态开始（见 heroState 初值、initScrollMemory）。
-  // 手机 / 减少动态 / 动画库没加载（降级模式）不走这一套，hero 照旧随页面滚走。
+  // 减少动态 / 动画库没加载不走这一套，hero 照旧随页面滚走。手机上其余动画走降级，这一套照样走（voyageOn）：
+  //   触屏返回 = 在第一部分顶上继续往下拉（手指往下），小圈旁的字换成「继续下拉」。
 
   var PIN_VH = 1.8;     // hero 钉住的滚动距离（屏高的倍数）
   var AUTO_AT = 0.8;    // 滚到钉住区间的这个比例 = 星体移出一半 → 自动播放；后面一截是缓冲，滚得猛也不会直接滚过 hero
@@ -1769,7 +1790,7 @@
     var hero = document.getElementById('about-hero');
     var pix = document.getElementById('hero-pixel');
     var pullEl = document.getElementById('ab-pull');
-    if (!hero || !pix) return;
+    if (!hero || !pix) { introSkip(); return; }
     var fadeEls = [hero.querySelector('.about-hero-content'), hero.querySelector('.about-hero-overlay')].filter(Boolean);
     var hint = hero.querySelector('.about-scrollhint');
     var st = null, stage = null, els = {};
@@ -1904,6 +1925,56 @@
       requestAnimationFrame(step);
     }
 
+    // ---------- 进页面：入场 ----------
+    // 先只剩星空（各层挪到屏幕外、标题 / 下滑提示 / 右上角按钮藏着），等页面和字体加载完（最多等 INTRO_WAIT），
+    // 按「返回」后半段同一套划进来：星体从左边一路移回原位 → 舱壁（连窗框、贴墙的摆设）从右、地面连人物从左合拢 →
+    // 前景摆设从右依次进来 → 标题区从左、右上角按钮从右划进来，打字机开打，下滑提示淡入。
+    // 各层一直在动（不冻住，划进来的途中也在动）；等待和播放期间滚动锁着
+    var INTRO_WAIT = 5000, INTRO_END = 1.75;
+    function startIntro() {
+      heroState = 'intro';
+      lock(true);
+      if (pixelHero) pixelHero.fillSky();   // 舱壁不在的时候窗外以外也得有星星
+      var nav = document.getElementById('about-nav'), content = hero.querySelector('.about-hero-content');
+      function slideIn(t) {
+        var k = 1 - easeOut3(seg(t, 1.1, INTRO_END));
+        if (content) content.style.transform = k ? 'translateX(' + (-96 * k).toFixed(1) + 'px)' : '';
+        if (nav) { nav.style.transform = k ? 'translateX(' + (160 * k).toFixed(1) + 'px)' : ''; nav.style.opacity = k ? (1 - k).toFixed(3) : ''; }
+      }
+      place([1, 1, 1, 1, 1], -outX(), 0, false);
+      slideIn(0);
+      if (hint) hint.style.opacity = 0;
+      document.documentElement.classList.remove('ab-pre');   // 接手：上面几样已经用行内样式藏好了
+      var started = false;
+      function go() {
+        if (started) return;
+        started = true;
+        var typed = false;
+        play(function (t) {
+          var X = outX();
+          function back(a, b) { return 1 - easeOut3(seg(t, a, b)); }
+          place([back(0.9, 1.45), back(0.85, 1.4), back(0.8, 1.35), back(0.5, 1.15), back(0.5, 1.15)], -X * back(0, 1.1), seg(t, 1.1, 1.6), false);
+          slideIn(t);
+          if (!typed && t >= 1.1) { typed = true; introGo(); }
+          if (t >= INTRO_END) {
+            s = target = 0;
+            heroState = 'hero';
+            apply(0);
+            slideIn(INTRO_END);
+            lock(false);
+            if (hint) gsap.to(hint, { opacity: 1, duration: 0.9 });
+            director.request();
+            return false;
+          }
+        });
+      }
+      var loaded = document.readyState === 'complete' ? Promise.resolve() : new Promise(function (r) { window.addEventListener('load', r, { once: true }); });
+      var fonts = document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();
+      function soon() { requestAnimationFrame(function () { requestAnimationFrame(go); }); }   // 等最后一批重画上屏
+      Promise.all([loaded, fonts]).then(soon, soon);
+      setTimeout(soon, INTRO_WAIT);   // 慢网下不至于一直只有星空
+    }
+
     // ---------- 往下：自动播放 ----------
     var EARTH0 = 0.05, EARTH1 = 3.6;   // 地球半径：出现时 / 推到最近时（屏高的倍数）
     function startAuto() {
@@ -1955,6 +2026,11 @@
     // ---------- 往上：在第一部分顶上继续往上滚 → 攒满小圈 → 返回 ----------
     var pull = 0, lastWheel = 0, streamAt = 0, topAt = 0, wasTop = window.scrollY <= 0, decay = 0, pullRaf = 0;
     function pullMax() { return Math.max(420, window.innerHeight * PULL_VH); }
+    var pullText = pullEl && pullEl.querySelector('.ab-pull-text');
+    function pullHint(touch) {
+      var t = touch ? '继续下拉 · 返回舰桥' : '继续上滑 · 返回舰桥';
+      if (pullText && pullText.textContent !== t) pullText.textContent = t;
+    }
     function paintPull() {
       if (!pullEl) return;
       var p = Math.min(1, pull / pullMax());
@@ -1986,8 +2062,28 @@
       if (heroState !== 'gone' || solo.on || window.scrollY > 0 || e.deltaY >= 0) return;
       if (streamAt <= topAt) return;               // 这一下是滚到顶之前就开始的（惯性）：不算
       cancelAnimationFrame(pullRaf);
+      pullHint(false);
       addPull(-e.deltaY * (e.deltaMode === 1 ? 40 : e.deltaMode === 2 ? window.innerHeight : 1));
     }, { passive: true });
+    // 触屏：手指按下时就已经在顶上，才算新的一下（一路拖到顶 / 甩到顶的那一下不算）；往下拉的那几步拦掉默认动作，
+    // 不会触发浏览器的下拉刷新、页面也不回弹。手指移动的距离 ×2 记进小圈
+    var touchY = null, touchFresh = false;
+    window.addEventListener('touchstart', function (e) {
+      touchY = e.touches.length === 1 ? e.touches[0].clientY : null;
+      touchFresh = window.scrollY <= 0;
+    }, { passive: true });
+    window.addEventListener('touchmove', function (e) {
+      if (touchY === null || e.touches.length !== 1) return;
+      var y = e.touches[0].clientY, dy = y - touchY;
+      touchY = y;
+      if (heroState !== 'gone' || solo.on || !touchFresh || window.scrollY > 0 || dy <= 0) return;
+      if (e.cancelable) e.preventDefault();
+      cancelAnimationFrame(pullRaf);
+      pullHint(true);
+      addPull(dy * 2);
+    }, { passive: false });
+    window.addEventListener('touchend', function () { touchY = null; }, { passive: true });
+    window.addEventListener('touchcancel', function () { touchY = null; }, { passive: true });
     document.addEventListener('keydown', function (e) {
       if (heroState !== 'gone' || solo.on || window.scrollY > 0) return;
       if (e.key === 'ArrowUp' || e.key === 'PageUp' || e.key === 'Home') { cancelAnimationFrame(pullRaf); addPull(pullMax() / 3 + 1); }
@@ -2050,12 +2146,13 @@
     // ---------- 起步 ----------
     if (heroState !== 'gone') {
       collect();
-      makePin();
+      if (voyageOn) makePin();   // 减少动态效果时只来播入场（见 heroIntro），不钉住
+      if (heroIntro) startIntro();
       // 地球贴图（约 130KB）和云图提前在空闲时备好，自动播放时不用等
       var idle = window.requestIdleCallback || function (fn) { return setTimeout(fn, 1500); };
-      window.addEventListener('load', function () { idle(preloadEarth, { timeout: 5000 }); }, { once: true });
+      if (voyageOn) window.addEventListener('load', function () { idle(preloadEarth, { timeout: 5000 }); }, { once: true });
     }
-    if (hint) gsap.to(hint, { opacity: 1, duration: 0.9, delay: 1.6 });   // 下滑提示：打字机出字后浮现
+    if (hint && !heroIntro) gsap.to(hint, { opacity: 1, duration: 0.9, delay: 1.6 });   // 下滑提示：打字机出字后浮现（入场时等入场播完）
   }
 
   // ========== 桌面端滚动动画 ==========
@@ -2340,7 +2437,7 @@
 
   function initCafe() {
     var box = document.getElementById('ab-cafe');
-    if (!box || !window.AboutCafe || isMobile) return;
+    if (!box || !window.AboutCafe) return;   // 手机上也挂（只露出右边那一截，见 about-cafe/09-cafe-mount）
     try {
       cafeBg = window.AboutCafe.mount(box, {
         reduceMotion: reduceMotion,
@@ -2446,7 +2543,15 @@
       director.request();
     } else {
       initStaticSplits();
-      initStaticStarsFade();
+      // 手机：其余照旧降级，hero 穿梭单独打开（见 voyageOn）
+      if (voyageOn) {
+        gsap.registerPlugin(ScrollTrigger);
+        initHeroVoyage();
+      } else {
+        initStaticStarsFade();
+        // 减少动态效果：不走穿梭，但进页面的入场照播（initHeroVoyage 这时只管入场）
+        if (heroIntro) initHeroVoyage();
+      }
     }
     initScrollMemory();
   });

@@ -1075,6 +1075,18 @@ body.ab-bar-on .ab-cup:hover::after { opacity: 1; translate: -50% 0; }
    .ab-voyage = 星空穿梭 / 地球那块画布（11-voyage），像素大小和 hero 一样 */
 html.ab-hero-gone #about-hero { display: none; }
 
+/* 进页面的入场（about.js startIntro）之前：hero 上的标题区、下滑提示、右上角按钮先藏着（html.ab-pre 由 head 里的小脚本加上），
+   about.js 接手时换成行内样式、等各层划进来再出来；不播入场就直接去掉 ab-pre。万一 about.js 没跑起来，6 秒后自己出来 */
+html.ab-pre .about-hero-content,
+html.ab-pre .about-hero-overlay,
+html.ab-pre .about-scrollhint,
+html.ab-pre .about-nav {
+  opacity: 0;
+  animation: ab-pre-show 0.4s ease 6s forwards;
+}
+
+@keyframes ab-pre-show { to { opacity: 1; } }
+
 #about-hero.is-stage {
   position: fixed;
   inset: 0;
@@ -2167,6 +2179,46 @@ html.ab-anim .ab-letter:not(.is-signed) .ab-letter-motto span { clip-path: inset
 .about-heatmap-label {
   font-size: 0.78rem;
   color: var(--ab-text-dim);
+}
+
+/* 第四项「下次提交 AFKfishing...」：每个字母一个 span（--i = 第几个字），
+   颜色在一圈彩色里慢慢轮换、字母之间错开一点（颜色像一道彩虹往右流）；同时像水面上的浮漂一样一上一下，相位也错开，连成一道小波浪。
+   后面三个点（--j）依次亮起、熄灭，像在等鱼上钩。颜色都挑在纸色底上看得清的深一点的色 */
+.ab-afk { white-space: nowrap; }
+
+.ab-afk span {
+  display: inline-block;
+  animation:
+    ab-afk-hue 3.6s linear infinite,
+    ab-afk-float 1.8s ease-in-out infinite;
+  animation-delay: calc(var(--i) * -0.22s), calc(var(--i) * -0.16s);
+}
+
+.ab-afk .ab-afk-dot {
+  animation:
+    ab-afk-hue 3.6s linear infinite,
+    ab-afk-float 1.8s ease-in-out infinite,
+    ab-afk-dot 1.5s ease-in-out infinite;
+  animation-delay: calc(var(--i) * -0.22s), calc(var(--i) * -0.16s), calc(var(--j) * 0.25s);
+}
+
+@keyframes ab-afk-hue {
+  0%, 100% { color: #e0484f; }
+  16% { color: #ec7d1f; }
+  33% { color: #c59a0c; }
+  50% { color: #2f9e63; }
+  66% { color: #2a86d1; }
+  83% { color: #8655d4; }
+}
+
+@keyframes ab-afk-float {
+  0%, 100% { transform: translateY(1px); }
+  50% { transform: translateY(-3px); }
+}
+
+@keyframes ab-afk-dot {
+  0%, 100% { opacity: 0.2; }
+  35%, 60% { opacity: 1; }
 }
 
 .about-heatmap { overflow-x: auto; padding-bottom: 4px; }
@@ -3552,28 +3604,32 @@ html.ab-anim .ab-letter:not(.is-signed) .ab-letter-motto span { clip-path: inset
 
 .about-muse-no { flex: none; letter-spacing: 0.08em; }
 
-/* 细线走完就翻页（悬停 / 离开视野时停住） */
-.about-muse-timer {
+/* 已探索的进度条：这次看过几条 / 一共几条（about.js initMuse 写 --p，长一截时缓缓伸过去；刷新从头算）。
+   炫彩：填满的那一截（宽 = --p）里始终是一整道彩虹、一直往右流——进度再短也看得到全部颜色；
+   颜色和打卡本里 AFKfishing 的那一圈一样 */
+.about-muse-progress {
   position: relative;
   flex: 1;
-  height: 2px;
+  height: 3px;
   overflow: hidden;
   border-radius: 2px;
   background: rgba(43, 37, 33, 0.1);
 }
 
-.about-muse-timer i {
+.about-muse-progress i {
   position: absolute;
-  inset: 0;
-  background: var(--ab-accent);
-  transform: scaleX(0);
-  transform-origin: 0 50%;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: calc(var(--p, 0) * 100%);
+  border-radius: 2px;
+  background: linear-gradient(90deg, #e0484f, #ec7d1f, #e7b416, #2f9e63, #2a86d1, #8655d4, #e0484f, #ec7d1f, #e7b416, #2f9e63, #2a86d1, #8655d4, #e0484f) 0 0 / 200% 100%;
+  transition: width 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  animation: ab-muse-rainbow 3s linear infinite;
 }
 
-.about-muse.is-run .about-muse-timer i { animation: ab-muse-timer 9s linear forwards; }
-.about-muse.is-hold .about-muse-timer i { animation-play-state: paused; }
-
-@keyframes ab-muse-timer { to { transform: scaleX(1); } }
+/* 彩虹往右流：图是填满那截的两倍宽、里面两道彩虹（露出来的正好一道），挪满一整张图正好接回开头 */
+@keyframes ab-muse-rainbow { to { background-position: -200% 0; } }
 
 .about-muse-next {
   flex: none;
@@ -3618,8 +3674,6 @@ html.ab-anim .ab-letter:not(.is-signed) .ab-letter-motto span { clip-path: inset
   opacity: 0;
   animation: ab-muse-shade 0.8s ease-in forwards;
 }
-
-.about-muse-sheet.is-leaf .about-muse-timer i { animation: none; transform: scaleX(1); }
 
 @keyframes ab-muse-flip {
   0% { transform: rotateX(0deg); }
@@ -4280,7 +4334,7 @@ html.ab-fallback .about-panel { display: none; }
   .ab-bar-sep { display: none; }
   .ab-marks { right: 12px; gap: 4px; }
   .ab-mark { width: 30px; }
-  .ab-cafe { display: none; }   /* 手机上暂不显示背景咖啡厅 */
+  /* 背景咖啡厅手机上也显示：只露出整幅最右边那一截（砖墙、招牌、黑板、吧台），见 about-cafe/09-cafe-mount */
   .about-nav-solo { display: none; }
 
   .about-hero-content { left: 7vw; right: 7vw; top: 9vh; width: auto; }
@@ -4348,6 +4402,8 @@ html.ab-fallback .about-panel { display: none; }
   .about-panel { display: none; }
 }
 
+/* 「减少动态效果」的样式先停用（2026-10-01，用户要求不管系统开没开都按有动态效果走），和 about.js 的 reduceMotion 判定一起；
+   要恢复就去掉这层注释
 @media (prefers-reduced-motion: reduce) {
   .about-scrollhint-arrow { animation: none; }
   .about-term-cursor { animation: none; }
@@ -4368,3 +4424,4 @@ html.ab-fallback .about-panel { display: none; }
   .ab-mark,
   body.ab-bar-on:not(.ab-chrome-away) .ab-mark { transition: transform 0.25s ease, background 0.25s ease, color 0.25s ease; }
 }
+*/

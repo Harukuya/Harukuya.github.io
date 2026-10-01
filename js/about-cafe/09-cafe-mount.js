@@ -6,6 +6,8 @@
 // 画一整幅要一两百毫秒，拆成几步放在浏览器空闲时做（不卡滚动）；窗口尺寸变了重画，画好之前旧的先留着。
 // 只在 setRunning(true)（about.js：Hero 滚过一半、且不在分割段里）或纯享背景时、且页面在前台时动；减少动态效果：只画一帧、不视差、云不飘。
 // 分割段：mirror(遮罩板, live) 在两块遮罩板里放一张对齐的快照，板滑开时咖啡厅跟着分开（见下面 mirror）。
+// 手机（窄屏，宽 ≤ 768）：整幅仍按横屏的比例排（左边落地窗、右边砖墙和吧台），屏幕只露出最右边那一截（霓虹招牌、木架、黑板菜单、吧台）；
+//   高度按地址栏收起时的最大高度画，地址栏出来 / 收起不用重画、底下也不会露空。
 // 纯享背景：setSolo(true)（about.js 的右上角按钮）——纸色纱淡掉；点到能玩的东西（ctx.hot，画的时候记下的矩形）就玩，
 //   点空白处调 opts.onSoloExit()。能玩的：唱片机（开关页眉里的店内 BGM，opts.music）、猫、吉他、萤火虫瓶、望远镜、咖啡机、霓虹招牌、帕姆。
 (function (PX) {
@@ -18,6 +20,7 @@
   var TICK = 83, TICK_FAST = 33, CLOUD_SPEED = 0.8;   // 小动画每 83 毫秒一帧（猫甩尾巴那一下 33 毫秒一帧，甩得顺）；云每秒飘 0.8 个画布像素
   // 跟着鼠标挪的比例（× maxShift）：窗外 / 屋里（地面 + 家具）/ 最前面的盆栽和高脚凳
   var OUT_DEPTH = 0.7, ROOM_DEPTH = 0.14, FRONT_DEPTH = 0.2;
+  var NARROW = 768, WIDE = 1.6;   // 窄屏（手机）：整幅按 16:10 的宽度排，右边对齐屏幕
   var SAY = { cat: ['喵', '喵~', '喵？', '呼噜呼噜…'], pompom: ['帕！', '帕~', '帕姆在此！'] };
 
   function pickTime() {
@@ -26,6 +29,20 @@
     return IDS[Math.floor(Math.random() * IDS.length)];
   }
   function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
+  // 现在的视口；窄屏的高度取地址栏收起时的最大高度（100lvh，不支持就用当前高度）
+  var lvhProbe = null;
+  function viewport() {
+    var w = window.innerWidth, h = window.innerHeight;
+    if (w <= NARROW) {
+      if (!lvhProbe) {
+        lvhProbe = document.createElement('div');
+        lvhProbe.style.cssText = 'position:fixed;left:0;top:0;width:0;height:100lvh;visibility:hidden;pointer-events:none';
+        document.body.appendChild(lvhProbe);
+      }
+      h = Math.max(h, lvhProbe.offsetHeight);
+    }
+    return { w: w, h: h };
+  }
   function canvasFrom(r) {
     var c = document.createElement('canvas');
     c.width = r.w; c.height = r.h;
@@ -47,10 +64,12 @@
 
     // 分几步画（每步一次空闲回调）；中途窗口又变了就作废重来
     function build() {
-      var my = ++job, vw = window.innerWidth, vh = window.innerHeight;
-      var P = clamp(Math.round(Math.max(vw / 460, vh / 300)), 2, 6), P2 = Math.max(2, Math.round(P / 2));
+      var my = ++job, vp = viewport(), vw = vp.w, vh = vp.h;
+      var fw = vw <= NARROW ? Math.max(vw, Math.round(vh * WIDE)) : vw;   // 排版用的宽度（窄屏按横屏排，见文件开头）
+      var P = clamp(Math.round(Math.max(fw / 460, vh / 300)), 2, 6), P2 = Math.max(2, Math.round(P / 2));
+      var ox = Math.round((fw - vw) / P2) * P2;   // 整幅往左挪多少（屏幕外的左边那截），按整画布像素
       var maxShift = reduce ? 0 : Math.min(24, vw * 0.016), m = Math.ceil(maxShift / P2) + 2;
-      var L = PX.cafeLayout(Math.ceil(vw / P2), Math.ceil(vh / P2), m), w = L.w, h = L.h;
+      var L = PX.cafeLayout(Math.ceil(fw / P2), Math.ceil(vh / P2), m), w = L.w, h = L.h;
       var ctx = { L: L, T: T, lights: [], shadows: [], fx: [], hot: [] }, R = {};
       var steps = [
         function () { R.sky = new Raster(w, h, 0, 0); PX.cafeSky(R.sky, L, T); },
@@ -87,7 +106,7 @@
               }
             }
           });
-          finish(my, P2, m, L, ctx, R, vw, vh, maxShift);
+          finish(my, P2, m, L, ctx, R, vw, vh, maxShift, ox);
         }
       ];
       (function next() {
@@ -99,13 +118,13 @@
     }
 
     // 画好了：换上新画布（旧的一起拿掉）
-    function finish(my, P2, m, L, ctx, R, vw, vh, maxShift) {
+    function finish(my, P2, m, L, ctx, R, vw, vh, maxShift, ox) {
       if (my !== job) return;
       var layers = [];
       function add(c, depth, extra) {
         c.className = 'ab-cafe-layer' + (depth || extra ? ' is-moving' : '');
         c.style.width = c.width * P2 + 'px'; c.style.height = c.height * P2 + 'px';
-        c.style.left = -m * P2 - (extra || 0) + 'px'; c.style.top = -m * P2 + 'px';
+        c.style.left = -m * P2 - ox - (extra || 0) + 'px'; c.style.top = -m * P2 + 'px';
         var Lr = { c: c, depth: depth, tf: '', cloud: !!extra, dx: 0, dy: 0 };
         layers.push(Lr);
         return Lr;
@@ -128,7 +147,7 @@
       if (built) built.layers.forEach(function (Lr) { Lr.c.remove(); });
       layers.forEach(function (Lr) { box.insertBefore(Lr.c, anchor); });
       built = {
-        layers: layers, room: room, neon: neon, neonA: 1, neon2: neon2, neonA2: 1, hot: ctx.hot, P2: P2, m: m, w: L.w, h: L.h, maxShift: maxShift, vw: vw, vh: vh,
+        layers: layers, room: room, neon: neon, neonA: 1, neon2: neon2, neonA2: 1, hot: ctx.hot, P2: P2, m: m, ox: ox, w: L.w, h: L.h, maxShift: maxShift, vw: vw, vh: vh,
         cloudW: R.cloud ? R.cloud.w : 0, gIn: fi.getContext('2d'), gOut: fo.getContext('2d'),
         env: { L: L, T: T, fx: ctx.fx, shafts: ctx.shafts, music: music, ev: ev }
       };
@@ -193,7 +212,7 @@
     // 屏幕坐标 ↔ 房间那块画布的像素（房间层自己也跟着鼠标挪了 dx / dy）
     function hitAt(x, y) {
       if (!built) return null;
-      var R = built.room, cx = (x - R.dx) / built.P2 + built.m, cy = (y - R.dy) / built.P2 + built.m, best = null, ba = Infinity;
+      var R = built.room, cx = (x - R.dx + built.ox) / built.P2 + built.m, cy = (y - R.dy) / built.P2 + built.m, best = null, ba = Infinity;
       built.hot.forEach(function (h) {
         if (cx < h.x0 || cx > h.x1 || cy < h.y0 || cy > h.y1) return;
         var a = (h.x1 - h.x0) * (h.y1 - h.y0);
@@ -201,7 +220,7 @@
       });
       return best;
     }
-    function toScreen(cx, cy) { var R = built.room; return [(cx - built.m) * built.P2 + R.dx, (cy - built.m) * built.P2 + R.dy]; }
+    function toScreen(cx, cy) { var R = built.room; return [(cx - built.m) * built.P2 + R.dx - built.ox, (cy - built.m) * built.P2 + R.dy]; }
     function act(h) {
       var top = toScreen((h.x0 + h.x1) / 2, h.y0 + 2);
       switch (h.id) {
@@ -262,8 +281,9 @@
       mirrors.forEach(function (M) {
         if (M.c.width !== w || M.c.height !== h) {
           M.c.width = w; M.c.height = h;
-          M.c.style.width = w * P2 + 'px'; M.c.style.height = h * P2 + 'px'; M.c.style.left = -m * P2 + 'px';
+          M.c.style.width = w * P2 + 'px'; M.c.style.height = h * P2 + 'px';
         }
+        M.c.style.left = -m * P2 - built.ox + 'px';
         M.c.style.top = -m * P2 - M.el.offsetTop + 'px';
         M.g.imageSmoothingEnabled = false;
         M.g.clearRect(0, 0, w, h);
@@ -282,7 +302,7 @@
     var rt = 0;
     window.addEventListener('resize', function () {
       clearTimeout(rt);
-      rt = setTimeout(function () { if (!built || built.vw !== window.innerWidth || built.vh !== window.innerHeight) build(); }, 250);
+      rt = setTimeout(function () { var vp = viewport(); if (!built || built.vw !== vp.w || built.vh !== vp.h) build(); }, 250);
     });
     idle(build, { timeout: 1500 });
 
