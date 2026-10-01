@@ -1,7 +1,7 @@
 // Luofu: rear silver crossing, second stern arc and drifting smoke material.
 (function (PX) {
   'use strict';
-  PX.need('07d-xianzhou-detail', ['atlasDraw', 'mix']);
+  PX.need('07d-xianzhou-detail', ['atlasDraw', 'mix', 'xianzhouRibbonOffset']);
   var atlasDraw = PX.atlasDraw, mix = PX.mix;
   // The atlas packs the rear arc and horizontal rail together; their projected
   // positions differ in the reference camera, so place the two silhouettes separately.
@@ -49,10 +49,14 @@
     { name: 'luofu-detail', rect: [260, 65, 600, 250], opacity: railMask },
     { name: 'luofu-detail', rect: [130, 20, 600, 280], opacity: arcMask }
   ];
+  var railLift = 60;
   function xianzhouDetail(r, F, t) {
     detailParts.forEach(function (part) {
       atlasDraw(r, F, part.name, part.rect, {
         detail: !!F.detail,
+        // Lift only the rear rail above the hull rim; retain the arc's placement.
+        dx: PX.xianzhouRibbonOffset[0] * F.s,
+        dy: (PX.xianzhouRibbonOffset[1] - (part === detailParts[0] ? railLift : 0)) * F.s,
         opacity: part.opacity,
         shade: function (c, u, v) {
           // Restore the rail material under the source arc, instead of cutting

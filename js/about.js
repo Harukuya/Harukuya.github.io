@@ -74,9 +74,10 @@
   // 要恢复就把下一行的注释去掉、删掉再下一行（about.css 末尾那段 @media (prefers-reduced-motion) 也一起恢复）
   // var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var reduceMotion = false;
+  // 手机也走动画模式（2026-10-01，用户要求：解锁后的分割段、信纸展开都和电脑一样有动画），isMobile 暂时不参与判定
   var isMobile = window.matchMedia('(max-width: 768px)').matches;
-  var animOn = hasAnimLibs && !reduceMotion && !isMobile;
-  // Hero 穿梭（退场 / 返回，见 initHeroVoyage）：电脑上随动画模式一起开；手机上其余部分照旧走降级，只把这一段单独打开（2026-10-01）
+  var animOn = hasAnimLibs && !reduceMotion;   // 原来是 hasAnimLibs && !reduceMotion && !isMobile
+  // Hero 穿梭（退场 / 返回，见 initHeroVoyage）：随动画模式一起开（手机原来走降级时单独打开过这一段，现在手机也走动画模式了，两者相同）
   var voyageOn = hasAnimLibs && !reduceMotion;
 
   document.documentElement.classList.add(animOn ? 'ab-anim' : 'ab-fallback');
@@ -2170,6 +2171,8 @@
 
   function initAnimations() {
     gsap.registerPlugin(ScrollTrigger);
+    // 手机上滚动时地址栏伸缩只改高度：不为这个重新测量（否则钉住的起止点跟着跳）；电脑上不受影响
+    ScrollTrigger.config({ ignoreMobileResize: true });
 
     // Hero：动画模式下钉住 + 退场 / 返回那一套（见 initHeroVoyage）；必须在分割段之前建（钉住的顺序 = 页面顺序）
     initHeroVoyage();

@@ -18,6 +18,8 @@
   var pools = [[394, 290, 30, 13], [571, 264, 44, 20], [641, 214, 40, 17],
     [759, 232, 35, 18], [740, 185, 48, 21], [839, 120, 32, 14], [843, 81, 27, 13]];
   var arc = [[145, 56], [161, 79], [171, 105], [172, 131], [164, 157]];
+  // Reference-space translation shared by the silver ornament and its bloom.
+  var ribbonOffset = [144.48, 30.92];
   function bloom(r, F, x, y, rx, ry, alpha, colour) {
     var cx = F.x + x * F.s, cy = F.y + y * F.s;
     rx *= F.s; ry *= F.s;
@@ -35,8 +37,10 @@
       bloom(r, F, p[0], p[1], p[2], p[3], 0.50 * breath, '#f0fff5');
     });
     arc.forEach(function (p) {
-      bloom(r, F, 330 + p[0] / 256 * 680, -40 + p[1] / 256 * 540, 38, 56, 0.28 * breath);
+      bloom(r, F, 330 + p[0] / 256 * 680 + ribbonOffset[0],
+        -40 + p[1] / 256 * 540 + ribbonOffset[1], 38, 56, 0.28 * breath);
     });
   }
-  PX.provide('07a-xianzhou-body', { xianzhouBody: xianzhouBody, xianzhouGlow: xianzhouGlow });
+  PX.provide('07a-xianzhou-body', { xianzhouBody: xianzhouBody, xianzhouGlow: xianzhouGlow,
+    xianzhouRibbonOffset: ribbonOffset });
 })(window.__abPixel = window.__abPixel || {});

@@ -4377,8 +4377,12 @@ html.ab-fallback .about-panel { display: none; }
   .about-muse-mark { left: 8px; top: 16px; font-size: 2.8rem; }
   .about-muse-text { font-size: 1.12rem; }
 
-  /* 手机上（静态图带，图按高度铺满）：文字回到正中、挪到图带下部，不压流萤的脸 */
-  .about-split-text.is-left { left: 50%; top: 76%; width: min(80vw, 760px); transform: translate(-50%, -50%); text-align: center; }
+  /* 靠左的分割段文字（流萤那张）手机上都回到正中，不压流萤的脸：
+     降级时（静态图带，图按高度铺满）挪到图带下部 76% 处；
+     动画模式下露出来的是屏幕中间一半（25%~75%），这段字长（四五行），放在这一半的上部（脸在一半往下），字号小一点，整段落在眼睛上面 */
+  html.ab-fallback .about-split-text.is-left { left: 50%; top: 76%; width: min(80vw, 760px); transform: translate(-50%, -50%); text-align: center; }
+  html.ab-anim .about-split-text.is-left { left: 50%; top: calc(25% + 16px); width: 86vw; transform: translate(-50%, 0); text-align: center; }
+  html.ab-anim .about-split-text.is-left .about-typewriter-lines { font-size: 1.1rem; }
 
   /* 回忆录手帐本：改成上下两页（照片页在上），翻页换成直接切换（左右滑动 / 按钮）；「珍藏」印挪到右上角，不压右下的出处 */
   .about-memo-hint .is-wide { display: none; }
@@ -4398,8 +4402,6 @@ html.ab-fallback .about-panel { display: none; }
   .ab-letter-postmark { width: 70px; right: 64px; }
   .ab-letter-postmark-waves { display: none; }
 
-  /* 分割段退化为静态嵌入图带（移动端本就走 ab-fallback） */
-  .about-panel { display: none; }
 }
 
 /* 「减少动态效果」的样式先停用（2026-10-01，用户要求不管系统开没开都按有动态效果走），和 about.js 的 reduceMotion 判定一起；
