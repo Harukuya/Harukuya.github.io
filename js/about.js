@@ -118,10 +118,14 @@
   }
   var introGo = function () {};
   var introReady = new Promise(function (r) { introGo = r; });
+  // 入场整个播完（不播入场就是马上）：背景咖啡厅等到这时才开始画（见 initCafe）
+  var introEnd = function () {};
+  var introDone = new Promise(function (r) { introEnd = r; });
   function introSkip() {
     heroIntro = false;
     document.documentElement.classList.remove('ab-pre');
     introGo();
+    introEnd();
   }
   if (!heroIntro) introSkip();
 
@@ -179,6 +183,8 @@
   // 先量一下这一行剩下的地方放不放得下整个单元，放不下就先换行再打，免得打到一半整个单词跳到下一行。
   // 另外两处也会让已经打出来的字跳行，一并避开：光标不占宽度（否则行快满时会把最后一个字挤下去）；
   // 霞鹜文楷是按字分片加载的，每条文案开打之前先把它用到的字形载好（否则打到一半字体换了、整行重排）。
+  var heroType = { resume: function () {} };   // hero 回来时接着打（见 initHeroType 的 later、startReturn）
+
   function initHeroType() {
     var el = document.getElementById('hero-typewriter');
     if (!el) return;
@@ -214,6 +220,21 @@
     box.appendChild(meas);
 
     var SPEED = 80, DELETE_SPEED = 35, HOLD = 2600, GAP = 900;
+    // 打字 / 删字的每一步都经 later 排：hero 已经拆掉（heroState === 'gone'，hero 不显示）时，到点了也不打——
+    // 把这一步记下来停住（不在后台一直打字、量字宽逼浏览器排版），hero 回来（startReturn → heroType.resume）再从这一步接着打
+    var parked = null;
+    function later(fn, ms) {
+      setTimeout(function () {
+        if (heroState === 'gone') { parked = fn; return; }
+        fn();
+      }, ms);
+    }
+    heroType.resume = function () {
+      if (!parked) return;
+      var fn = parked;
+      parked = null;
+      fn();
+    };
     var UNIT = /[“‘（《]*(?:[A-Za-z0-9][A-Za-z0-9'’.\-]*|\s+|[^\sA-Za-z0-9])[，。！？、；：”’）》~,.!?…]*/g;
     var qi = 0;
 
@@ -262,25 +283,25 @@
       (function step() {
         if (u >= units.length) {
           cursor.classList.remove('is-typing');
-          setTimeout(eraseQuote, HOLD);
+          later(eraseQuote, HOLD);
           return;
         }
         var unit = units[u];
         if (c === 0 && !/^\s/.test(unit) && !atLineStart() && !fits(unit)) out.appendChild(document.createElement('br'));
         putChar(unit.charAt(c));
         if (++c >= unit.length) { u++; c = 0; }
-        setTimeout(step, SPEED);
+        later(step, SPEED);
       })();
     }
     function eraseQuote() {
       cursor.classList.add('is-typing');
       (function step() {
-        if (dropOne()) { setTimeout(step, DELETE_SPEED); return; }
+        if (dropOne()) { later(step, DELETE_SPEED); return; }
         cursor.classList.remove('is-typing');
-        setTimeout(typeQuote, GAP);
+        later(typeQuote, GAP);
       })();
     }
-    introReady.then(function () { setTimeout(typeQuote, 350); });   // 入场时等各层划进来、标题到位再开打
+    introReady.then(function () { later(typeQuote, 350); });   // 入场时等各层划进来、标题到位再开打
   }
 
   // ========== 滚动数字时钟（MAC 风：数字纵向滚动切换） ==========
@@ -407,10 +428,15 @@
       : new Promise(function (r) { window.addEventListener('load', r, { once: true }); });
     var fonts = document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();
 
+    var loadedYet = false;
+    loaded.then(function () { loadedYet = true; });
     // 最多等 3 秒，慢网下不至于一直盖着
     Promise.race([Promise.all([loaded, fonts]), wait(3000)]).then(function () {
-      // 字体换上后文字高度会变：无论是否恢复位置都重新测量一次分割段
+      // 字体换上后文字高度会变：无论是否恢复位置都重新测量一次分割段（加载阶段唯一的一次，见 requestRefresh）
+      stSettled = true;
       if (voyageOn) ScrollTrigger.refresh();
+      // 3 秒到了页面还没加载完（慢网）：等真加载完（图片都到了）再补测一次
+      if (!loadedYet) loaded.then(requestRefresh);
       if (saved > 0) {
         window.scrollTo(0, saved);
         if (voyageOn) ScrollTrigger.update();
@@ -440,7 +466,17 @@
   var CAFE_NEAR = 400;       // 离分割段还有这么远(px)就开始让背景咖啡厅往遮罩板里同步快照
 
   var pinTriggers = [];      // 动画模式下由 initAnimations 按页面顺序填充
-  var director = { chapter: 0, request: function () {} };
+  var director = { chapter: 0, request: function () {}, stale: function () {} };
+
+  // 分割段重新测量（ScrollTrigger.refresh，整页量一遍，几十到几百毫秒）的合并：
+  // 加载阶段先不测，等页面和字体都到位后 initScrollMemory 统一测一次（stSettled）；之后零散的请求（打卡数据回来、字体换上信纸变高…）
+  // 攒 150 毫秒合成一次。要马上测完接着读位置的地方（信纸走到头的 arrive、锁的切换、hero 拆掉 / 回来）照旧直接调 ScrollTrigger.refresh
+  var stSettled = false, stTimer = 0;
+  function requestRefresh() {
+    if (!animOn || !stSettled) return;
+    clearTimeout(stTimer);
+    stTimer = setTimeout(function () { ScrollTrigger.refresh(); }, 150);
+  }
 
   function bgAt(p) {
     for (var i = 1; i < BG_STOPS.length; i++) {
@@ -453,15 +489,16 @@
     return BG_STOPS[BG_STOPS.length - 1][1];
   }
 
-  function currentChapter(blocks) {
+  // tops = 各块顶端的文档坐标（initDirector 记下来的），y = 当前滚动位置：不读布局
+  function currentChapter(tops, y) {
     if (animOn && !locked && pinTriggers.length) {
       var passed = 0;
       pinTriggers.forEach(function (st) { if (st.progress > 0.45) passed++; });
       return 1 + passed;
     }
     var n = 1;
-    blocks.forEach(function (b, i) {
-      if (b.getBoundingClientRect().top < window.innerHeight * 0.5) n = i + 1;
+    tops.forEach(function (top, i) {
+      if (top - y < window.innerHeight * 0.5) n = i + 1;
     });
     return n;
   }
@@ -512,6 +549,18 @@
     var lastBg = '';
     var lastY = window.scrollY;
     var ticking = false;
+    // 各块顶端的位置、页面能滚多远：量一次记下来（文档坐标），滚动时直接用——以前每滚一帧都去读，
+    // 读布局会逼浏览器当场把整页重新排一遍。页面尺寸变了（窗口、内容高度、分割段重新测量、锁切换）才作废，下次用到时重新量
+    var tops = null, maxY = 0;
+    function measure() {
+      var sy = window.scrollY;
+      tops = blocks.map(function (b) { return b.getBoundingClientRect().top + sy; });
+      maxY = root.scrollHeight - window.innerHeight;
+    }
+    function stale() {
+      tops = null;
+      request();
+    }
 
     function setChapter(n, instant) {
       if (n === director.chapter) return;
@@ -532,7 +581,8 @@
     function update() {
       ticking = false;
       var y = window.scrollY;
-      var max = root.scrollHeight - window.innerHeight;
+      if (!tops) measure();
+      var max = maxY;
       var p = max > 0 ? Math.min(1, Math.max(0, y / max)) : 0;
 
       // 底色：颜色只有几十级，变了才写，避免每帧触发全局样式重算
@@ -565,14 +615,14 @@
       // 降级模式的 Hero 洗白（有 hero 穿梭时不洗白，hero 播完整个淡掉）
       if (!voyageOn && wash) wash.style.opacity = Math.min(1, y / hero.offsetHeight).toFixed(3);
 
-      setChapter(currentChapter(blocks), director.chapter === 0);
+      setChapter(currentChapter(tops, y), director.chapter === 0);
 
       // 工牌挂式彩蛋：往下滑到第 2 块浮现的那一刻（分割线出现前）自动恢复正常；往上滑不触发。
       // 动画模式与第 2 块浮现同一触发点（分割段 1 起点 − 0.4 屏）；降级模式按第 2 块顶进入视口 90%
       if (badge.hanging && blocks[1] && y > lastY) {
         var limit = animOn && pinTriggers[0]
           ? pinTriggers[0].start - window.innerHeight * 0.4
-          : blocks[1].getBoundingClientRect().top + y - window.innerHeight * 0.9;
+          : tops[1] - window.innerHeight * 0.9;
         if (y >= limit) badge.reset();
       }
       lastY = y;
@@ -628,8 +678,16 @@
     }
 
     window.addEventListener('scroll', request, { passive: true });
-    window.addEventListener('resize', request);
+    window.addEventListener('resize', stale);
+    // 内容高度变了（信纸展开、数据回来、字体换上…）：浏览器排完版后会通知，记下的位置作废、下次滚动时再量
+    // （只作废不马上更新：信纸展开时高度每帧都在变，没必要每帧都重新量）
+    if (window.ResizeObserver) {
+      var ro = new ResizeObserver(function () { tops = null; });
+      blocks.forEach(function (b) { ro.observe(b); });
+      ro.observe(document.body);
+    }
     director.request = request;
+    director.stale = stale;
     update();
   }
 
@@ -1058,7 +1116,7 @@
       setBox(h, true);
       if (h !== foldH) {
         foldH = h;
-        refresh();
+        requestRefresh();   // 字体换上 / 窗口变了：合并着测（见 requestRefresh）
       }
     }
 
@@ -1667,14 +1725,14 @@
         box.appendChild(grid);
         // 默认滚到最右（最近的周）
         box.scrollLeft = box.scrollWidth;
-        // 骨架与真实网格同结构，高度几乎不变；周数不同会有像素级差异，仍重新测量一次分割段
-        if (animOn) ScrollTrigger.refresh();
+        // 骨架与真实网格同结构，高度几乎不变；周数不同会有像素级差异，仍重新测量一次分割段（合并着测，见 requestRefresh）
+        requestRefresh();
       })
       .catch(function () {
         // 保留骨架网格占位（不让面板塌陷打乱分割段位置），在下方补一行提示
         box.insertAdjacentHTML('beforeend', '<p class="about-heatmap-loading">贡献数据加载失败，' +
           '<a href="https://github.com/' + user + '" target="_blank" rel="noopener">去 GitHub 看看</a></p>');
-        if (animOn) ScrollTrigger.refresh();
+        requestRefresh();
       });
   }
 
@@ -1971,6 +2029,7 @@
           if (t >= INTRO_END) {
             s = target = 0;
             heroState = 'hero';
+            introEnd();
             apply(0);
             slideIn(INTRO_END);
             lock(false);
@@ -2105,6 +2164,7 @@
     function startReturn() {
       if (heroState !== 'gone') return;
       heroState = 'back';
+      heroType.resume();   // 拆掉期间停住的打字机接着打
       lock(true);
       player.close();
       director.request();
@@ -2171,8 +2231,9 @@
 
   function initAnimations() {
     gsap.registerPlugin(ScrollTrigger);
-    // 手机上滚动时地址栏伸缩只改高度：不为这个重新测量（否则钉住的起止点跟着跳）；电脑上不受影响
-    ScrollTrigger.config({ ignoreMobileResize: true });
+    // 手机上滚动时地址栏伸缩只改高度：不为这个重新测量（否则钉住的起止点跟着跳）；电脑上不受影响。
+    // 自动重新测量只留窗口尺寸变化和切回标签页：页面加载完 / DOMContentLoaded 那两次和 initScrollMemory 的统一测量重复，去掉（见 requestRefresh）
+    ScrollTrigger.config({ ignoreMobileResize: true, autoRefreshEvents: 'visibilitychange,resize' });
 
     // Hero：动画模式下钉住 + 退场 / 返回那一套（见 initHeroVoyage）；必须在分割段之前建（钉住的顺序 = 页面顺序）
     initHeroVoyage();
@@ -2460,8 +2521,14 @@
           playing: function () { return player.playing ? player.playing() : false; },
           beat: function () { return player.beat ? player.beat() : 0; }
         },
-        onSoloExit: function () { solo.exit(); }
+        onSoloExit: function () { solo.exit(); },
+        manualStart: true
       });
+      // 页面加载完、入场也播完再开始画（这之前它藏在 hero 后面，或者页面正忙着加载，画它会和加载、入场抢主线程）。
+      // 页脚的访客计数（busuanzi）有时一直挂着不回，页面的 load 就迟迟不来：最多等 4 秒
+      var loaded = document.readyState === 'complete' ? Promise.resolve() : new Promise(function (r) { window.addEventListener('load', r, { once: true }); });
+      var late = new Promise(function (r) { setTimeout(r, 4000); });
+      Promise.all([Promise.race([loaded, late]), introDone]).then(function () { if (cafeBg) cafeBg.start(); });
     } catch (e) {
       cafeBg = null; // 画不出来就只剩纸色底
     }
@@ -2521,6 +2588,20 @@
     });
   }
 
+  // ========== 屏幕外的循环动画暂停 ==========
+  // 正文里一直循环的 CSS 动画（信封三角、打卡本 AFKfishing、终端光标、今日特调的热气、头脑风暴进度条的彩虹）：
+  // 滚出屏幕就暂停（加 .ab-off，见 about.css），离屏幕还有一屏远时就恢复——滚到眼前之前早已在动，看不出停过；
+  // 暂停停在原来那一帧，恢复后接着走，错开的相位不乱。屏幕外它们照样让浏览器每帧重算样式、重绘整页，很占主线程（2026-10-03 排查）
+  var LOOPS = '.ab-letter-toggle, .ab-afk, .about-term-cursor, .about-special-cup, .about-muse-progress';
+
+  function initOffscreenPause() {
+    if (!('IntersectionObserver' in window)) return;
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) { e.target.classList.toggle('ab-off', !e.isIntersecting); });
+    }, { rootMargin: '100% 0px' });
+    [].forEach.call(document.querySelectorAll(LOOPS), function (el) { io.observe(el); });
+  }
+
   // ========== 启动 ==========
 
   document.addEventListener('DOMContentLoaded', function () {
@@ -2543,6 +2624,7 @@
     initPlayer();
     initIntroLetter();
     initCursor();
+    initOffscreenPause();
     initPhotoTile();
     initMuse();
     loadLedger().then(function (d) {
@@ -2553,7 +2635,7 @@
     if (animOn) {
       initAnimations();
       // 分割段位置在每次 ScrollTrigger 刷新后才确定：章节判定 / 印花淡出 / 跳章都依赖它
-      ScrollTrigger.addEventListener('refresh', director.request);
+      ScrollTrigger.addEventListener('refresh', director.stale);   // 重新测量过：记下的块位置作废
       director.request();
     } else {
       initStaticSplits();

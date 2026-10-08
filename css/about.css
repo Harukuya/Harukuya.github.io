@@ -4311,6 +4311,10 @@ html.ab-anim .about-split-media.is-band img {
 
 .about-footer-dim { font-size: 0.78rem; opacity: 0.75; }
 
+/* 屏幕外暂停的循环动画（about.js initOffscreenPause 给元素加 .ab-off；离屏幕还有一屏远时就去掉，滚到眼前前早已恢复） */
+.ab-off,
+.ab-off * { animation-play-state: paused !important; }
+
 /* ========== 动画初始态（仅在 JS 动画可用时生效） ========== */
 /* 浮现作用于内层（外层的位移/透明度归分割段时间轴），由 JS 按滚动触发 */
 html.ab-anim .about-block-inner {

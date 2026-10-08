@@ -3,7 +3,8 @@
 // 像素是 Hero 的一半（Hero 画布高约 300 像素，这里约 540）；分几块画布叠起来：
 //   窗外的天 → 云（另外慢慢往右飘）→ 窗外的小动画 → 房间 + 家具 → 霓虹招牌的亮光（咖啡杯、字各一层，各闪各的，能关）→ 屋里的小动画 → 最前面的盆栽和高脚凳。
 // 鼠标视差：窗外挪得多（隔着窗框看外面在动）；屋里只挪一点——地面和家具在同一块画布上一起挪，前景的盆栽 / 高脚凳只比地面多挪一点点。
-// 画一整幅要一两百毫秒，拆成几步放在浏览器空闲时做（不卡滚动）；窗口尺寸变了重画，画好之前旧的先留着。
+// 画一整幅要一两百毫秒，拆成十几小步放在浏览器空闲时做（空闲时间够就一次多做几步，不够就一步；不卡滚动）；窗口尺寸变了重画，画好之前旧的先留着。
+// opts.manualStart：先不画，等调用 start() 才开始（about.js 等页面加载完、入场播完再开画，不和加载、入场抢主线程）。
 // 只在 setRunning(true)（about.js：Hero 滚过一半、且不在分割段里）或纯享背景时、且页面在前台时动；减少动态效果：只画一帧、不视差、云不飘。
 // 分割段：mirror(遮罩板, live) 在两块遮罩板里放一张对齐的快照，板滑开时咖啡厅跟着分开（见下面 mirror）。
 // 手机（窄屏，宽 ≤ 768）：整幅仍按横屏的比例排（左边落地窗、右边砖墙和吧台），屏幕只露出最右边那一截（霓虹招牌、木架、黑板菜单、吧台）；
@@ -54,7 +55,7 @@
     opts = opts || {};
     var reduce = !!opts.reduceMotion, T = TIMES[pickTime()], music = opts.music || null;
     box.dataset.time = T.id;
-    var built = null, job = 0, running = false, solo = false, visible = !document.hidden, raf = 0;
+    var built = null, job = 0, running = false, solo = false, visible = !document.hidden, raf = 0, started = !opts.manualStart;
     var clock = 0, lastNow = 0, lastTick = -1e9, mouse = { x: 0.5, y: 0.5 }, cur = { x: 0, y: 0 };
     var ev = { tail: -1e9, jar: -1e9, scope: -1e9, burst: -1e9, neonOff: false, neonT: -1e9 };   // 纯享时点东西的时刻
     var idle = window.requestIdleCallback || function (fn) { return setTimeout(fn, 60); };
@@ -62,8 +63,8 @@
     var anchor = document.createComment('cafe-layers');
     box.appendChild(anchor);
 
-    // 分几步画（每步一次空闲回调）；中途窗口又变了就作废重来
-    function build() {
+    // 分十几小步画（每次空闲回调里，剩余时间够就接着做下一步）；中途窗口又变了就作废重来
+    function build(deadline) {
       var my = ++job, vp = viewport(), vw = vp.w, vh = vp.h;
       var fw = vw <= NARROW ? Math.max(vw, Math.round(vh * WIDE)) : vw;   // 排版用的宽度（窄屏按横屏排，见文件开头）
       var P = clamp(Math.round(Math.max(fw / 460, vh / 300)), 2, 6), P2 = Math.max(2, Math.round(P / 2));
@@ -71,22 +72,24 @@
       var maxShift = reduce ? 0 : Math.min(24, vw * 0.016), m = Math.ceil(maxShift / P2) + 2;
       var L = PX.cafeLayout(Math.ceil(fw / P2), Math.ceil(vh / P2), m), w = L.w, h = L.h;
       var ctx = { L: L, T: T, lights: [], shadows: [], fx: [], hot: [] }, R = {};
+      // 顺序和原来一整块画时完全一样，只是切得更细（结果一像素不差）
       var steps = [
         function () { R.sky = new Raster(w, h, 0, 0); PX.cafeSky(R.sky, L, T); },
-        function () { if (T.id !== 'night') { R.cloud = new Raster(w, h, 0, 0); PX.cafeClouds(R.cloud, L, T, w); } R.A = new Raster(w, h, 0, 0); PX.cafeRoom(R.A, ctx); },
+        function () { if (T.id !== 'night') { R.cloud = new Raster(w, h, 0, 0); PX.cafeClouds(R.cloud, L, T, w); } },
+        function () { R.A = new Raster(w, h, 0, 0); PX.cafeRoom(R.A, ctx); },
         function () { PX.cafeFloor(R.A, ctx); },
-        function () { R.B = new Raster(w, h, 0, 0); ctx.E = new Raster(w, h, 0, 0); ctx.N = new Raster(w, h, 0, 0); ctx.N2 = new Raster(w, h, 0, 0); PX.cafeWindowSeat(R.B, ctx); PX.cafeLounge(R.B, ctx); },
-        function () { PX.cafeBar(R.B, ctx); R.F = new Raster(w, h, 0, 0); PX.cafeFront(R.F, ctx); },
+        function () { R.B = new Raster(w, h, 0, 0); ctx.E = new Raster(w, h, 0, 0); ctx.N = new Raster(w, h, 0, 0); ctx.N2 = new Raster(w, h, 0, 0); PX.cafeWindowSeat(R.B, ctx); },
+        function () { PX.cafeLounge(R.B, ctx); },
+        function () { PX.cafeBar(R.B, ctx); },
+        function () { R.F = new Raster(w, h, 0, 0); PX.cafeFront(R.F, ctx); },
         function () { R.LA = new PX.CafeLight(w, h, T.amb); PX.cafeApplyLights(R.LA, ctx, 'room'); PX.cafeRoomLight(R.LA, ctx); },
+        function () { R.LB = new PX.CafeLight(w, h, T.amb); PX.cafeApplyLights(R.LB, ctx, 'obj'); },
+        function () { R.LF = new PX.CafeLight(w, h, T.amb); PX.cafeApplyLights(R.LF, ctx, 'front'); },
+        function () { PX.cafeShafts([R.LA, R.LB, R.LF], ctx); },
+        function () { R.out = new Raster(w, h, 0, 0); PX.cafeCompose(R.A, R.LA, R.out); },
+        function () { PX.cafeCompose(R.B, R.LB, R.out); R.out.blit(ctx.E, 0, 0); },
+        function () { R.front = new Raster(w, h, 0, 0); PX.cafeCompose(R.F, R.LF, R.front); },
         function () {
-          R.LB = new PX.CafeLight(w, h, T.amb); PX.cafeApplyLights(R.LB, ctx, 'obj');
-          R.LF = new PX.CafeLight(w, h, T.amb); PX.cafeApplyLights(R.LF, ctx, 'front');
-          PX.cafeShafts([R.LA, R.LB, R.LF], ctx);
-        },
-        function () {
-          R.out = new Raster(w, h, 0, 0); PX.cafeCompose(R.A, R.LA, R.out); PX.cafeCompose(R.B, R.LB, R.out);
-          R.out.blit(ctx.E, 0, 0);
-          R.front = new Raster(w, h, 0, 0); PX.cafeCompose(R.F, R.LF, R.front);
           // 家具上的小动画按那一处的光调暗
           ctx.fx.forEach(function (f) {
             if (!f.lit) return;
@@ -109,12 +112,13 @@
           finish(my, P2, m, L, ctx, R, vw, vh, maxShift, ox);
         }
       ];
-      (function next() {
+      // 每次至少做一步；空闲回调给的剩余时间还够（> 6 毫秒）就接着做下一步，不够就等下一次空闲
+      (function next(dl) {
         if (my !== job) return;
-        var st = steps.shift();
-        st();
-        if (steps.length) idle(next, { timeout: 1200 });
-      })();
+        do { steps.shift()(); } while (steps.length && dl && !dl.didTimeout && dl.timeRemaining() > 6);
+        // 兜底 0.4 秒：页面一直「加载中」（外部请求挂着）时浏览器几乎不给空闲时间，不至于一步等一秒、十几步拖十几秒
+        if (steps.length) idle(next, { timeout: 400 });
+      })(deadline);
     }
 
     // 画好了：换上新画布（旧的一起拿掉）
@@ -302,11 +306,20 @@
     var rt = 0;
     window.addEventListener('resize', function () {
       clearTimeout(rt);
-      rt = setTimeout(function () { var vp = viewport(); if (!built || built.vw !== vp.w || built.vh !== vp.h) build(); }, 250);
+      rt = setTimeout(function () {
+        if (!started) return;   // 还没开画（manualStart 等着 start()）：开画时自然按当时的尺寸画
+        var vp = viewport();
+        if (!built || built.vw !== vp.w || built.vh !== vp.h) build();
+      }, 250);
     });
-    idle(build, { timeout: 1500 });
+    if (started) idle(build, { timeout: 1500 });
+    function start() {
+      if (started) return;
+      started = true;
+      idle(build, { timeout: 1500 });
+    }
 
-    return { mirror: mirror, setRunning: setRunning, setSolo: setSolo, time: T.id };
+    return { mirror: mirror, setRunning: setRunning, setSolo: setSolo, start: start, time: T.id };
   }
 
   window.AboutCafe = { mount: mount };

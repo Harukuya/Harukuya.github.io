@@ -1,0 +1,752 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><script>// 手机 / 平板上不做下面两种控制台检测（2026-10-01）：手机上本来就打不开控制台，
+// 而苹果手机上的 Chrome 会被误判成「开着控制台」——一打开主站就弹「请关闭控制台」、页面被清空。电脑上照旧
+var btfSkipDevtoolsCheck = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent) || (navigator.maxTouchPoints > 1 && /Macintosh/.test(navigator.userAgent));
+if (!btfSkipDevtoolsCheck) ((function() {var callbacks = [],timeLimit = 50,open = false;setInterval(loop, 1);return {addListener: function(fn) {callbacks.push(fn);},cancleListenr: function(fn) {callbacks = callbacks.filter(function(v) {return v !== fn;});}}
+function loop() {var startTime = new Date();debugger;if (new Date() - startTime > timeLimit) {if (!open) {callbacks.forEach(function(fn) {fn.call(null);});}open = true;window.stop();alert('你真坏，请关闭控制台！');document.body.innerHTML = "";} else {open = false;}}})()).addListener(function() {window.location.reload();});</script><script>function toDevtools(){
+  let num = 0; 
+  let devtools = new Date();
+  devtools.toString = function() {
+    num++;
+    if (num > 1) {
+        alert('你真坏，请关闭控制台！')
+        window.location.href = "about:blank"
+        blast();
+    }
+  }
+  console.log('', devtools);
+}
+if (!btfSkipDevtoolsCheck) toDevtools();
+
+</script><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>深度学习与神经网络8 | TechCafe☕️丨Have a nice day!</title><meta name="author" content="Noctuna"><meta name="copyright" content="Noctuna"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="自监督与表示学习">
+<meta property="og:type" content="article">
+<meta property="og:title" content="深度学习与神经网络8">
+<meta property="og:url" content="https://www.noctuna.cc/2026/10/07/DeepLearning8/index.html">
+<meta property="og:site_name" content="TechCafe☕️丨Have a nice day!">
+<meta property="og:description" content="自监督与表示学习">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://blogpic-5qb.pages.dev/img/postcover/14.png">
+<meta property="article:published_time" content="2026-10-07T15:32:23.000Z">
+<meta property="article:modified_time" content="2026-10-07T15:32:23.000Z">
+<meta property="article:author" content="Noctuna">
+<meta property="article:tag" content="机器学习">
+<meta property="article:tag" content="人工智能">
+<meta property="article:tag" content="深度学习">
+<meta property="article:tag" content="神经网络">
+<meta property="article:tag" content="PyTorch">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://blogpic-5qb.pages.dev/img/postcover/14.png"><link rel="shortcut icon" href="https://blogpic-5qb.pages.dev/img/icon/sunday.jpg"><link rel="canonical" href="https://www.noctuna.cc/2026/10/07/DeepLearning8/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=4.8.1"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.15/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":true,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"找不到您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":230},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"你已切换为繁体","cht_to_chs":"你已切换为简体","day_to_night":"你已切换为深色模式","night_to_day":"你已切换为浅色模式","bgLight":"#49b1f5","bgDark":"#1f1f1f","position":"top-left"},
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery@2.1.2/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery@2.1.2/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: true,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  }
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '深度学习与神经网络8',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2026-10-07 23:32:23'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+    win.getCSS = (url,id = false) => new Promise((resolve, reject) => {
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = url
+      if (id) link.id = id
+      link.onerror = reject
+      link.onload = link.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        link.onload = link.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(link)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          const now = new Date()
+          const hour = now.getHours()
+          const isNight = hour <= 6 || hour >= 18
+          if (t === undefined) isNight ? activateDarkMode() : activateLightMode()
+          else if (t === 'light') activateLightMode()
+          else activateDarkMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><link rel="stylesheet" href="/css/custom.css" media="defer" onload="this.media='all'"><span id="fps"></span><link rel="stylesheet" href="https://cdn1.tianli0.top/npm/element-ui@2.15.6/packages/theme-chalk/lib/index.css"><style>.dl-night{display:none}[data-theme="dark"] .dl-day{display:none}[data-theme="dark"] .dl-night{display:block}</style><script>document.addEventListener("click",function(e){if(!e.target.closest||!e.target.closest("#article-container a[data-fancybox]"))return;document.querySelectorAll("#article-container .dl-img a[data-fancybox]").forEach(function(a){a.setAttribute("data-fancybox",a.offsetParent===null?"dl-hidden":"gallery")})},true)</script><div id="myscoll"></div><!-- hexo injector head_end start --><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-categories-card@1.0.0/lib/categorybar.css"><link rel="stylesheet" href="https://www.fomal.cc/static/css/runtime.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-swiper/lib/swiper.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-swiper/lib/swiperstyle.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/assets/font-awesome-animation.min.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/tag_plugins.css" media="defer" onload="this.media='all'"><script src="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/assets/carousel-touch.js"></script><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-wowjs/lib/animate.min.css" media="print" onload="this.media='screen'"><!-- hexo injector head_end end --><meta name="generator" content="Hexo 5.4.2"></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://blogpic-5qb.pages.dev/img/avatar/neko.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">74</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">28</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 咖啡厅</span></a></div><div class="menus_item"><a class="site-page" href="/comments/"><i class="fa-fw fas fa-envelope-open"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于店长</span></a></div><div class="menus_item"><a class="site-page" href="/gallery/"><i class="fa-fw fas fa-image"></i><span> 插画厅</span></a></div><div class="menus_item"><a class="site-page group hide" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> 来点什么？</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-link"></i><span> 店长们</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 档案室</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签墙</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 类目表</span></a></li></ul></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://blogpic-5qb.pages.dev/img/postcover/14.png')"><nav id="nav"><span id="blog-info"><a href="/" title="TechCafe☕️丨Have a nice day!"><span class="site-name">TechCafe☕️丨Have a nice day!</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 咖啡厅</span></a></div><div class="menus_item"><a class="site-page" href="/comments/"><i class="fa-fw fas fa-envelope-open"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于店长</span></a></div><div class="menus_item"><a class="site-page" href="/gallery/"><i class="fa-fw fas fa-image"></i><span> 插画厅</span></a></div><div class="menus_item"><a class="site-page group hide" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> 来点什么？</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-link"></i><span> 店长们</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 档案室</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签墙</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 类目表</span></a></li></ul></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">深度学习与神经网络8</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-10-07T15:32:23.000Z" title="发表于 2026-10-07 23:32:23">2026-10-07</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-10-07T15:32:23.000Z" title="更新于 2026-10-07 23:32:23">2026-10-07</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E8%BE%89%E5%A4%9C%E3%81%AE%E7%BC%96%E7%A8%8B%E4%B9%8B%E8%B7%AF/">辉夜の编程之路</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">9.1k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>35分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="深度学习与神经网络8"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h2 id="2-6-自监督与表示学习"><a href="#2-6-自监督与表示学习" class="headerlink" title="2.6 自监督与表示学习"></a>2.6 自监督与表示学习</h2><h3 id="2-6-0-表示学习在学什么（家族公共部分）"><a href="#2-6-0-表示学习在学什么（家族公共部分）" class="headerlink" title="2.6.0 表示学习在学什么（家族公共部分）"></a>2.6.0 表示学习在学什么（家族公共部分）</h3><div class="dl-img"><div class="dl-day"><div class="img-wrap"><div class="img-bg"><img class="img" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://blogpic-5qb.pages.dev/img/sc_swe/dlnn/light/架构-2.6.0-表示学习.png" alt="<center>2.6.0 表示学习"/></div><span class="image-caption"><center>2.6.0 表示学习</span></div></div><div class="dl-night"><div class="img-wrap"><div class="img-bg"><img class="img" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://blogpic-5qb.pages.dev/img/sc_swe/dlnn/dark/架构-2.6.0-表示学习.png" alt="<center>2.6.0 表示学习"/></div><span class="image-caption"><center>2.6.0 表示学习</span></div></div></div>
+
+<p><strong>表征（representation）</strong>：模型内部对输入的一种编码，常常是压缩的（也有过完备的，比如 2.6.5 的稀疏自编码器）。看完一张照片，脑子里不存每个像素，只留下「一只黑猫坐在沙发左边，光从右边来」，这就是表征：丢掉大部分细节，保留后面要用的信息。下面几个词相关但不等同，各有侧重：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>词</th>
+<th>侧重</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>representation 表征</td>
+<td>最通用</td>
+</tr>
+<tr>
+<td>feature 特征</td>
+<td>从原始信号里提取出来的</td>
+</tr>
+<tr>
+<td>embedding 嵌入</td>
+<td>被放进一个连续向量空间</td>
+</tr>
+<tr>
+<td>latent 隐变量 / 隐空间</td>
+<td>没有直接观测到的变量，在模型内部</td>
+</tr>
+<tr>
+<td>token</td>
+<td>序列或集合里的一个处理单元：文本里是离散的 token ID，图像块、连续动作的 token 是连续向量</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>表征学习</strong>：学「输入 → 一个好用的中间编码」这件事本身。好用的标准有三条：下游任务只需少量标注就能学好；同一套表征能用于多种任务；输入有扰动（光照、传感器噪声）时表征不剧变。</p>
+<p><strong>自监督</strong>：不靠人工标注，让数据自己提供监督信号。主要路线（按热度排）：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>路线</th>
+<th>监督信号从哪来</th>
+<th>损失在哪个空间算</th>
+<th>本笔记</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>对比 / 对齐</td>
+<td>同一样本的两个视角、或成对的两种模态应该靠近</td>
+<td>隐空间</td>
+<td>2.6.1</td>
+</tr>
+<tr>
+<td>掩码重建</td>
+<td>遮住一部分，从剩下的部分补回来</td>
+<td>观测空间（像素、token）</td>
+<td>2.6.2</td>
+</tr>
+<tr>
+<td>自蒸馏、隐空间预测</td>
+<td>学生网络预测老师网络给出的表征</td>
+<td>隐空间</td>
+<td>2.6.3</td>
+</tr>
+<tr>
+<td>重建</td>
+<td>压缩后再还原整个输入</td>
+<td>观测空间</td>
+<td>2.6.4</td>
+</tr>
+<tr>
+<td>量化重建</td>
+<td>先量化到码本再还原</td>
+<td>观测空间</td>
+<td>2.2.5</td>
+</tr>
+<tr>
+<td>预测未来</td>
+<td>用现在推接下来的观测或表征</td>
+<td>观测空间或隐空间</td>
+<td>3.2 世界模型</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>两条互相拉扯的要求</strong>：多模态场景里，好的表征一方面要让不同模态里语义相同的东西靠近（对齐），另一方面要保留每个模态特有的细节（保真）。对比学习偏向前者，重建类目标偏向后者，所以实践中常把两类目标合起来用。</p>
+<p><strong>损失在哪个空间算，决定表征至少要保留什么</strong></p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>空间</th>
+<th>表征至少要保留</th>
+<th>代价</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>观测空间（重建）</td>
+<td>重建需要的细节，常常包括与任务无关的噪声和背景</td>
+<td>贵；能保留多少受瓶颈、容量和损失限制</td>
+</tr>
+<tr>
+<td>隐空间（对齐、自蒸馏）</td>
+<td>预测目标表征所需的信息</td>
+<td>省，但上限取决于目标表征的质量</td>
+</tr>
+<tr>
+<td>任务输出（标签、奖励）</td>
+<td>预测任务输出所需的信息</td>
+<td>监督有多密看任务：一张图一个类别标签很粗，逐像素的分割图、每一步的动作可以很密；奖励可能只在少数时刻出现</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>这些损失最后都会汇成一个标量去反传，表里比较的是拿什么当比较对象：整个输入、一个表征，还是任务的标签或奖励。中间一列是下限：损失只要求这些信息在表征里，没有要求删掉其余的。编码器多输出几维用不上的信息，只要后面的头不读它们，损失不变；所以这一列说的是训练鼓励保留什么，不保证别的信息被丢掉。</p>
+<p><strong>表示学习目标是一个损失，融合是一层网络</strong>：自监督目标挂在编码器输出上，训练时用；做下游识别任务时，很多方法会把预训练用的解码器、投影头扔掉，但要不要留看用途，比如 CLIP 做零样本分类、跨模态检索仍要用投影到共同空间的那一层；多模态融合模块（2.8）则是网络里实实在在的一层，推理时每次都要过。两者是两个独立的设计选择。</p>
+<p><strong>表征塌缩</strong>：如果编码器把所有输入都映射成同一个向量，很多自监督损失可以降到很低，表征却不含任何信息。不同方法用不同手段防止它：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>防塌缩的手段</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>对比学习</td>
+<td>负样本：不同样本必须被推开</td>
+</tr>
+<tr>
+<td>BYOL、DINO、JEPA</td>
+<td>停止梯度 + EMA 老师网络；BYOL、JEPA 在学生一侧多一个预测头（不对称结构），DINO 没有预测头，靠对老师的输出做中心化和锐化</td>
+</tr>
+<tr>
+<td>VICReg</td>
+<td>直接约束每个维度的方差不能太小、不同维度之间不相关</td>
+</tr>
+<tr>
+<td>重建类</td>
+<td>一般不会塌缩成常数（常数向量没法还原不同的输入），但这不是数学保证，解码器能绕开编码时照样可能退化；而且会保留无关细节</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>怎么评估表征</strong>：冻结编码器，只在表征上训练一个线性分类器（线性探测，linear probe），或者用 k 近邻分类；也可以整体微调后看下游表现。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">import</span> torch.nn <span class="keyword">as</span> nn</span><br><span class="line"><span class="keyword">import</span> torch.nn.functional <span class="keyword">as</span> F</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">linear_probe</span>(<span class="params">f_train, y_train, f_test, y_test, n_cls, steps=<span class="number">300</span></span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;冻结编码器，只训练一个线性分类器：评估表征好坏的标准做法&quot;&quot;&quot;</span></span><br><span class="line">    clf = nn.Linear(f_train.size(<span class="number">1</span>), n_cls)</span><br><span class="line">    opt = torch.optim.Adam(clf.parameters(), lr=<span class="number">1e-2</span>)</span><br><span class="line">    <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(steps):</span><br><span class="line">        loss = F.cross_entropy(clf(f_train), y_train)</span><br><span class="line">        opt.zero_grad(); loss.backward(); opt.step()</span><br><span class="line">    <span class="keyword">return</span> (clf(f_test).argmax(<span class="number">1</span>) == y_test).<span class="built_in">float</span>().mean().item()</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">collapse_score</span>(<span class="params">z</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;归一化后每个维度在 batch 内的标准差的均值；接近 0 说明表征塌缩成了常数&quot;&quot;&quot;</span></span><br><span class="line">    <span class="keyword">return</span> F.normalize(z, dim=<span class="number">1</span>).std(<span class="number">0</span>).mean().item()</span><br><span class="line"></span><br><span class="line">torch.manual_seed(<span class="number">0</span>)</span><br><span class="line">z_good = torch.randn(<span class="number">256</span>, <span class="number">64</span>)                         <span class="comment"># 各样本表征不同</span></span><br><span class="line">z_collapsed = torch.randn(<span class="number">1</span>, <span class="number">64</span>) + <span class="number">0.001</span> * torch.randn(<span class="number">256</span>, <span class="number">64</span>)   <span class="comment"># 几乎都是同一个向量</span></span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;正常表征 <span class="subst">&#123;collapse_score(z_good):<span class="number">.3</span>f&#125;</span>，塌缩表征 <span class="subst">&#123;collapse_score(z_collapsed):<span class="number">.4</span>f&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line">X = torch.randn(<span class="number">600</span>, <span class="number">20</span>); y = (X[:, <span class="number">0</span>] + X[:, <span class="number">1</span>] &gt; <span class="number">0</span>).long()       <span class="comment"># 线性可分的玩具数据</span></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;线性探测准确率:&quot;</span>, linear_probe(X[:<span class="number">500</span>], y[:<span class="number">500</span>], X[<span class="number">500</span>:], y[<span class="number">500</span>:], <span class="number">2</span>))</span><br></pre></td></tr></table></figure>
+<h3 id="2-6-1-对比学习：孪生网络、SimCLR、CLIP"><a href="#2-6-1-对比学习：孪生网络、SimCLR、CLIP" class="headerlink" title="2.6.1 对比学习：孪生网络、SimCLR、CLIP"></a>2.6.1 对比学习：孪生网络、SimCLR、CLIP</h3><div class="dl-img"><div class="dl-day"><div class="img-wrap"><div class="img-bg"><img class="img" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://blogpic-5qb.pages.dev/img/sc_swe/dlnn/light/架构-2.6.1-对比学习.png" alt="<center>2.6.1 对比学习"/></div><span class="image-caption"><center>2.6.1 对比学习</span></div></div><div class="dl-night"><div class="img-wrap"><div class="img-bg"><img class="img" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://blogpic-5qb.pages.dev/img/sc_swe/dlnn/dark/架构-2.6.1-对比学习.png" alt="<center>2.6.1 对比学习"/></div><span class="image-caption"><center>2.6.1 对比学习</span></div></div></div>
+
+<div class="note primary simple"><p><strong>一句话</strong></p>
+<p>同一个东西的两个视角（两种增强、或图像和它的文字描述）表征要靠近，不同东西的表征要推远。正负关系来自数据增强或天然的配对（图文对），不需要人工类别标签；监督式的度量学习（如 FaceNet）则要用身份标签来定正负对。</p>
+</div>
+<p><strong>孪生网络（Bromley 1993）</strong>：两个输入过同一个编码器（权重共享），比较输出的距离。最早用于签名验证，后来的人脸验证（FaceNet 2015，三元组损失：锚点离正样本比离负样本近一个间隔）也是这个结构。</p>
+<p><strong>InfoNCE 损失</strong>：一个 batch 里有 B 对正样本 (z_i, z′_i)，把第 i 对当正确答案，其余 B − 1 个当干扰项，做一个 B 选 1 的分类：</p>
+<script type="math/tex; mode=display">\mathcal{L}_i = -\log\frac{\exp\left(\operatorname{sim}(\mathbf{z}_i, \mathbf{z}'_i)/\tau\right)}{\sum_{j=1}^{B}\exp\left(\operatorname{sim}(\mathbf{z}_i, \mathbf{z}'_j)/\tau\right)}</script><p>sim 是余弦相似度，τ 是温度：τ 小时只盯着最难的负样本，τ 大时对所有负样本一视同仁。跨模态时两个方向（A 找 B、B 找 A）各算一次取平均，叫对称 InfoNCE。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>正样本从哪来</th>
+<th>负样本</th>
+<th>要点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>CLIP（2021）</strong></td>
+<td>图像和它的文字描述</td>
+<td>batch 里其他图文对</td>
+<td>4 亿图文对；训练后用文字描述当分类器，零样本分类</td>
+</tr>
+<tr>
+<td><strong>SimCLR（2020）</strong></td>
+<td>同一张图的两种随机增强（裁剪、颜色扰动、模糊）</td>
+<td>batch 里的其他图</td>
+<td>投影头只在训练时用；需要大 batch</td>
+</tr>
+<tr>
+<td>MoCo（2019）</td>
+<td>同上</td>
+<td>一个先进先出的负样本队列，由动量编码器产生</td>
+<td>小 batch 也能有大量负样本</td>
+</tr>
+<tr>
+<td>SigLIP（2023）</td>
+<td>图文对</td>
+<td>batch 里所有不匹配的图文对</td>
+<td>把 softmax 换成逐对的 sigmoid，大 batch 下更省内存</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>数据增强决定学到什么</strong>：SimCLR 的增强里有颜色扰动，模型就学会忽略颜色；没有裁剪，模型就可能靠位置作弊。增强的设计就是在告诉模型「哪些变化不重要」。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">import</span> torch.nn <span class="keyword">as</span> nn</span><br><span class="line"><span class="keyword">import</span> torch.nn.functional <span class="keyword">as</span> F</span><br><span class="line"></span><br><span class="line"><span class="comment"># SimCLR 式自监督：一维信号，4 类（频率不同），预训练时不看标签</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">signals</span>(<span class="params">n</span>):</span><br><span class="line">    y = torch.randint(<span class="number">0</span>, <span class="number">4</span>, (n,))</span><br><span class="line">    t = torch.linspace(<span class="number">0</span>, <span class="number">1</span>, <span class="number">64</span>)</span><br><span class="line">    x = torch.sin(<span class="number">2</span> * torch.pi * (<span class="number">3</span> + <span class="number">3</span> * y[:, <span class="literal">None</span>]) * t + torch.rand(n, <span class="number">1</span>) * <span class="number">6.28</span>)</span><br><span class="line">    <span class="keyword">return</span> (x + <span class="number">0.3</span> * torch.randn(n, <span class="number">64</span>)).unsqueeze(<span class="number">1</span>), y</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">augment</span>(<span class="params">x</span>):                                             <span class="comment"># 增强 = 告诉模型哪些变化不重要</span></span><br><span class="line">    x = x * (<span class="number">0.5</span> + torch.rand(x.size(<span class="number">0</span>), <span class="number">1</span>, <span class="number">1</span>))             <span class="comment"># 幅度</span></span><br><span class="line">    x = torch.roll(x, <span class="built_in">int</span>(torch.randint(<span class="number">0</span>, <span class="number">64</span>, (<span class="number">1</span>,))), -<span class="number">1</span>)  <span class="comment"># 平移</span></span><br><span class="line">    <span class="keyword">return</span> x + <span class="number">0.2</span> * torch.randn_like(x)                    <span class="comment"># 噪声</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">make_encoder</span>():</span><br><span class="line">    <span class="keyword">return</span> nn.Sequential(nn.Conv1d(<span class="number">1</span>, <span class="number">32</span>, <span class="number">7</span>, padding=<span class="number">3</span>), nn.ReLU(), nn.Conv1d(<span class="number">32</span>, <span class="number">32</span>, <span class="number">7</span>, padding=<span class="number">3</span>), nn.ReLU(),</span><br><span class="line">                         nn.AdaptiveAvgPool1d(<span class="number">1</span>), nn.Flatten(), nn.Linear(<span class="number">32</span>, <span class="number">32</span>))</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">info_nce</span>(<span class="params">z1, z2, tau=<span class="number">0.2</span></span>):</span><br><span class="line">    z1, z2 = F.normalize(z1, dim=<span class="number">1</span>), F.normalize(z2, dim=<span class="number">1</span>)</span><br><span class="line">    logits = z1 @ z2.T / tau                                <span class="comment"># (B, B)，对角线是正样本对</span></span><br><span class="line">    labels = torch.arange(z1.size(<span class="number">0</span>))</span><br><span class="line">    <span class="keyword">return</span> (F.cross_entropy(logits, labels) + F.cross_entropy(logits.T, labels)) / <span class="number">2</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">probe</span>(<span class="params">encoder</span>):                                         <span class="comment"># 只给 40 个带标签样本的线性探测（4 类随机抽，平均每类 10 个，没分层）</span></span><br><span class="line">    <span class="comment"># 每次调用都重新抽标注集和测试集、重新初始化分类头，前后两次的差值里也含这部分波动</span></span><br><span class="line">    <span class="keyword">with</span> torch.no_grad():</span><br><span class="line">        x_tr, y_tr = signals(<span class="number">40</span>); x_te, y_te = signals(<span class="number">1000</span>)</span><br><span class="line">        f_tr, f_te = encoder(x_tr), encoder(x_te)</span><br><span class="line">    clf = nn.Linear(<span class="number">32</span>, <span class="number">4</span>); opt = torch.optim.Adam(clf.parameters(), lr=<span class="number">1e-2</span>)</span><br><span class="line">    <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">300</span>):</span><br><span class="line">        loss = F.cross_entropy(clf(f_tr), y_tr); opt.zero_grad(); loss.backward(); opt.step()</span><br><span class="line">    <span class="keyword">return</span> (clf(f_te).argmax(<span class="number">1</span>) == y_te).<span class="built_in">float</span>().mean().item()</span><br><span class="line"></span><br><span class="line">torch.manual_seed(<span class="number">0</span>)</span><br><span class="line">encoder = make_encoder()</span><br><span class="line">proj = nn.Sequential(nn.Linear(<span class="number">32</span>, <span class="number">64</span>), nn.ReLU(), nn.Linear(<span class="number">64</span>, <span class="number">32</span>))     <span class="comment"># 投影头：只在预训练时用</span></span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;随机初始化的编码器，线性探测准确率 <span class="subst">&#123;probe(encoder):<span class="number">.3</span>f&#125;</span>&quot;</span>)</span><br><span class="line">opt = torch.optim.Adam(<span class="built_in">list</span>(encoder.parameters()) + <span class="built_in">list</span>(proj.parameters()), lr=<span class="number">1e-3</span>)</span><br><span class="line"><span class="keyword">for</span> step <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">400</span>):</span><br><span class="line">    x, _ = signals(<span class="number">256</span>)                                     <span class="comment"># 不用标签</span></span><br><span class="line">    loss = info_nce(proj(encoder(augment(x))), proj(encoder(augment(x))))</span><br><span class="line">    opt.zero_grad(); loss.backward(); opt.step()</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;对比学习预训练后，线性探测准确率 <span class="subst">&#123;probe(encoder):<span class="number">.3</span>f&#125;</span>（随机猜 0.25）&quot;</span>)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">import</span> torch.nn <span class="keyword">as</span> nn</span><br><span class="line"><span class="keyword">import</span> torch.nn.functional <span class="keyword">as</span> F</span><br><span class="line"></span><br><span class="line"><span class="comment"># CLIP 式跨模态对齐：同一物体的「视觉特征」和「触觉特征」来自同一个隐变量，但经过不同变换、各自带噪声</span></span><br><span class="line">torch.manual_seed(<span class="number">0</span>)</span><br><span class="line">Mv, Mt = torch.randn(<span class="number">8</span>, <span class="number">32</span>), torch.randn(<span class="number">8</span>, <span class="number">24</span>)</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">pairs</span>(<span class="params">n</span>):</span><br><span class="line">    z = torch.randn(n, <span class="number">8</span>)</span><br><span class="line">    <span class="keyword">return</span> torch.tanh(z @ Mv) + <span class="number">0.1</span> * torch.randn(n, <span class="number">32</span>), torch.tanh(z @ Mt) + <span class="number">0.1</span> * torch.randn(n, <span class="number">24</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">DualEncoder</span>(nn.Module):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, d=<span class="number">64</span></span>):</span><br><span class="line">        <span class="built_in">super</span>().__init__()</span><br><span class="line">        self.f_v = nn.Sequential(nn.Linear(<span class="number">32</span>, <span class="number">128</span>), nn.ReLU(), nn.Linear(<span class="number">128</span>, d))   <span class="comment"># 视觉塔</span></span><br><span class="line">        self.f_t = nn.Sequential(nn.Linear(<span class="number">24</span>, <span class="number">128</span>), nn.ReLU(), nn.Linear(<span class="number">128</span>, d))   <span class="comment"># 触觉塔</span></span><br><span class="line">        self.log_tau = nn.Parameter(torch.tensor(-<span class="number">2.0</span>))                             <span class="comment"># 可学习温度（CLIP 的做法）</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">forward</span>(<span class="params">self, v, t</span>):</span><br><span class="line">        zv, zt = F.normalize(self.f_v(v), dim=-<span class="number">1</span>), F.normalize(self.f_t(t), dim=-<span class="number">1</span>)</span><br><span class="line">        <span class="keyword">return</span> zv @ zt.T / self.log_tau.exp()               <span class="comment"># (B, B) 相似度矩阵</span></span><br><span class="line"></span><br><span class="line">model = DualEncoder()</span><br><span class="line">opt = torch.optim.Adam(model.parameters(), lr=<span class="number">1e-3</span>)</span><br><span class="line"><span class="keyword">for</span> step <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">1500</span>):</span><br><span class="line">    v, t = pairs(<span class="number">256</span>)</span><br><span class="line">    logits = model(v, t)</span><br><span class="line">    labels = torch.arange(<span class="number">256</span>)</span><br><span class="line">    loss = (F.cross_entropy(logits, labels) + F.cross_entropy(logits.T, labels)) / <span class="number">2</span>   <span class="comment"># 对称 InfoNCE</span></span><br><span class="line">    opt.zero_grad(); loss.backward(); opt.step()</span><br><span class="line"></span><br><span class="line"><span class="keyword">with</span> torch.no_grad():</span><br><span class="line">    v, t = pairs(<span class="number">1000</span>)</span><br><span class="line">    acc = (model(v, t).argmax(<span class="number">1</span>) == torch.arange(<span class="number">1000</span>)).<span class="built_in">float</span>().mean().item()</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;用视觉特征在 1000 个触觉特征里找出配对的那个，准确率 <span class="subst">&#123;acc:<span class="number">.3</span>f&#125;</span>（随机猜 0.001）&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;学到的温度 τ = <span class="subst">&#123;model.log_tau.exp().item():<span class="number">.3</span>f&#125;</span>&quot;</span>)</span><br></pre></td></tr></table></figure>
+<div class="note success simple"><p><strong>典型例子</strong></p>
+<ul>
+<li>CLIP：零样本 ImageNet 分类（ViT-L/14@336px 约 76%），把类别名写成「a photo of a {类别}」当分类器</li>
+<li>CLIP / SigLIP 的图像编码器是多模态大模型和大多数 VLA 的视觉入口；CLIP 的文本编码器是 Stable Diffusion v1 的文本条件（SD 2 换成 OpenCLIP，SDXL、SD3 又加了别的文本编码器）</li>
+<li>人脸验证：FaceNet</li>
+<li>检索：图搜图、文搜图、RAG 里的句子嵌入</li>
+<li>机器人与触觉：R3M 用视频与语言的对比目标预训练机器人视觉表征；TVL、UniTouch 等把触觉对齐到视觉-语言空间，让数据很少的触觉模态借用图文预训练学到的语义结构</li>
+</ul>
+</div>
+<ul>
+<li><strong>优势</strong>：自监督的对比学习不需要人工类别标签，配对关系本身就是监督；学到的嵌入空间可以直接做检索、零样本分类和跨模态对齐；双塔结构推理时每个模态的嵌入可以预先算好建索引</li>
+<li><strong>局限</strong>：依赖大 batch 或大量负样本；增强和配对的质量决定上限；容易学到捷径特征；对齐过程会压掉某个模态特有的信息，常配合重建类目标使用</li>
+<li><strong>适合的数据</strong>：成对或多视角的数据：图文对、视觉-触觉对、同一样本的不同增强、多视角图像；检索和度量学习任务</li>
+</ul>
+<h3 id="2-6-2-MAE-掩码自编码器"><a href="#2-6-2-MAE-掩码自编码器" class="headerlink" title="2.6.2 MAE 掩码自编码器"></a>2.6.2 MAE 掩码自编码器</h3><div class="dl-img"><div class="dl-day"><div class="img-wrap"><div class="img-bg"><img class="img" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://blogpic-5qb.pages.dev/img/sc_swe/dlnn/light/架构-2.6.2-MAE.png" alt="<center>2.6.2 MAE"/></div><span class="image-caption"><center>2.6.2 MAE</span></div></div><div class="dl-night"><div class="img-wrap"><div class="img-bg"><img class="img" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://blogpic-5qb.pages.dev/img/sc_swe/dlnn/dark/架构-2.6.2-MAE.png" alt="<center>2.6.2 MAE"/></div><span class="image-caption"><center>2.6.2 MAE</span></div></div></div>
+
+<div class="note primary simple"><p><strong>一句话</strong></p>
+<p>把图像切块后随机遮住 75%，编码器只看剩下的 25%，解码器负责把被遮住的块补回来；完形填空式的预训练。</p>
+</div>
+<p><strong>设计要点</strong>（He 2021）</p>
+<ol>
+<li><strong>高遮挡率</strong>：图像的冗余很大，遮得少时靠邻近块插值就能补回来；MAE 遮 75% 才逼模型理解整体结构。BERT 的约 15% 是语言 token 里被选作预测目标的比例，掩码做法和 MAE 不完全相同（见 2.1.1）</li>
+<li><strong>不对称</strong>：编码器只处理可见块（计算量降到约 1/4），被遮住的位置用一个共享的可学习 [MASK] 向量占位，交给一个很轻的解码器</li>
+<li><strong>损失只算被遮住的部分</strong>：</li>
+</ol>
+<script type="math/tex; mode=display">\mathcal{L} = \frac{1}{|\Omega|}\sum_{j\in\Omega}\lVert\mathbf{x}_j - \hat{\mathbf{x}}_j\rVert^2,\qquad \Omega = \text{被遮住的块}</script><p><strong>和普通自编码器的差别</strong>：普通 AE 看着完整输入还原完整输入，可以靠近似恒等映射偷懒；MAE 必须从上下文推断看不到的部分。</p>
+<p><strong>同一思路的其他形式</strong>：BERT 的掩码语言模型（约 15% 的位置当预测目标，这些位置仍留在输入里，替换规则见 2.1.1）；多模态里遮住一个模态的一部分，让模型借助其他模态补回来（比如遮住触觉、看着视觉补），直接逼出跨模态的互补关系。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">import</span> torch.nn <span class="keyword">as</span> nn</span><br><span class="line"><span class="keyword">import</span> torch.nn.functional <span class="keyword">as</span> F</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">blobs</span>(<span class="params">n, size=<span class="number">16</span></span>):                                   <span class="comment"># 每张图 0–3 个光斑（每个以 0.6 的概率出现，约 6.4% 是全暗图）</span></span><br><span class="line">    g = torch.arange(size).<span class="built_in">float</span>()</span><br><span class="line">    yy, xx = torch.meshgrid(g, g, indexing=<span class="string">&quot;ij&quot;</span>)</span><br><span class="line">    img = torch.zeros(n, size, size)</span><br><span class="line">    <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">3</span>):</span><br><span class="line">        c = torch.rand(n, <span class="number">2</span>) * (size - <span class="number">4</span>) + <span class="number">2</span></span><br><span class="line">        on = (torch.rand(n) &lt; <span class="number">0.6</span>).<span class="built_in">float</span>()[:, <span class="literal">None</span>, <span class="literal">None</span>]</span><br><span class="line">        img += on * torch.exp(-((xx - c[:, <span class="number">0</span>, <span class="literal">None</span>, <span class="literal">None</span>]) ** <span class="number">2</span> + (yy - c[:, <span class="number">1</span>, <span class="literal">None</span>, <span class="literal">None</span>]) ** <span class="number">2</span>) / <span class="number">4</span>)</span><br><span class="line">    <span class="keyword">return</span> img.clamp(<span class="number">0</span>, <span class="number">1</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">patchify</span>(<span class="params">img, p=<span class="number">4</span></span>):                                  <span class="comment"># (B, 16, 16) → (B, 16 块, 16 像素)</span></span><br><span class="line">    B = img.size(<span class="number">0</span>)</span><br><span class="line">    <span class="keyword">return</span> img.view(B, <span class="number">4</span>, p, <span class="number">4</span>, p).permute(<span class="number">0</span>, <span class="number">1</span>, <span class="number">3</span>, <span class="number">2</span>, <span class="number">4</span>).reshape(B, <span class="number">16</span>, p * p)</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">MAE</span>(nn.Module):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, d=<span class="number">64</span>, n=<span class="number">16</span>, pdim=<span class="number">16</span></span>):</span><br><span class="line">        <span class="built_in">super</span>().__init__()</span><br><span class="line">        self.embed = nn.Linear(pdim, d)</span><br><span class="line">        self.pos = nn.Parameter(torch.randn(<span class="number">1</span>, n, d) * <span class="number">0.02</span>)</span><br><span class="line">        enc_layer = nn.TransformerEncoderLayer(d, <span class="number">4</span>, <span class="number">4</span> * d, dropout=<span class="number">0.0</span>, batch_first=<span class="literal">True</span>, norm_first=<span class="literal">True</span>)</span><br><span class="line">        self.encoder = nn.TransformerEncoder(enc_layer, <span class="number">3</span>, enable_nested_tensor=<span class="literal">False</span>)</span><br><span class="line">        self.mask_token = nn.Parameter(torch.zeros(<span class="number">1</span>, <span class="number">1</span>, d))</span><br><span class="line">        dec_layer = nn.TransformerEncoderLayer(d, <span class="number">4</span>, <span class="number">2</span> * d, dropout=<span class="number">0.0</span>, batch_first=<span class="literal">True</span>, norm_first=<span class="literal">True</span>)</span><br><span class="line">        self.decoder = nn.TransformerEncoder(dec_layer, <span class="number">1</span>, enable_nested_tensor=<span class="literal">False</span>)   <span class="comment"># 轻量解码器</span></span><br><span class="line">        self.head = nn.Linear(d, pdim)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">forward</span>(<span class="params">self, patches, ratio=<span class="number">0.75</span></span>):</span><br><span class="line">        B, N, _ = patches.shape</span><br><span class="line">        n_keep = <span class="built_in">int</span>(N * (<span class="number">1</span> - ratio))</span><br><span class="line">        order = torch.rand(B, N).argsort(<span class="number">1</span>)                  <span class="comment"># 每张图随机打乱块的顺序</span></span><br><span class="line">        keep, masked = order[:, :n_keep], order[:, n_keep:]</span><br><span class="line">        tokens = self.embed(patches) + self.pos</span><br><span class="line">        visible = torch.gather(tokens, <span class="number">1</span>, keep[..., <span class="literal">None</span>].expand(-<span class="number">1</span>, -<span class="number">1</span>, tokens.size(-<span class="number">1</span>)))</span><br><span class="line">        enc = self.encoder(visible)                          <span class="comment"># 编码器只看可见的 25%</span></span><br><span class="line">        full = self.mask_token.expand(B, N, -<span class="number">1</span>).clone()      <span class="comment"># 被遮的位置放 [MASK]</span></span><br><span class="line">        full.scatter_(<span class="number">1</span>, keep[..., <span class="literal">None</span>].expand(-<span class="number">1</span>, -<span class="number">1</span>, enc.size(-<span class="number">1</span>)), enc)</span><br><span class="line">        pred = self.head(self.decoder(full + self.pos))      <span class="comment"># 解码器补全所有位置</span></span><br><span class="line">        <span class="keyword">return</span> pred, masked</span><br><span class="line"></span><br><span class="line">torch.manual_seed(<span class="number">0</span>)</span><br><span class="line">model = MAE()</span><br><span class="line">opt = torch.optim.AdamW(model.parameters(), lr=<span class="number">1e-3</span>)</span><br><span class="line"><span class="keyword">for</span> step <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">1500</span>):</span><br><span class="line">    patches = patchify(blobs(<span class="number">128</span>))</span><br><span class="line">    pred, masked = model(patches)</span><br><span class="line">    idx = masked[..., <span class="literal">None</span>].expand(-<span class="number">1</span>, -<span class="number">1</span>, <span class="number">16</span>)</span><br><span class="line">    loss = F.mse_loss(torch.gather(pred, <span class="number">1</span>, idx), torch.gather(patches, <span class="number">1</span>, idx))   <span class="comment"># 只算被遮住的块</span></span><br><span class="line">    opt.zero_grad(); loss.backward(); opt.step()</span><br><span class="line"></span><br><span class="line"><span class="keyword">with</span> torch.no_grad():</span><br><span class="line">    patches = patchify(blobs(<span class="number">500</span>))</span><br><span class="line">    pred, masked = model(patches)</span><br><span class="line">    idx = masked[..., <span class="literal">None</span>].expand(-<span class="number">1</span>, -<span class="number">1</span>, <span class="number">16</span>)</span><br><span class="line">    target = torch.gather(patches, <span class="number">1</span>, idx)</span><br><span class="line">    mae_err = F.mse_loss(torch.gather(pred, <span class="number">1</span>, idx), target).item()</span><br><span class="line">    base = F.mse_loss(target.mean(dim=(<span class="number">0</span>, <span class="number">1</span>), keepdim=<span class="literal">True</span>).expand_as(target), target).item()</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;被遮住的块：MAE 重建 MSE <span class="subst">&#123;mae_err:<span class="number">.4</span>f&#125;</span>，用这批被遮块自己的平均图块去猜的 MSE <span class="subst">&#123;base:<span class="number">.4</span>f&#125;</span>（偷看了答案的均值，是偏乐观的基线）&quot;</span>)</span><br></pre></td></tr></table></figure>
+<div class="dl-img"><div class="dl-day"><div class="img-wrap"><div class="img-bg"><img class="img" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://blogpic-5qb.pages.dev/img/sc_swe/dlnn/light/MAE遮挡与补全.png" alt="<center>MAE遮挡与补全"/></div><span class="image-caption"><center>MAE遮挡与补全</span></div></div><div class="dl-night"><div class="img-wrap"><div class="img-bg"><img class="img" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://blogpic-5qb.pages.dev/img/sc_swe/dlnn/dark/MAE遮挡与补全.png" alt="<center>MAE遮挡与补全"/></div><span class="image-caption"><center>MAE遮挡与补全</span></div></div></div>
+
+<div class="note success simple"><p><strong>典型例子</strong></p>
+<ul>
+<li>ViT 预训练：MAE 预训练的 ViT-H 在 ImageNet 上微调到 87.8%，SAM 的图像编码器就是 MAE 预训练的</li>
+<li>BERT：掩码语言模型，NLP 预训练的标准做法</li>
+<li>视频（VideoMAE）、音频（AudioMAE）、点云（Point-MAE）</li>
+<li>多模态：同时遮住视觉块和触觉块，让模型互相补全</li>
+</ul>
+</div>
+<ul>
+<li><strong>优势</strong>：目标简单，不需要负样本和复杂的增强；高遮挡率让编码器只算少量 token，预训练快；学到的特征微调效果好</li>
+<li><strong>局限</strong>：线性探测效果不如对比学习和 DINO（特征需要微调才好用）；重建目标在像素空间，会花容量在无关细节上；遮挡率要调</li>
+<li><strong>适合的数据</strong>：能切成 token、冗余度高的数据：图像、视频、音频频谱、点云、多模态序列</li>
+</ul>
+<h3 id="2-6-3-自蒸馏与-JEPA：BYOL、DINO、I-JEPA"><a href="#2-6-3-自蒸馏与-JEPA：BYOL、DINO、I-JEPA" class="headerlink" title="2.6.3 自蒸馏与 JEPA：BYOL、DINO、I-JEPA"></a>2.6.3 自蒸馏与 JEPA：BYOL、DINO、I-JEPA</h3><div class="dl-img"><div class="dl-day"><div class="img-wrap"><div class="img-bg"><img class="img" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://blogpic-5qb.pages.dev/img/sc_swe/dlnn/light/架构-2.6.3-自蒸馏与JEPA.png" alt="<center>2.6.3 自蒸馏与 JEPA"/></div><span class="image-caption"><center>2.6.3 自蒸馏与 JEPA</span></div></div><div class="dl-night"><div class="img-wrap"><div class="img-bg"><img class="img" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://blogpic-5qb.pages.dev/img/sc_swe/dlnn/dark/架构-2.6.3-自蒸馏与JEPA.png" alt="<center>2.6.3 自蒸馏与 JEPA"/></div><span class="image-caption"><center>2.6.3 自蒸馏与 JEPA</span></div></div></div>
+
+<div class="note primary simple"><p><strong>一句话</strong></p>
+<p>不要负样本：学生网络去预测老师网络给出的表征，老师是学生权重的滑动平均；预测发生在表征空间，不重建像素。</p>
+</div>
+<p><strong>BYOL（2020）</strong>：两个增强视角分别进在线网络和目标网络。在线网络后面多接一个预测头，去预测目标网络的输出；目标网络不回传梯度，权重是在线网络的 EMA：</p>
+<script type="math/tex; mode=display">\mathcal{L} = 2 - 2\cdot\frac{\langle q_\theta(\mathbf{z}_\theta),\ \operatorname{sg}(\mathbf{z}'_\xi)\rangle}{\lVert q_\theta(\mathbf{z}_\theta)\rVert\,\lVert\mathbf{z}'_\xi\rVert},\qquad \xi \leftarrow m\,\xi + (1-m)\,\theta</script><p>没有负样本却不塌缩，靠的是「停止梯度 + EMA 老师 + 只在一侧加预测头」这套不对称结构；投影头里的 BatchNorm 在 batch 内做归一化，本身也能挡住一部分塌缩。下面的代码把这几样都去掉后，表征很快塌缩成常数。</p>
+<p><strong>DINO（2021）/ DINOv2（2023）</strong>：同样是学生-老师自蒸馏，输出变成在 K 个原型上的概率分布，老师的输出做中心化（防止一个维度独占）和锐化（防止均匀分布）。DINOv2 的特征不微调就能直接做检索、深度估计、分割，是机器人视觉编码器的常用选择。</p>
+<p><strong>JEPA（I-JEPA 2023，V-JEPA 2024–2025）</strong>：联合嵌入预测架构。遮住图像（或视频）的一些区域，让预测器从可见部分的表征去预测被遮区域的表征，目标由 EMA 老师编码器给出。和 MAE 的区别是预测目标在表征空间，不用还原像素，模型不必在背景纹理这类无法预测的细节上花容量。LeCun 主张把它作为世界模型的基础：只预测未来的表征，不去生成未来的像素。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> copy</span><br><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">import</span> torch.nn <span class="keyword">as</span> nn</span><br><span class="line"><span class="keyword">import</span> torch.nn.functional <span class="keyword">as</span> F</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">signals</span>(<span class="params">n</span>):                                            <span class="comment"># 与 2.6.1 相同的一维信号</span></span><br><span class="line">    y = torch.randint(<span class="number">0</span>, <span class="number">4</span>, (n,))</span><br><span class="line">    t = torch.linspace(<span class="number">0</span>, <span class="number">1</span>, <span class="number">64</span>)</span><br><span class="line">    x = torch.sin(<span class="number">2</span> * torch.pi * (<span class="number">3</span> + <span class="number">3</span> * y[:, <span class="literal">None</span>]) * t + torch.rand(n, <span class="number">1</span>) * <span class="number">6.28</span>)</span><br><span class="line">    <span class="keyword">return</span> (x + <span class="number">0.3</span> * torch.randn(n, <span class="number">64</span>)).unsqueeze(<span class="number">1</span>), y</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">augment</span>(<span class="params">x</span>):</span><br><span class="line">    x = x * (<span class="number">0.5</span> + torch.rand(x.size(<span class="number">0</span>), <span class="number">1</span>, <span class="number">1</span>))</span><br><span class="line">    x = torch.roll(x, <span class="built_in">int</span>(torch.randint(<span class="number">0</span>, <span class="number">64</span>, (<span class="number">1</span>,))), -<span class="number">1</span>)</span><br><span class="line">    <span class="keyword">return</span> x + <span class="number">0.2</span> * torch.randn_like(x)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">make_encoder</span>():</span><br><span class="line">    <span class="keyword">return</span> nn.Sequential(nn.Conv1d(<span class="number">1</span>, <span class="number">32</span>, <span class="number">7</span>, padding=<span class="number">3</span>), nn.ReLU(), nn.Conv1d(<span class="number">32</span>, <span class="number">32</span>, <span class="number">7</span>, padding=<span class="number">3</span>), nn.ReLU(),</span><br><span class="line">                         nn.AdaptiveAvgPool1d(<span class="number">1</span>), nn.Flatten(), nn.Linear(<span class="number">32</span>, <span class="number">32</span>))</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">byol_loss</span>(<span class="params">p, z</span>):</span><br><span class="line">    <span class="keyword">return</span> (<span class="number">2</span> - <span class="number">2</span> * F.cosine_similarity(p, z, dim=-<span class="number">1</span>)).mean()</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">mlp</span>(<span class="params">d_in, d_out, bn=<span class="literal">True</span></span>):                             <span class="comment"># BYOL 的投影头、预测头都带 BatchNorm</span></span><br><span class="line">    norm = nn.BatchNorm1d(<span class="number">64</span>) <span class="keyword">if</span> bn <span class="keyword">else</span> nn.Identity()</span><br><span class="line">    <span class="keyword">return</span> nn.Sequential(nn.Linear(d_in, <span class="number">64</span>), norm, nn.ReLU(), nn.Linear(<span class="number">64</span>, d_out))</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">train</span>(<span class="params">use_tricks, bn, steps=<span class="number">300</span></span>):</span><br><span class="line">    torch.manual_seed(<span class="number">0</span>)</span><br><span class="line">    encoder, projector, predictor = make_encoder(), mlp(<span class="number">32</span>, <span class="number">32</span>, bn=bn), mlp(<span class="number">32</span>, <span class="number">32</span>)</span><br><span class="line">    online = nn.Sequential(encoder, projector)</span><br><span class="line">    target = copy.deepcopy(online).requires_grad_(<span class="literal">False</span>)                 <span class="comment"># 老师：在线网络的 EMA</span></span><br><span class="line">    params = <span class="built_in">list</span>(online.parameters()) + (<span class="built_in">list</span>(predictor.parameters()) <span class="keyword">if</span> use_tricks <span class="keyword">else</span> [])</span><br><span class="line">    opt = torch.optim.Adam(params, lr=<span class="number">3e-3</span>)</span><br><span class="line">    <span class="keyword">for</span> step <span class="keyword">in</span> <span class="built_in">range</span>(steps):</span><br><span class="line">        x, _ = signals(<span class="number">128</span>)</span><br><span class="line">        v1, v2 = augment(x), augment(x)</span><br><span class="line">        <span class="keyword">if</span> use_tricks:                                    <span class="comment"># BYOL：预测头 + 停止梯度 + EMA 老师</span></span><br><span class="line">            loss = byol_loss(predictor(online(v1)), target(v2).detach()) + \</span><br><span class="line">                   byol_loss(predictor(online(v2)), target(v1).detach())</span><br><span class="line">        <span class="keyword">else</span>:                                             <span class="comment"># 去掉全部技巧：两个视角直接互相拉近</span></span><br><span class="line">            loss = byol_loss(online(v1), online(v2))</span><br><span class="line">        opt.zero_grad(); loss.backward(); opt.step()</span><br><span class="line">        <span class="keyword">if</span> use_tricks:</span><br><span class="line">            <span class="keyword">with</span> torch.no_grad():</span><br><span class="line">                <span class="keyword">for</span> pt, po <span class="keyword">in</span> <span class="built_in">zip</span>(target.parameters(), online.parameters()):</span><br><span class="line">                    pt.mul_(<span class="number">0.99</span>).add_(<span class="number">0.01</span> * po)</span><br><span class="line">    encoder.<span class="built_in">eval</span>(); online.<span class="built_in">eval</span>()</span><br><span class="line">    <span class="keyword">with</span> torch.no_grad():</span><br><span class="line">        x, y = signals(<span class="number">1000</span>)</span><br><span class="line">        spread = F.normalize(online(x), dim=<span class="number">1</span>).std(<span class="number">0</span>).mean().item()   <span class="comment"># 接近 0 = 塌缩</span></span><br><span class="line">        x_tr, y_tr = signals(<span class="number">40</span>)                                     <span class="comment"># 每种配置各自抽探测数据、各自初始化分类头，差值里也含这部分波动</span></span><br><span class="line">        f_tr, f_te = encoder(x_tr), encoder(x)</span><br><span class="line">    clf = nn.Linear(<span class="number">32</span>, <span class="number">4</span>); o = torch.optim.Adam(clf.parameters(), lr=<span class="number">1e-2</span>)</span><br><span class="line">    <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">300</span>):</span><br><span class="line">        l = F.cross_entropy(clf(f_tr), y_tr); o.zero_grad(); l.backward(); o.step()</span><br><span class="line">    <span class="keyword">return</span> spread, (clf(f_te).argmax(<span class="number">1</span>) == y).<span class="built_in">float</span>().mean().item()</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> use_tricks, bn, name <span class="keyword">in</span> [(<span class="literal">True</span>, <span class="literal">True</span>, <span class="string">&quot;BYOL（完整）&quot;</span>),</span><br><span class="line">                             (<span class="literal">False</span>, <span class="literal">True</span>, <span class="string">&quot;去掉预测头、停止梯度、EMA，保留 BatchNorm&quot;</span>),</span><br><span class="line">                             (<span class="literal">False</span>, <span class="literal">False</span>, <span class="string">&quot;再去掉投影头里的 BatchNorm&quot;</span>)]:</span><br><span class="line">    spread, acc = train(use_tricks, bn)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;<span class="subst">&#123;name&#125;</span>：表征离散度 <span class="subst">&#123;spread:<span class="number">.4</span>f&#125;</span>，40 个标签（平均每类 10 个）的线性探测准确率 <span class="subst">&#123;acc:<span class="number">.3</span>f&#125;</span>&quot;</span>)   <span class="comment"># 离散度测投影头输出，探测用编码器输出</span></span><br><span class="line"><span class="comment"># 32 维单位向量完全随机分布时，离散度约为 1/√32 ≈ 0.18</span></span><br></pre></td></tr></table></figure>
+<div class="note warning simple"><p><strong>常见说法与实测</strong></p>
+<p><strong>常见说法</strong>：BYOL 没有负样本却不塌缩，靠的是预测头、停止梯度和 EMA 老师这套不对称结构。</p>
+<p><strong>实测</strong>：三样都去掉、但投影头里保留 BatchNorm 时，表征没有完全塌成常数（离散度 0.064，完整 BYOL 是 0.15；离散度不为 0 不能排除只剩少数几个方向的部分塌缩），线性探测准确率仍是 1.0；再把 BatchNorm 也去掉，离散度降到 0.0001，准确率掉到 0.24（等于瞎猜）。</p>
+<p><strong>怎么理解</strong>：BatchNorm 用整个 batch 的统计量做归一化，会把同一个 batch 里输出之间的微小差别重新放大到单位方差，在优化上起到了隐式的防塌缩作用。它并不从数学上排除常数解：输入完全相同时 BN 的输出全都等于 β，γ = 0 时也输出常数；这个实验只说明在当前设置下保留 BN 有帮助。2020 年有分析据此认为 BatchNorm 才是 BYOL 不塌缩的原因；BYOL 作者随后说明，换成不依赖 batch 统计量的 GroupNorm 加权重标准化、配合合适的初始化，BYOL 照样能训练（Richemond 等 2020，《BYOL works even without batch statistics》）。两种机制都能起作用，实际训练里通常同时存在。</p>
+</div>
+<div class="note success simple"><p><strong>典型例子</strong></p>
+<ul>
+<li>DINOv2：通用视觉特征，OpenVLA 等 VLA 把 DINOv2 和 SigLIP 的特征拼起来当视觉输入</li>
+<li>DINO 的注意力图不用任何标注就能分割出前景物体</li>
+<li>I-JEPA、V-JEPA 2：在表征空间做预测的图像和视频模型，V-JEPA 2 被用于机器人规划</li>
+<li>隐空间世界模型：在编码后的表征空间预测未来（见 3.2）</li>
+</ul>
+</div>
+<ul>
+<li><strong>优势</strong>：不需要负样本，对 batch 大小不敏感；预测目标在表征空间，不浪费容量在不可预测的像素细节上；DINO 系列的特征拿来就能用</li>
+<li><strong>局限</strong>：塌缩风险始终存在，训练对 EMA 系数、增强、中心化等细节敏感；为什么不塌缩的理论解释还不完整；效果上限受老师表征质量制约</li>
+<li><strong>适合的数据</strong>：大规模无标注图像、视频；需要通用、可直接复用特征的视觉任务；隐空间世界模型</li>
+</ul>
+<h3 id="2-6-4-自编码器-AE-〔图：AE〕"><a href="#2-6-4-自编码器-AE-〔图：AE〕" class="headerlink" title="2.6.4 自编码器 AE 〔图：AE〕"></a>2.6.4 自编码器 AE 〔图：AE〕</h3><div class="dl-img"><div class="dl-day"><div class="img-wrap"><div class="img-bg"><img class="img" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://blogpic-5qb.pages.dev/img/sc_swe/dlnn/light/架构-2.6.4-自编码器.png" alt="<center>2.6.4 自编码器"/></div><span class="image-caption"><center>2.6.4 自编码器</span></div></div><div class="dl-night"><div class="img-wrap"><div class="img-bg"><img class="img" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://blogpic-5qb.pages.dev/img/sc_swe/dlnn/dark/架构-2.6.4-自编码器.png" alt="<center>2.6.4 自编码器"/></div><span class="image-caption"><center>2.6.4 自编码器</span></div></div></div>
+
+<div class="note primary simple"><p><strong>一句话</strong></p>
+<p>编码器把输入压到一个窄瓶颈，解码器再还原回来，损失是还原误差；不需要标签。</p>
+</div>
+<script type="math/tex; mode=display">\mathbf{z} = f_\phi(\mathbf{x}),\qquad \hat{\mathbf{x}} = g_\theta(\mathbf{z}),\qquad \mathcal{L} = \lVert\mathbf{x} - \hat{\mathbf{x}}\rVert^2</script><p>图中 AE 是对称的沙漏形，输出单元画成「输入输出匹配单元」：训练目标就是复现输入。</p>
+<p><strong>要点</strong></p>
+<ul>
+<li>瓶颈比输入窄，网络只能保留最重要的信息。去掉所有非线性、用 MSE 训练的线性自编码器，学到的子空间就是 PCA 的主成分子空间；加了非线性就是非线性降维</li>
+<li>隐空间没有约束，点与点之间是空的，不能直接从中采样生成新样本（这是 VAE 要解决的问题，见 2.2.3）</li>
+<li>瓶颈太宽时会学成近似恒等映射，学不到有用的结构</li>
+<li><strong>作为辅助重建目标</strong>：在一个主任务（比如机器人策略）的编码器上加一个解码器，要求它能还原原始输入，防止编码器只学到对主任务「够用」的粗糙特征。触觉编码器只靠动作损失训练时，容易只学到「有没有接触」这种粗信息，加重建目标能逼它保留形变方向、剪切这类细节；代价是噪声也被一起保留</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">import</span> torch.nn <span class="keyword">as</span> nn</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">AutoEncoder</span>(nn.Module):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, in_dim, latent_dim</span>):</span><br><span class="line">        <span class="built_in">super</span>().__init__()</span><br><span class="line">        self.encoder = nn.Sequential(nn.Linear(in_dim, <span class="number">64</span>), nn.ReLU(), nn.Linear(<span class="number">64</span>, latent_dim))</span><br><span class="line">        self.decoder = nn.Sequential(nn.Linear(latent_dim, <span class="number">64</span>), nn.ReLU(), nn.Linear(<span class="number">64</span>, in_dim))</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">forward</span>(<span class="params">self, x</span>):</span><br><span class="line">        z = self.encoder(x)                       <span class="comment"># 压到瓶颈</span></span><br><span class="line">        <span class="keyword">return</span> self.decoder(z), z                 <span class="comment"># 再还原</span></span><br><span class="line"></span><br><span class="line">torch.manual_seed(<span class="number">0</span>)</span><br><span class="line"><span class="comment"># 正常数据：藏在 20 维空间里的一个 2 维曲面（比如一台机器正常工况下的 20 路传感器读数）</span></span><br><span class="line">proj = torch.randn(<span class="number">2</span>, <span class="number">20</span>)</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">normal_data</span>(<span class="params">n</span>):</span><br><span class="line">    s = torch.rand(n, <span class="number">2</span>) * <span class="number">2</span> - <span class="number">1</span></span><br><span class="line">    <span class="keyword">return</span> torch.tanh(s @ proj) + <span class="number">0.02</span> * torch.randn(n, <span class="number">20</span>)</span><br><span class="line"></span><br><span class="line">model = AutoEncoder(<span class="number">20</span>, <span class="number">2</span>)</span><br><span class="line">opt = torch.optim.Adam(model.parameters(), lr=<span class="number">1e-3</span>)</span><br><span class="line"><span class="keyword">for</span> step <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">3000</span>):</span><br><span class="line">    x = normal_data(<span class="number">128</span>)</span><br><span class="line">    loss = nn.functional.mse_loss(model(x)[<span class="number">0</span>], x)</span><br><span class="line">    opt.zero_grad(); loss.backward(); opt.step()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 异常检测：重建误差大 = 不像训练时见过的数据</span></span><br><span class="line"><span class="keyword">with</span> torch.no_grad():</span><br><span class="line">    err = <span class="keyword">lambda</span> x: (model(x)[<span class="number">0</span>] - x).<span class="built_in">pow</span>(<span class="number">2</span>).mean(<span class="number">1</span>)</span><br><span class="line">    normal, anomaly = normal_data(<span class="number">1000</span>), torch.rand(<span class="number">1000</span>, <span class="number">20</span>) * <span class="number">2</span> - <span class="number">1</span></span><br><span class="line">    thr = err(normal).quantile(<span class="number">0.99</span>)                         <span class="comment"># 阈值：正常数据误差的 99 分位</span></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;正常样本平均误差 <span class="subst">&#123;err(normal).mean():<span class="number">.4</span>f&#125;</span>，异常样本平均误差 <span class="subst">&#123;err(anomaly).mean():<span class="number">.4</span>f&#125;</span>&quot;</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;异常检出率 <span class="subst">&#123;(err(anomaly) &gt; thr).<span class="built_in">float</span>().mean():<span class="number">.3</span>f&#125;</span>，误报率 <span class="subst">&#123;(err(normal) &gt; thr).<span class="built_in">float</span>().mean():<span class="number">.3</span>f&#125;</span>（在定阈值的同一批正常样本上算，约 1% 是按定义来的，不是独立测试）&quot;</span>)</span><br></pre></td></tr></table></figure>
+<div class="note success simple"><p><strong>典型例子</strong></p>
+<ul>
+<li>工业异常检测：只用正常工况的振动、电流、图像训练，重建误差大就报警（MVTec AD 等基准）</li>
+<li>降维与可视化：比 PCA 更灵活的非线性降维</li>
+<li>图像压缩：学习式图像压缩（Ballé 2017）的主体是自编码器加熵模型</li>
+<li>机器人：Deep Spatial Autoencoder（Finn 2016）把相机图像压成特征点坐标，再用来学视觉运动策略</li>
+<li>2006 年 Hinton 在 Science 上用深层自编码器做降维，是深度学习复兴的标志性工作之一</li>
+</ul>
+</div>
+<ul>
+<li><strong>优势</strong>：不需要标签；能学非线性降维；重建误差天然可以当异常分数；编码器可以当预训练的特征提取器</li>
+<li><strong>局限</strong>：隐空间不规整，不能直接采样生成；容易学成恒等映射；像素级 MSE 偏向模糊、会保留无关细节</li>
+<li><strong>适合的数据</strong>：无标签、高维、实际集中在低维流形上的数据：多通道传感器读数、图像、频谱；压缩、降维、异常检测</li>
+</ul>
+<h3 id="2-6-5-稀疏自编码器-SAE-〔图：SAE〕"><a href="#2-6-5-稀疏自编码器-SAE-〔图：SAE〕" class="headerlink" title="2.6.5 稀疏自编码器 SAE 〔图：SAE〕"></a>2.6.5 稀疏自编码器 SAE 〔图：SAE〕</h3><div class="dl-img"><div class="dl-day"><div class="img-wrap"><div class="img-bg"><img class="img" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://blogpic-5qb.pages.dev/img/sc_swe/dlnn/light/架构-2.6.5-稀疏自编码器.png" alt="<center>2.6.5 稀疏自编码器"/></div><span class="image-caption"><center>2.6.5 稀疏自编码器</span></div></div><div class="dl-night"><div class="img-wrap"><div class="img-bg"><img class="img" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://blogpic-5qb.pages.dev/img/sc_swe/dlnn/dark/架构-2.6.5-稀疏自编码器.png" alt="<center>2.6.5 稀疏自编码器"/></div><span class="image-caption"><center>2.6.5 稀疏自编码器</span></div></div></div>
+
+<div class="note primary simple"><p><strong>一句话</strong></p>
+<p>隐藏层可以比输入还宽，但每个输入只允许少数几个隐藏单元激活；网络被迫把输入拆成少数几个「概念」的组合。</p>
+</div>
+<script type="math/tex; mode=display">\mathcal{L} = \lVert\mathbf{x} - \hat{\mathbf{x}}\rVert^2 + \lambda\lVert\mathbf{h}\rVert_1</script><p>图中 SAE 的隐藏层比输入和输出都宽（菱形）。稀疏的实现方式：L1 惩罚（上式）、KL 散度把每个单元的平均激活率拉到一个小目标值（如 0.05）、或者直接只保留最大的 k 个激活（TopK SAE）。</p>
+<p><strong>叠加（superposition）</strong>：神经网络的一层里，往往用 d 维向量编码远多于 d 个特征，每个特征是一个方向，彼此不完全正交，靠「同一时刻只有少数特征活跃」来避免混淆。稀疏自编码器正好能把这些叠加在一起的特征拆开，每个隐藏单元对应一个方向。</p>
+<p><strong>现在最火的用途：大模型可解释性</strong>。Anthropic 2023 年在小模型、2024 年在 Claude 3 Sonnet 的中间层激活上训练稀疏自编码器，拆出了数百万个可解释的特征（比如一个专门对「金门大桥」响应的特征，人为放大它，模型会在各种话题里把自己说成金门大桥）。OpenAI 等也发表了 TopK SAE 的扩展方法。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">import</span> torch.nn <span class="keyword">as</span> nn</span><br><span class="line"><span class="keyword">import</span> torch.nn.functional <span class="keyword">as</span> F</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">SparseAE</span>(nn.Module):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, in_dim, n_features</span>):</span><br><span class="line">        <span class="built_in">super</span>().__init__()</span><br><span class="line">        self.enc = nn.Linear(in_dim, n_features)</span><br><span class="line">        self.dec = nn.Linear(n_features, in_dim, bias=<span class="literal">False</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">forward</span>(<span class="params">self, x</span>):</span><br><span class="line">        h = F.relu(self.enc(x))                    <span class="comment"># 过完备：隐藏单元数 &gt; 输入维度</span></span><br><span class="line">        <span class="keyword">return</span> self.dec(h), h</span><br><span class="line"></span><br><span class="line">torch.manual_seed(<span class="number">0</span>)</span><br><span class="line">d, n_true = <span class="number">20</span>, <span class="number">40</span></span><br><span class="line">atoms = F.normalize(torch.randn(n_true, d), dim=<span class="number">1</span>)  <span class="comment"># 40 个真实「特征方向」挤在 20 维里（叠加）</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">data</span>(<span class="params">n, k=<span class="number">3</span></span>):</span><br><span class="line">    idx = torch.rand(n, n_true).argsort(<span class="number">1</span>)[:, :k]                      <span class="comment"># 每个样本只有 3 个特征活跃</span></span><br><span class="line">    coef = torch.zeros(n, n_true).scatter_(<span class="number">1</span>, idx, torch.rand(n, k) + <span class="number">0.5</span>)</span><br><span class="line">    <span class="keyword">return</span> coef @ atoms</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">train</span>(<span class="params">lam, normalize=<span class="literal">True</span>, steps=<span class="number">6000</span></span>):</span><br><span class="line">    torch.manual_seed(<span class="number">0</span>)</span><br><span class="line">    model = SparseAE(d, <span class="number">80</span>)</span><br><span class="line">    opt = torch.optim.Adam(model.parameters(), lr=<span class="number">2e-3</span>)</span><br><span class="line">    <span class="keyword">for</span> step <span class="keyword">in</span> <span class="built_in">range</span>(steps):</span><br><span class="line">        x = data(<span class="number">512</span>)</span><br><span class="line">        x_hat, h = model(x)</span><br><span class="line">        loss = F.mse_loss(x_hat, x) + lam * h.<span class="built_in">abs</span>().<span class="built_in">sum</span>(<span class="number">1</span>).mean()      <span class="comment"># 重建 + L1 稀疏</span></span><br><span class="line">        opt.zero_grad(); loss.backward(); opt.step()</span><br><span class="line">        <span class="keyword">if</span> normalize:                        <span class="comment"># 解码器每一列（每个特征的方向）归一化成单位长度；</span></span><br><span class="line">            <span class="keyword">with</span> torch.no_grad():            <span class="comment"># 否则模型会把 h 缩小、解码器放大来逃避 L1</span></span><br><span class="line">                model.dec.weight.data = F.normalize(model.dec.weight.data, dim=<span class="number">0</span>)</span><br><span class="line">    <span class="keyword">return</span> model</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> lam, normalize <span class="keyword">in</span> [(<span class="number">1e-2</span>, <span class="literal">False</span>), (<span class="number">3e-3</span>, <span class="literal">True</span>), (<span class="number">1e-2</span>, <span class="literal">True</span>)]:</span><br><span class="line">    model = train(lam, normalize)</span><br><span class="line">    <span class="keyword">with</span> torch.no_grad():</span><br><span class="line">        x = data(<span class="number">2000</span>)</span><br><span class="line">        x_hat, h = model(x)</span><br><span class="line">        learned = F.normalize(model.dec.weight.T, dim=<span class="number">1</span>)               <span class="comment"># 每个隐藏单元对应的解码方向</span></span><br><span class="line">        best = (atoms @ learned.T).<span class="built_in">max</span>(<span class="number">1</span>).values                       <span class="comment"># 每个真实特征找最像的单元</span></span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;λ = <span class="subst">&#123;lam&#125;</span><span class="subst">&#123;<span class="string">&#x27;&#x27;</span> <span class="keyword">if</span> normalize <span class="keyword">else</span> <span class="string">&#x27;，解码器不归一化&#x27;</span>&#125;</span>：重建相对误差 <span class="subst">&#123;((x_hat - x).norm() / x.norm()).item():<span class="number">.3</span>f&#125;</span>，&quot;</span></span><br><span class="line">              <span class="string">f&quot;平均激活单元 <span class="subst">&#123;(h &gt; <span class="number">1e-3</span>).<span class="built_in">float</span>().<span class="built_in">sum</span>(<span class="number">1</span>).mean():<span class="number">.1</span>f&#125;</span> 个，&quot;</span></span><br><span class="line">              <span class="string">f&quot;40 个真实特征找回 <span class="subst">&#123;(best &gt; <span class="number">0.9</span>).<span class="built_in">sum</span>().item()&#125;</span> 个（余弦 &gt; 0.9）&quot;</span>)</span><br><span class="line"><span class="comment"># λ 大：更稀疏、找回的特征更多，但重建变差；λ 小则相反</span></span><br></pre></td></tr></table></figure>
+<div class="note warning simple"><p><strong>常见说法与实测</strong></p>
+<p><strong>常见说法</strong>：在自编码器的损失里加一个 L1 惩罚，隐藏层就会变稀疏，学到可解释的特征。</p>
+<p><strong>实测</strong>：λ = 0.01、只加 L1 不约束解码器时，重建误差最小（0.036），但平均激活 19 个单元，40 个真实特征只找回 1 个；每次更新后把解码器每一列归一化成单位长度，同样的 λ 找回 32 个。λ 降到 0.003 时只找回 8 个，重建更好（0.103 对 0.243）。</p>
+<p><strong>怎么理解</strong>：L1 惩罚的是 h 的大小。模型可以把 h 整体缩小、把解码器权重同比放大，重建不变、惩罚变小，等于绕开了约束。所以用 L1 惩罚激活的稀疏自编码器通常都会约束解码器的列范数（或者把列范数乘进惩罚项），λ 再在稀疏和重建之间取舍。</p>
+</div>
+<div class="note success simple"><p><strong>典型例子</strong></p>
+<ul>
+<li>大语言模型可解释性：从模型内部激活里拆出可解释、可干预的特征</li>
+<li>稀疏编码：在自然图像小块上学到的字典很像视觉皮层 V1 的 Gabor 状边缘检测器（Olshausen &amp; Field 1996，同一个原理）</li>
+<li>早期深度学习里用于逐层无监督预训练</li>
+</ul>
+</div>
+<ul>
+<li><strong>优势</strong>：特征更可解释，一个单元对应一个相对独立的概念；能从过完备表示中拆出叠加的特征；稀疏表示对下游线性分类友好</li>
+<li><strong>局限</strong>：λ 难调（太大重建差、太小不稀疏）；会出现从不激活的「死特征」；特征数很大时训练成本高；拆出来的特征是否就是模型「真正使用」的概念，仍有争议</li>
+<li><strong>适合的数据</strong>：由少数独立因素叠加而成的数据：神经网络内部激活、自然图像小块、多源混合信号</li>
+</ul>
+<h3 id="2-6-6-去噪自编码器-DAE-〔图：DAE〕"><a href="#2-6-6-去噪自编码器-DAE-〔图：DAE〕" class="headerlink" title="2.6.6 去噪自编码器 DAE 〔图：DAE〕"></a>2.6.6 去噪自编码器 DAE 〔图：DAE〕</h3><div class="dl-img"><div class="dl-day"><div class="img-wrap"><div class="img-bg"><img class="img" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://blogpic-5qb.pages.dev/img/sc_swe/dlnn/light/架构-2.6.6-去噪自编码器.png" alt="<center>2.6.6 去噪自编码器"/></div><span class="image-caption"><center>2.6.6 去噪自编码器</span></div></div><div class="dl-night"><div class="img-wrap"><div class="img-bg"><img class="img" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://blogpic-5qb.pages.dev/img/sc_swe/dlnn/dark/架构-2.6.6-去噪自编码器.png" alt="<center>2.6.6 去噪自编码器"/></div><span class="image-caption"><center>2.6.6 去噪自编码器</span></div></div></div>
+
+<div class="note primary simple"><p><strong>一句话</strong></p>
+<p>输入先加噪或遮挡，要求输出还原干净的原始输入；学到的特征对噪声和缺失更鲁棒。</p>
+</div>
+<script type="math/tex; mode=display">\mathcal{L} = \lVert\mathbf{x} - g_\theta(f_\phi(\tilde{\mathbf{x}}))\rVert^2,\qquad \tilde{\mathbf{x}} = \mathbf{x} + \boldsymbol\epsilon\ \text{ 或随机遮挡}</script><p>图中 DAE 的输入单元画成「带噪输入单元」（带三角的黄色圆）。Vincent 2008 年提出。</p>
+<p><strong>为什么重要</strong>：DAE 的思想后来分成了两条主线。</p>
+<ol>
+<li><strong>掩码预训练</strong>：「遮挡」这种腐蚀推到极致，就是 BERT 和 MAE（2.6.2）</li>
+<li><strong>扩散模型</strong>：在很多个噪声等级上同时训练去噪器，再一步步去噪，就是扩散模型（2.2.1）。两者靠 score 联系起来，见下</li>
+</ol>
+<p><strong>去噪和 score 的关系</strong>（Vincent 2011）：高斯加噪、平方重建损失下，训练去噪自编码器等价于对加噪后的分布做 score matching。最优去噪器 r*_σ 的重建残差除以噪声方差，正好是加噪分布 p_σ 的 score（对数密度的梯度）：</p>
+<script type="math/tex; mode=display">\frac{r^*_\sigma(\tilde{\mathbf{x}}) - \tilde{\mathbf{x}}}{\sigma^2} = \nabla_{\tilde{\mathbf{x}}}\log p_\sigma(\tilde{\mathbf{x}})</script><p>p_σ 是数据和高斯噪声卷积后的分布，噪声很小时才接近原数据分布的 score（Alain &amp; Bengio 2014）；随机遮挡这类腐蚀不适用这个关系。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">import</span> torch.nn <span class="keyword">as</span> nn</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">clean_signals</span>(<span class="params">n, T=<span class="number">128</span></span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;随机频率、相位的正弦混合，模拟干净的振动或触觉信号&quot;&quot;&quot;</span></span><br><span class="line">    t = torch.linspace(<span class="number">0</span>, <span class="number">1</span>, T)</span><br><span class="line">    f = torch.randint(<span class="number">2</span>, <span class="number">8</span>, (n, <span class="number">2</span>, <span class="number">1</span>)).<span class="built_in">float</span>()</span><br><span class="line">    ph = torch.rand(n, <span class="number">2</span>, <span class="number">1</span>) * <span class="number">6.28</span></span><br><span class="line">    <span class="keyword">return</span> (torch.sin(<span class="number">2</span> * torch.pi * f * t + ph).<span class="built_in">sum</span>(<span class="number">1</span>, keepdim=<span class="literal">True</span>)) / <span class="number">2</span>      <span class="comment"># (n, 1, T)</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">DenoisingAE</span>(nn.Module):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="built_in">super</span>().__init__()</span><br><span class="line">        self.encoder = nn.Sequential(nn.Conv1d(<span class="number">1</span>, <span class="number">16</span>, <span class="number">9</span>, stride=<span class="number">2</span>, padding=<span class="number">4</span>), nn.ReLU(),</span><br><span class="line">                                     nn.Conv1d(<span class="number">16</span>, <span class="number">32</span>, <span class="number">9</span>, stride=<span class="number">2</span>, padding=<span class="number">4</span>), nn.ReLU())        <span class="comment"># 128 → 32</span></span><br><span class="line">        self.decoder = nn.Sequential(nn.ConvTranspose1d(<span class="number">32</span>, <span class="number">16</span>, <span class="number">8</span>, stride=<span class="number">2</span>, padding=<span class="number">3</span>), nn.ReLU(),</span><br><span class="line">                                     nn.ConvTranspose1d(<span class="number">16</span>, <span class="number">1</span>, <span class="number">8</span>, stride=<span class="number">2</span>, padding=<span class="number">3</span>))           <span class="comment"># 32 → 128</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">forward</span>(<span class="params">self, x</span>):</span><br><span class="line">        <span class="keyword">return</span> self.decoder(self.encoder(x))</span><br><span class="line"></span><br><span class="line">torch.manual_seed(<span class="number">0</span>)</span><br><span class="line">model = DenoisingAE()</span><br><span class="line">opt = torch.optim.Adam(model.parameters(), lr=<span class="number">2e-3</span>)</span><br><span class="line"><span class="keyword">for</span> step <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">2000</span>):</span><br><span class="line">    x = clean_signals(<span class="number">64</span>)</span><br><span class="line">    x_noisy = x + <span class="number">0.3</span> * torch.randn_like(x)                       <span class="comment"># 加噪</span></span><br><span class="line">    x_noisy = x_noisy * (torch.rand_like(x) &gt; <span class="number">0.1</span>).<span class="built_in">float</span>()        <span class="comment"># 再随机丢掉 10% 的采样点</span></span><br><span class="line">    loss = nn.functional.mse_loss(model(x_noisy), x)              <span class="comment"># 目标是干净信号</span></span><br><span class="line">    opt.zero_grad(); loss.backward(); opt.step()</span><br><span class="line"></span><br><span class="line"><span class="keyword">with</span> torch.no_grad():</span><br><span class="line">    x = clean_signals(<span class="number">500</span>)</span><br><span class="line">    x_noisy = x + <span class="number">0.3</span> * torch.randn_like(x)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;去噪前 MSE <span class="subst">&#123;nn.functional.mse_loss(x_noisy, x):<span class="number">.4</span>f&#125;</span>，去噪后 MSE <span class="subst">&#123;nn.functional.mse_loss(model(x_noisy), x):<span class="number">.4</span>f&#125;</span>&quot;</span>)</span><br></pre></td></tr></table></figure>
+<div class="note success simple"><p><strong>典型例子</strong></p>
+<ul>
+<li>图像去噪、语音增强、医学影像去伪影</li>
+<li>2010 年前后的堆叠去噪自编码器（逐层预训练）</li>
+<li>现代后继者：BERT、MAE（掩码重建）与扩散模型（多噪声等级的去噪）</li>
+</ul>
+</div>
+<ul>
+<li><strong>优势</strong>：学到对噪声和缺失鲁棒的特征；不需要窄瓶颈也不会学成恒等映射；思想直接延伸到掩码预训练和扩散模型</li>
+<li><strong>局限</strong>：训练时的腐蚀方式要接近真实的腐蚀，否则泛化差；本节这种只在一个噪声等级上训练的确定性去噪器没有现成的采样流程，不能直接套用 DDPM 那样的多步采样；把腐蚀和去噪交替当成马尔可夫链来采样的生成式 DAE（Bengio 2013）是另一条路</li>
+<li><strong>适合的数据</strong>：带噪或有缺失的信号和图像：传感器读数、音频、医学影像；作为自监督预训练的目标</li>
+</ul>
+</article><div class="post-copyright"><div class="post-copyright__title"><span class="post-copyright-info"><h>深度学习与神经网络8</h></span></div><div class="post-copyright__type"><span class="post-copyright-info"><a href="https://www.noctuna.cc/2026/10/07/DeepLearning8/">https://www.noctuna.cc/2026/10/07/DeepLearning8/</a></span></div><div class="post-copyright-m"><div class="post-copyright-m-info"><div class="post-copyright-a"><h>作者</h><div class="post-copyright-cc-info"><h>Noctuna</h></div></div><div class="post-copyright-c"><h>发布于</h><div class="post-copyright-cc-info"><h>2026-10-07</h></div></div><div class="post-copyright-u"><h>更新于</h><div class="post-copyright-cc-info"><h>2026-10-07</h></div></div><div class="post-copyright-c"><h>许可协议</h><div class="post-copyright-cc-info"><a class="icon" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a><a rel="noopener" target="_blank" title="CC BY-NC-SA 4.0" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></div></div></div></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/">机器学习</a><a class="post-meta__tags" href="/tags/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/">人工智能</a><a class="post-meta__tags" href="/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/">深度学习</a><a class="post-meta__tags" href="/tags/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C/">神经网络</a><a class="post-meta__tags" href="/tags/PyTorch/">PyTorch</a></div><div class="post_share"><div class="social-share" data-image="https://blogpic-5qb.pages.dev/img/postcover/14.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2026/10/07/DeepLearning9/" title="深度学习与神经网络9"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://blogpic-5qb.pages.dev/img/postcover/4.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">深度学习与神经网络9</div></div></a></div><div class="next-post pull-right"><a href="/2026/10/07/DeepLearning7/" title="深度学习与神经网络7"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://blogpic-5qb.pages.dev/img/postcover/4.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">深度学习与神经网络7</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2026/10/07/DeepLearning1/" title="深度学习与神经网络1"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://blogpic-5qb.pages.dev/img/postcover/7.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2026-10-07</div><div class="title">深度学习与神经网络1</div></div></a></div><div><a href="/2026/10/07/DeepLearning12/" title="深度学习与神经网络12"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://blogpic-5qb.pages.dev/img/postcover/20.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2026-10-07</div><div class="title">深度学习与神经网络12</div></div></a></div><div><a href="/2026/10/07/DeepLearning11/" title="深度学习与神经网络11"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://blogpic-5qb.pages.dev/img/postcover/14.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2026-10-07</div><div class="title">深度学习与神经网络11</div></div></a></div><div><a href="/2026/10/07/DeepLearning13/" title="深度学习与神经网络13"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://blogpic-5qb.pages.dev/img/postcover/6.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2026-10-07</div><div class="title">深度学习与神经网络13</div></div></a></div><div><a href="/2026/10/07/DeepLearning10/" title="深度学习与神经网络10"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://blogpic-5qb.pages.dev/img/postcover/18.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2026-10-07</div><div class="title">深度学习与神经网络10</div></div></a></div><div><a href="/2026/10/07/DeepLearning4/" title="深度学习与神经网络4"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://blogpic-5qb.pages.dev/img/postcover/16.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2026-10-07</div><div class="title">深度学习与神经网络4</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://blogpic-5qb.pages.dev/img/avatar/neko.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">Noctuna</div><div class="author-info__description">“ 𝑰 𝒂𝒎 𝒃𝒐𝒖𝒏𝒅 𝒕𝒐 𝒇𝒊𝒏𝒅... 𝒎𝒚 𝒐𝒘𝒏 𝑫𝒓𝒆𝒂𝒎 ”</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">74</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">28</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><a id="card-info-btn" href="/about/"><i></i><span>☕ Have a cup of coffee?</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/Harukuya" target="_blank" title="Github"><i class="fab fa-github" style="color: ;"></i></a><a class="social-icon" href="https://space.bilibili.com/256307110?spm_id_from=333.1007.0.0" target="_blank" title="BiliBili"><i class="fa-brands fa-bilibili" style="color: ;"></i></a><a class="social-icon" href="https://t.me/techcoffeeinside" target="_blank" title="Telegram"><i class="fa-brands fa-telegram" style="color: ;"></i></a><a class="social-icon" href="https://x.com/Noctuna0206" target="_blank" title="Twitter"><i class="fa-brands fa-twitter" style="color: ;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fa-regular fa-bookmark"></i><span>公告</span></div><div class="announcement_content"><center> 主域名：<br><a href="https://www.noctuna.cc"><b><font color="#5ea6e5">www.noctuna.cc</font></b></a><br> 联系方式：<br><a href="https://www.noctuna.cc"><b><font color="#5ea6e5">QQ 308733148</font></b></a><br> <a href="https://www.noctuna.cc">📬：<b><font color="#a591e0">noctuna0206@163.com</font></b></a><br> 碎碎念：<br><a href="https://www.noctuna.cc"><b><font color="#5ea6e5">☕ 今天过得好吗？</font></b></a><br> <a href="https://www.noctuna.cc"><b><font color="#5ea6e5">🎶 听会歌休息一下吧</font></b></a><br> <a href="https://www.noctuna.cc"><b><font color="#5ea6e5">💫 愿我们在闪耀的未来再会</font></b></a><br> <a href="https://www.noctuna.cc" style="color:#999999; font-size:0.9em;">* IconCDN已修复 *</a><br> </center></div><div id="welcome-info"></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#2-6-%E8%87%AA%E7%9B%91%E7%9D%A3%E4%B8%8E%E8%A1%A8%E7%A4%BA%E5%AD%A6%E4%B9%A0"><span class="toc-text">2.6 自监督与表示学习</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-6-0-%E8%A1%A8%E7%A4%BA%E5%AD%A6%E4%B9%A0%E5%9C%A8%E5%AD%A6%E4%BB%80%E4%B9%88%EF%BC%88%E5%AE%B6%E6%97%8F%E5%85%AC%E5%85%B1%E9%83%A8%E5%88%86%EF%BC%89"><span class="toc-text">2.6.0 表示学习在学什么（家族公共部分）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-6-1-%E5%AF%B9%E6%AF%94%E5%AD%A6%E4%B9%A0%EF%BC%9A%E5%AD%AA%E7%94%9F%E7%BD%91%E7%BB%9C%E3%80%81SimCLR%E3%80%81CLIP"><span class="toc-text">2.6.1 对比学习：孪生网络、SimCLR、CLIP</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-6-2-MAE-%E6%8E%A9%E7%A0%81%E8%87%AA%E7%BC%96%E7%A0%81%E5%99%A8"><span class="toc-text">2.6.2 MAE 掩码自编码器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-6-3-%E8%87%AA%E8%92%B8%E9%A6%8F%E4%B8%8E-JEPA%EF%BC%9ABYOL%E3%80%81DINO%E3%80%81I-JEPA"><span class="toc-text">2.6.3 自蒸馏与 JEPA：BYOL、DINO、I-JEPA</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-6-4-%E8%87%AA%E7%BC%96%E7%A0%81%E5%99%A8-AE-%E3%80%94%E5%9B%BE%EF%BC%9AAE%E3%80%95"><span class="toc-text">2.6.4 自编码器 AE 〔图：AE〕</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-6-5-%E7%A8%80%E7%96%8F%E8%87%AA%E7%BC%96%E7%A0%81%E5%99%A8-SAE-%E3%80%94%E5%9B%BE%EF%BC%9ASAE%E3%80%95"><span class="toc-text">2.6.5 稀疏自编码器 SAE 〔图：SAE〕</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-6-6-%E5%8E%BB%E5%99%AA%E8%87%AA%E7%BC%96%E7%A0%81%E5%99%A8-DAE-%E3%80%94%E5%9B%BE%EF%BC%9ADAE%E3%80%95"><span class="toc-text">2.6.6 去噪自编码器 DAE 〔图：DAE〕</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2026/10/07/DeepLearning13/" title="深度学习与神经网络13"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://blogpic-5qb.pages.dev/img/postcover/6.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="深度学习与神经网络13"/></a><div class="content"><a class="title" href="/2026/10/07/DeepLearning13/" title="深度学习与神经网络13">深度学习与神经网络13</a><time datetime="2026-10-07T15:37:23.000Z" title="更新于 2026-10-07 23:37:23">2026-10-07</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/10/07/DeepLearning12/" title="深度学习与神经网络12"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://blogpic-5qb.pages.dev/img/postcover/20.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="深度学习与神经网络12"/></a><div class="content"><a class="title" href="/2026/10/07/DeepLearning12/" title="深度学习与神经网络12">深度学习与神经网络12</a><time datetime="2026-10-07T15:36:23.000Z" title="更新于 2026-10-07 23:36:23">2026-10-07</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/10/07/DeepLearning11/" title="深度学习与神经网络11"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://blogpic-5qb.pages.dev/img/postcover/14.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="深度学习与神经网络11"/></a><div class="content"><a class="title" href="/2026/10/07/DeepLearning11/" title="深度学习与神经网络11">深度学习与神经网络11</a><time datetime="2026-10-07T15:35:23.000Z" title="更新于 2026-10-07 23:35:23">2026-10-07</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2023 - 2026 By Noctuna</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="简繁转换">繁</button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button><button id="go-down" type="button" title="直达底部" onclick="btf.scrollToDest(document.body.scrollHeight, 500)"><i class="fas fa-arrow-down"></i></button></div></div><div><script src="/js/utils.js?v=4.8.1"></script><script src="/js/main.js?v=4.8.1"></script><script src="/js/tw_cn.js?v=4.8.1"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.15/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@5.2.0/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload@17.8.3/dist/lazyload.iife.min.js"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.js"></script><script>function panguFn () {
+  if (typeof pangu === 'object') pangu.autoSpacingPage()
+  else {
+    getScript('https://cdn.jsdelivr.net/npm/pangu@4.0.7/dist/browser/pangu.min.js')
+      .then(() => {
+        pangu.autoSpacingPage()
+      })
+  }
+}
+
+function panguInit () {
+  if (false){
+    GLOBAL_CONFIG_SITE.isPost && panguFn()
+  } else {
+    panguFn()
+  }
+}
+
+document.addEventListener('DOMContentLoaded', panguInit)</script><div class="js-pjax"><script>if (!window.MathJax) {
+  window.MathJax = {
+    tex: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"]],
+      tags: 'ams'
+    },
+    chtml: {
+      scale: 1.1
+    },
+    options: {
+      renderActions: {
+        findScript: [10, doc => {
+          for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+            const display = !!node.type.match(/; *mode=display/)
+            const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+            const text = document.createTextNode('')
+            node.parentNode.replaceChild(text, node)
+            math.start = {node: text, delim: '', n: 0}
+            math.end = {node: text, delim: '', n: 0}
+            doc.math.push(math)
+          }
+        }, ''],
+        insertScript: [200, () => {
+          document.querySelectorAll('mjx-container').forEach(node => {
+            if (node.hasAttribute('display')) {
+              btf.wrap(node, 'div', { class: 'mathjax-overflow' })
+            } else {
+              btf.wrap(node, 'span', { class: 'mathjax-overflow' })
+            }
+          });
+        }, '', false]
+      }
+    }
+  }
+  
+  const script = document.createElement('script')
+  script.src = 'https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.min.js'
+  script.id = 'MathJax-script'
+  script.async = true
+  document.head.appendChild(script)
+} else {
+  MathJax.startup.document.state(0)
+  MathJax.texReset()
+  MathJax.typesetPromise()
+}</script></div><script defer src="https://npm.elemecdn.com/jquery@latest/dist/jquery.min.js"></script><div class="aplayer no-destroy" data-id="8866982132" data-server="tencent" data-type="playlist" data-fixed="true" data-autoplay="false" data-theme="#ffaf5e" data-order="random"> </div><canvas id="universe"></canvas><script defer src="/js/universe.js"></script><script defer src="/js/cursor.js"></script><script async src="//npm.elemecdn.com/pace-js@1.2.4/pace.min.js"></script><script async src="/js/fps.js"></script><script src="/js/f12.js"></script><script async src="https://cdn1.tianli0.top/npm/vue@2.6.14/dist/vue.min.js"></script><script async src="https://cdn1.tianli0.top/npm/element-ui@2.15.6/lib/index.js"></script><script defer data-pjax src="/js/cat.js"></script><script src="https://cdn.staticfile.org/jquery/3.6.3/jquery.min.js"></script><script async data-pjax src="/js/txmap.js"></script><script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js"></script><script>let pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+var pjax = new Pjax({
+  elements: 'a:not([target="_blank"])',
+  selectors: pjaxSelectors,
+  cacheBust: false,
+  analytics: false,
+  scrollRestoration: false
+})
+
+document.addEventListener('pjax:send', function () {
+
+  // removeEventListener scroll 
+  window.tocScrollFn && window.removeEventListener('scroll', window.tocScrollFn)
+  window.scrollCollect && window.removeEventListener('scroll', scrollCollect)
+
+  document.getElementById('rightside').style.cssText = "opacity: ''; transform: ''"
+  
+  if (window.aplayers) {
+    for (let i = 0; i < window.aplayers.length; i++) {
+      if (!window.aplayers[i].options.fixed) {
+        window.aplayers[i].destroy()
+      }
+    }
+  }
+
+  typeof typed === 'object' && typed.destroy()
+
+  //reset readmode
+  const $bodyClassList = document.body.classList
+  $bodyClassList.contains('read-mode') && $bodyClassList.remove('read-mode')
+
+  typeof disqusjs === 'object' && disqusjs.destroy()
+})
+
+document.addEventListener('pjax:complete', function () {
+  window.refreshFn()
+
+  document.querySelectorAll('script[data-pjax]').forEach(item => {
+    const newScript = document.createElement('script')
+    const content = item.text || item.textContent || item.innerHTML || ""
+    Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+    newScript.appendChild(document.createTextNode(content))
+    item.parentNode.replaceChild(newScript, item)
+  })
+
+  GLOBAL_CONFIG.islazyload && window.lazyLoadInstance.update()
+
+  typeof chatBtnFn === 'function' && chatBtnFn()
+  typeof panguInit === 'function' && panguInit()
+
+  // google analytics
+  typeof gtag === 'function' && gtag('config', '', {'page_path': window.location.pathname});
+
+  // baidu analytics
+  typeof _hmt === 'object' && _hmt.push(['_trackPageview',window.location.pathname]);
+
+  typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
+
+  // prismjs
+  typeof Prism === 'object' && Prism.highlightAll()
+})
+
+document.addEventListener('pjax:error', (e) => {
+  if (e.request.status === 404) {
+    pjax.loadUrl('/404.html')
+  }
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div class="no-result" id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=4.8.1"></script></div></div><!-- hexo injector body_end start --><script data-pjax>
+    function butterfly_categories_card_injector_config(){
+      var parent_div_git = document.getElementById('recent-posts');
+      var item_html = '<style>li.categoryBar-list-item{width:32.3%;}.categoryBar-list{max-height: 380px;overflow:auto;}.categoryBar-list::-webkit-scrollbar{width:0!important}@media screen and (max-width: 650px){.categoryBar-list{max-height: 320px;}}</style><div class="recent-post-item" style="height:auto;width:100%;padding:0px;"><div id="categoryBar"><ul class="categoryBar-list"><li class="categoryBar-list-item" style="background:url(https://blogpic-5qb.pages.dev/img/cate/4.jpg);"> <a class="categoryBar-list-link" onclick="pjax.loadUrl(&quot;categories/国G杂谈/&quot;);" href="javascript:void(0);">国G杂谈</a><span class="categoryBar-list-count">3</span><span class="categoryBar-list-descr">今日特惠：焦糖玛奇朵☕</span></li><li class="categoryBar-list-item" style="background:url(https://blogpic-5qb.pages.dev/img/cate/1.jpg);"> <a class="categoryBar-list-link" onclick="pjax.loadUrl(&quot;categories/摸点同人文/&quot;);" href="javascript:void(0);">摸点同人文</a><span class="categoryBar-list-count">9</span><span class="categoryBar-list-descr">会继续吗...</span></li><li class="categoryBar-list-item" style="background:url(https://blogpic-5qb.pages.dev/img/cate/3.jpg);"> <a class="categoryBar-list-link" onclick="pjax.loadUrl(&quot;categories/辉夜の生活碎片/&quot;);" href="javascript:void(0);">辉夜の生活碎片</a><span class="categoryBar-list-count">6</span><span class="categoryBar-list-descr">也许以后会学点前端？</span></li><li class="categoryBar-list-item" style="background:url(https://blogpic-5qb.pages.dev/img/cate/9.jpg);"> <a class="categoryBar-list-link" onclick="pjax.loadUrl(&quot;categories/辉夜の编程之路/&quot;);" href="javascript:void(0);">辉夜の编程之路</a><span class="categoryBar-list-count">53</span><span class="categoryBar-list-descr">进修半导体ING...</span></li><li class="categoryBar-list-item" style="background:url(https://blogpic-5qb.pages.dev/img/cate/6.jpg);"> <a class="categoryBar-list-link" onclick="pjax.loadUrl(&quot;categories/辉夜の软件工程之路/&quot;);" href="javascript:void(0);">辉夜の软件工程之路</a><span class="categoryBar-list-count">1</span><span class="categoryBar-list-descr">“無限進步”！</span></li><li class="categoryBar-list-item" style="background:url(https://blogpic-5qb.pages.dev/img/cate/8.jpg);"> <a class="categoryBar-list-link" onclick="pjax.loadUrl(&quot;categories/Minecraft服务器/&quot;);" href="javascript:void(0);">Minecraft服务器</a><span class="categoryBar-list-count">1</span><span class="categoryBar-list-descr">再写了再写了</span></li><li class="categoryBar-list-item" style="background:url(https://blogpic-5qb.pages.dev/img/gallery_firefly/11.jpg);"> <a class="categoryBar-list-link" onclick="pjax.loadUrl(&quot;categories/辉夜の集成电路之路/&quot;);" href="javascript:void(0);">辉夜の集成电路之路</a><span class="categoryBar-list-count">1</span><span class="categoryBar-list-descr">“人是一株有思想的芦苇...”</span></li></ul></div></div>';
+      console.log('已挂载butterfly_categories_card')
+      parent_div_git.insertAdjacentHTML("afterbegin",item_html)
+      }
+    if( document.getElementById('recent-posts') && (location.pathname ==='/'|| '/' ==='all')){
+    butterfly_categories_card_injector_config()
+    }
+  </script><script data-pjax>
+  function butterfly_footer_beautify_injector_config(){
+    var parent_div_git = document.getElementById('footer-wrap');
+    var item_html = '<div id="workboard"></div>';
+    console.log('已挂载butterfly_footer_beautify')
+    parent_div_git.insertAdjacentHTML("beforeend",item_html)
+    }
+  var elist = 'null'.split(',');
+  var cpage = location.pathname;
+  var epage = 'all';
+  var flag = 0;
+
+  for (var i=0;i<elist.length;i++){
+    if (cpage.includes(elist[i])){
+      flag++;
+    }
+  }
+
+  if ((epage ==='all')&&(flag == 0)){
+    butterfly_footer_beautify_injector_config();
+  }
+  else if (epage === cpage){
+    butterfly_footer_beautify_injector_config();
+  }
+  </script><script async src="/js/runtime.js"></script><script data-pjax>
+  function butterfly_swiper_injector_config(){
+    var parent_div_git = document.getElementById('recent-posts');
+    var item_html = '<div class="recent-post-item" style="height: auto;width: 100%"><div class="blog-slider swiper-container-fade swiper-container-horizontal" id="swiper_container"><div class="blog-slider__wrp swiper-wrapper" style="transition-duration: 0ms;"><div class="blog-slider__item swiper-slide" style="width: 750px; opacity: 1; transform: translate3d(0px, 0px, 0px); transition-duration: 0ms;"><a class="blog-slider__img" onclick="pjax.loadUrl(&quot;2022/08/15/mysterylovercomm/&quot;);" href="javascript:void(0);" alt=""><img width="48" height="48" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://blogpic-5qb.pages.dev/img/postcover/1.png" alt="" onerror="this.src=https://unpkg.zhimg.com/akilar-candyassets/image/loading.gif; this.onerror = null;"/></a><div class="blog-slider__content"><span class="blog-slider__code">2022-08-15</span><a class="blog-slider__title" onclick="pjax.loadUrl(&quot;2022/08/15/mysterylovercomm/&quot;);" href="javascript:void(0);" alt="">MysteryLover</a><div class="blog-slider__text">每个人，都有决定自己是谁的权利</div><a class="blog-slider__button" onclick="pjax.loadUrl(&quot;2022/08/15/mysterylovercomm/&quot;);" href="javascript:void(0);" alt="">详情       </a></div></div><div class="blog-slider__item swiper-slide" style="width: 750px; opacity: 1; transform: translate3d(0px, 0px, 0px); transition-duration: 0ms;"><a class="blog-slider__img" onclick="pjax.loadUrl(&quot;2022/12/15/mysterylover/&quot;);" href="javascript:void(0);" alt=""><img width="48" height="48" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://blogpic-5qb.pages.dev/img/postcover/1.png" alt="" onerror="this.src=https://unpkg.zhimg.com/akilar-candyassets/image/loading.gif; this.onerror = null;"/></a><div class="blog-slider__content"><span class="blog-slider__code">2022-12-15</span><a class="blog-slider__title" onclick="pjax.loadUrl(&quot;2022/12/15/mysterylover/&quot;);" href="javascript:void(0);" alt="">MysteryLover - 遥远的ta</a><div class="blog-slider__text">遥远的ta</div><a class="blog-slider__button" onclick="pjax.loadUrl(&quot;2022/12/15/mysterylover/&quot;);" href="javascript:void(0);" alt="">详情       </a></div></div><div class="blog-slider__item swiper-slide" style="width: 750px; opacity: 1; transform: translate3d(0px, 0px, 0px); transition-duration: 0ms;"><a class="blog-slider__img" onclick="pjax.loadUrl(&quot;2023/01/22/newyear/&quot;);" href="javascript:void(0);" alt=""><img width="48" height="48" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://blogpic-5qb.pages.dev/img/postcover/3.jpg" alt="" onerror="this.src=https://unpkg.zhimg.com/akilar-candyassets/image/loading.gif; this.onerror = null;"/></a><div class="blog-slider__content"><span class="blog-slider__code">2023-01-22</span><a class="blog-slider__title" onclick="pjax.loadUrl(&quot;2023/01/22/newyear/&quot;);" href="javascript:void(0);" alt="">年。</a><div class="blog-slider__text">年。</div><a class="blog-slider__button" onclick="pjax.loadUrl(&quot;2023/01/22/newyear/&quot;);" href="javascript:void(0);" alt="">详情       </a></div></div><div class="blog-slider__item swiper-slide" style="width: 750px; opacity: 1; transform: translate3d(0px, 0px, 0px); transition-duration: 0ms;"><a class="blog-slider__img" onclick="pjax.loadUrl(&quot;2025/03/01/ICMfundamental/&quot;);" href="javascript:void(0);" alt=""><img width="48" height="48" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://blogpic-5qb.pages.dev/img/postcover/5.png" alt="" onerror="this.src=https://unpkg.zhimg.com/akilar-candyassets/image/loading.gif; this.onerror = null;"/></a><div class="blog-slider__content"><span class="blog-slider__code">2025-03-01</span><a class="blog-slider__title" onclick="pjax.loadUrl(&quot;2025/03/01/ICMfundamental/&quot;);" href="javascript:void(0);" alt="">《集成电路材料科学与工程基础》第六章</a><div class="blog-slider__text">《集成电路材料科学与工程基础》第六章随笔</div><a class="blog-slider__button" onclick="pjax.loadUrl(&quot;2025/03/01/ICMfundamental/&quot;);" href="javascript:void(0);" alt="">详情       </a></div></div><div class="blog-slider__item swiper-slide" style="width: 750px; opacity: 1; transform: translate3d(0px, 0px, 0px); transition-duration: 0ms;"><a class="blog-slider__img" onclick="pjax.loadUrl(&quot;2023/04/15/dreamending/&quot;);" href="javascript:void(0);" alt=""><img width="48" height="48" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://blogpic-5qb.pages.dev/img/postcover/7.png" alt="" onerror="this.src=https://unpkg.zhimg.com/akilar-candyassets/image/loading.gif; this.onerror = null;"/></a><div class="blog-slider__content"><span class="blog-slider__code">2023-04-15</span><a class="blog-slider__title" onclick="pjax.loadUrl(&quot;2023/04/15/dreamending/&quot;);" href="javascript:void(0);" alt="">DreamEnding</a><div class="blog-slider__text">末日下的爱恋——《梦末》⏳</div><a class="blog-slider__button" onclick="pjax.loadUrl(&quot;2023/04/15/dreamending/&quot;);" href="javascript:void(0);" alt="">详情       </a></div></div><div class="blog-slider__item swiper-slide" style="width: 750px; opacity: 1; transform: translate3d(0px, 0px, 0px); transition-duration: 0ms;"><a class="blog-slider__img" onclick="pjax.loadUrl(&quot;2023/04/15/tinysnow/&quot;);" href="javascript:void(0);" alt=""><img width="48" height="48" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://blogpic-5qb.pages.dev/img/postcover/10.png" alt="" onerror="this.src=https://unpkg.zhimg.com/akilar-candyassets/image/loading.gif; this.onerror = null;"/></a><div class="blog-slider__content"><span class="blog-slider__code">2023-04-15</span><a class="blog-slider__title" onclick="pjax.loadUrl(&quot;2023/04/15/tinysnow/&quot;);" href="javascript:void(0);" alt="">TinySnow</a><div class="blog-slider__text">被操控的爱——《茸雪》❄️</div><a class="blog-slider__button" onclick="pjax.loadUrl(&quot;2023/04/15/tinysnow/&quot;);" href="javascript:void(0);" alt="">详情       </a></div></div></div><div class="blog-slider__pagination swiper-pagination-clickable swiper-pagination-bullets"></div></div></div>';
+    console.log('已挂载butterfly_swiper')
+    parent_div_git.insertAdjacentHTML("afterbegin",item_html)
+    }
+  var elist = 'undefined'.split(',');
+  var cpage = location.pathname;
+  var epage = '/';
+  var flag = 0;
+
+  for (var i=0;i<elist.length;i++){
+    if (cpage.includes(elist[i])){
+      flag++;
+    }
+  }
+
+  if ((epage ==='all')&&(flag == 0)){
+    butterfly_swiper_injector_config();
+  }
+  else if (epage === cpage){
+    butterfly_swiper_injector_config();
+  }
+  </script><script defer src="https://npm.elemecdn.com/hexo-butterfly-swiper/lib/swiper.min.js"></script><script defer data-pjax src="https://npm.elemecdn.com/hexo-butterfly-swiper/lib/swiper_init.js"></script><script async src="//at.alicdn.com/t/font_2032782_8d5kxvn09md.js"></script><div class="js-pjax"><script async="async">var arr = document.getElementsByClassName('recent-post-item');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__zoomIn');
+    arr[i].setAttribute('data-wow-duration', '1.5s');
+    arr[i].setAttribute('data-wow-delay', '0.5s');
+    arr[i].setAttribute('data-wow-offset', '100');
+    arr[i].setAttribute('data-wow-iteration', '1');
+  }</script><script async="async">var arr = document.getElementsByClassName('card-widget');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__backInRight');
+    arr[i].setAttribute('data-wow-duration', '');
+    arr[i].setAttribute('data-wow-delay', '');
+    arr[i].setAttribute('data-wow-offset', '');
+    arr[i].setAttribute('data-wow-iteration', '');
+  }</script><script async="async">var arr = document.getElementsByClassName('page-number current');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__zoomIn');
+    arr[i].setAttribute('data-wow-duration', '1.5s');
+    arr[i].setAttribute('data-wow-delay', '0.5s');
+    arr[i].setAttribute('data-wow-offset', '');
+    arr[i].setAttribute('data-wow-iteration', '');
+  }</script></div><script defer src="https://npm.elemecdn.com/hexo-butterfly-wowjs/lib/wow.min.js"></script><script defer src="https://npm.elemecdn.com/hexo-butterfly-wowjs/lib/wow_init.js"></script><!-- hexo injector body_end end --></body></html>
