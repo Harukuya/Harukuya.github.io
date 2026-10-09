@@ -231,14 +231,28 @@ div#tag {
   border-radius: 20px;
 }
 
-/* 导航栏 */
+/* 导航栏：往下滚后的毛玻璃底画在 #nav::before 上，不直接给 #nav 加 backdrop-filter——加在 #nav 上的话，
+   菜单里伸出导航条的东西（「关于店长」的信纸卡、「来点什么？」的下拉菜单）会被画成半透明（2026-10-09） */
 #page-header.nav-fixed #nav {
+  background: transparent;
+}
+
+#page-header.nav-fixed #nav::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
   background: rgba(255, 255, 255, 0.75);
   backdrop-filter: var(--backdrop-filter);
+  pointer-events: none;
 }
 
 [data-theme="dark"] #page-header.nav-fixed #nav {
-  background: rgba(0, 0, 0, 0.7) !important;
+  background: transparent !important;
+}
+
+[data-theme="dark"] #page-header.nav-fixed #nav::before {
+  background: rgba(0, 0, 0, 0.7);
 }
 
 /* 夜间模式遮罩 */
@@ -888,4 +902,73 @@ a.article-sort-item-img {
 #pagination .page-number.current {
   animation: none !important;
   border-radius: 8px !important;
+}
+
+/* 顶部菜单「关于店长」（2026-10-09）：图标是一只咖啡杯（菜单配置里 fa-mug-saucer），杯口一直冒三缕热气（只动位移 / 透明度，交给显卡）；
+   鼠标移上去杯子以杯底为支点微微倾斜（热气反着转回去，还是竖直往上冒），下面弹出一张信纸样式的小卡片「进来坐坐 →」——
+   卡片是链接自己的 ::before，点它也进 About 页（链接的 ::after 主题拿去画悬停下划线了） */
+#nav a.site-page[href="/about/"] > i {
+  position: relative;
+  transform-origin: 45% 88%;
+  transition: rotate 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+#nav a.site-page[href="/about/"] > i::after {
+  content: '';
+  position: absolute;
+  left: 42%;
+  bottom: 88%;
+  width: 0.95em;
+  height: 0.72em;
+  background: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 12'%3E%3Cg fill='none' stroke='%23000' stroke-width='1.7' stroke-linecap='round'%3E%3Cpath d='M4 11c-2-2.2 2-3.6 0-6.6'/%3E%3Cpath d='M8 9.5c-2-2.2 2-3.6 0-6.6'/%3E%3Cpath d='M12 11c-2-2.2 2-3.6 0-6.6'/%3E%3C/g%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 12'%3E%3Cg fill='none' stroke='%23000' stroke-width='1.7' stroke-linecap='round'%3E%3Cpath d='M4 11c-2-2.2 2-3.6 0-6.6'/%3E%3Cpath d='M8 9.5c-2-2.2 2-3.6 0-6.6'/%3E%3Cpath d='M12 11c-2-2.2 2-3.6 0-6.6'/%3E%3C/g%3E%3C/svg%3E") center / contain no-repeat;
+  opacity: 0;
+  pointer-events: none;
+  animation: tc-cup-steam 2.4s ease-out infinite;
+  transition: rotate 0.35s ease;
+}
+
+@keyframes tc-cup-steam {
+  0% { opacity: 0; transform: translate(-50%, 3px) scaleY(0.7); }
+  35% { opacity: 0.9; }
+  100% { opacity: 0; transform: translate(-50%, -4px) scaleY(1.1); }
+}
+
+#nav a.site-page[href="/about/"]:hover > i { rotate: -16deg; }
+#nav a.site-page[href="/about/"]:hover > i::after { rotate: 16deg; }
+
+/* 信纸卡片：米白信纸 + 淡红横线 + 左边一条红页边线，顶上一道航空信的红蓝斜纹；手写体 */
+#nav a.site-page[href="/about/"]::before {
+  content: '进来坐坐 →';
+  position: absolute;
+  z-index: 2;
+  top: calc(100% + 10px);
+  left: 50%;
+  padding: 11px 16px 7px 22px;
+  white-space: nowrap;
+  font-family: 'LXGW WenKai', 'Kaiti SC', 'STKaiti', 'KaiTi', serif;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 22px;
+  letter-spacing: 0.06em;
+  color: #2b2521;
+  text-shadow: none;
+  background:
+    repeating-linear-gradient(-45deg, #d9473b 0 5px, #fffbf3 5px 8px, #3b6fb6 8px 13px, #fffbf3 13px 16px) top / 100% 4px no-repeat,
+    linear-gradient(90deg, transparent 13px, rgba(214, 104, 84, 0.5) 13px, rgba(214, 104, 84, 0.5) 14px, transparent 14px),
+    repeating-linear-gradient(transparent 0 21px, rgba(214, 104, 84, 0.22) 21px 22px) 0 7px,
+    #fffbf3;
+  border-radius: 3px;
+  box-shadow: 0 1px 0 rgba(110, 80, 50, 0.12), 0 12px 22px -10px rgba(60, 38, 18, 0.45);
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, -6px) rotate(-3deg);
+  transition: opacity 0.22s ease, transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+#nav a.site-page[href="/about/"]:hover::before {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translate(-50%, 0) rotate(-2deg);
 }

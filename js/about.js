@@ -109,6 +109,8 @@
   // head 里的小脚本先给 html 加了 ab-pre（hero 上的标题、下滑提示、右上角按钮先藏着，见 about.css）：不播入场就马上去掉；
   // 打字机等 introReady（入场播到标题那一步）才开打
   var SCROLL_KEY = 'about-scroll-y';
+  // 博客数据（/about/ledger.json）填完（或拿不到）：写作账本、最新发布、今日特调的高度要等它才定下来，恢复滚动位置也等它（见 initScrollMemory）
+  var ledgerDone = Promise.resolve();
   var heroIntro = hasAnimLibs && heroState === 'hero';
   if (heroIntro) {
     try {
@@ -128,6 +130,17 @@
     introEnd();
   }
   if (!heroIntro) introSkip();
+
+  // 从主站过来（主站 js/about-transit.js 点「关于店长」时先在后台预渲染这一页）：这里星空一画好就发 ready（startIntro 把各层挪到屏幕外、
+  // 只剩星空的那一刻），主站这才切过来；切过来后停在星空上，等页面加载完再左右滑入。顶上接着显示主站那条进度条，入场播完走完、往上收回（initTransitBar）
+  var transit = document.prerendering === true;
+  function transitReady() {
+    if (!transit || transitReady.sent) return;
+    transitReady.sent = true;
+    // 预渲染中的页面发 BroadcastChannel 消息、改 localStorage 触发的 storage 事件，主站都收不到（Chrome 压到切过来之后才放行），
+    // 但写进 localStorage 的值主站读得到：写个时间戳，主站那边轮询（js/about-transit.js）
+    try { localStorage.setItem('about-transit-ready', String(Date.now())); } catch (e) { /* 主站等不到就按它自己的上限时间跳 */ }
+  }
 
   // ========== 打字机 ==========
 
@@ -431,7 +444,8 @@
     var loadedYet = false;
     loaded.then(function () { loadedYet = true; });
     // 最多等 3 秒，慢网下不至于一直盖着
-    Promise.race([Promise.all([loaded, fonts]), wait(3000)]).then(function () {
+    // 也等博客数据填完：最新发布 / 今日特调从占位换成真内容会让第 3 部分变高，先恢复位置的话下面几块就被往下推了
+    Promise.race([Promise.all([loaded, fonts, ledgerDone]), wait(3000)]).then(function () {
       // 字体换上后文字高度会变：无论是否恢复位置都重新测量一次分割段（加载阶段唯一的一次，见 requestRefresh）
       stSettled = true;
       if (voyageOn) ScrollTrigger.refresh();
@@ -1203,6 +1217,417 @@
     cup.addEventListener('animationiteration', function (e) {
       if (e.animationName === 'ab-cup-shake' && !held) box.classList.remove('is-shake');
     });
+  }
+
+  // ========== 抽签盒（日式六角签箱）==========
+  // 按住签箱 3 秒：签箱越摇越急，签从顶上的孔里一点点探出头，中途松手就缩回去；摇满 3 秒整支签（签号）冒出来 → 签纸展开
+  // （签号 / 吉凶 / 签文 / 宜忌）。签文在 index.pug 的 FORTUNES（写在 data-fortunes 上）。
+  // 每人每天 1 次：抽没抽过、抽到哪支记在访客自己的浏览器里（localStorage，按本地日期，第二天重置；存储不可用就只算这次打开的页面）。
+  // 今天抽过的话，再打开页面直接摆出那一支；再按签箱：轻轻晃一下，不再出签
+  var OMIKUJI_KEY = 'about-omikuji', OMIKUJI_PER_DAY = 1, OMIKUJI_HOLD = 3000;
+  var CN_DIGITS = '〇一二三四五六七八九';
+
+  function cnNum(n) {   // 1 ~ 99 → 一 ~ 九十九
+    if (n < 10) return CN_DIGITS[n];
+    var t = Math.floor(n / 10), u = n % 10;
+    return (t > 1 ? CN_DIGITS[t] : '') + '十' + (u ? CN_DIGITS[u] : '');
+  }
+
+  function initOmikuji() {
+    var box = document.getElementById('omikuji');
+    if (!box) return;
+    var list = [];
+    try { list = JSON.parse(box.getAttribute('data-fortunes') || '[]'); } catch (e) { list = []; }
+    if (!list.length) return;
+    var btn = document.getElementById('omikuji-box'), stick = document.getElementById('omikuji-stick'), slip = document.getElementById('omikuji-slip');
+    var $ = function (id) { return document.getElementById(id); };
+    var now = new Date(), day = now.getFullYear() + '-' + pad2(now.getMonth() + 1) + '-' + pad2(now.getDate());
+    var state = { day: day, used: 0, last: -1 };
+    try {
+      var saved = JSON.parse(localStorage.getItem(OMIKUJI_KEY) || 'null');
+      if (saved && saved.day === day && saved.last < list.length) state = saved;
+    } catch (e) { /* 存储不可用：只算这次打开的页面 */ }
+    function save() { try { localStorage.setItem(OMIKUJI_KEY, JSON.stringify(state)); } catch (e) { /* 忽略 */ } }
+    function spent() { return state.used >= OMIKUJI_PER_DAY; }
+    function paintLeft() {
+      $('omikuji-left').textContent = spent() ? '今天的签抽过啦，明天再来' : '按住签箱 3 秒，摇一支签';
+      box.classList.toggle('is-spent', spent());
+      btn.setAttribute('aria-label', spent() ? '今天的签抽过了，明天再来' : '按住签箱 3 秒，抽一支今天的签');
+    }
+    function fill(i) {
+      var f = list[i], no = '第' + cnNum(i + 1) + '签';
+      slip.classList.remove('is-empty');
+      $('omikuji-no').textContent = no;
+      $('omikuji-lv').textContent = f.lv;
+      $('omikuji-text').textContent = f.text;
+      $('omikuji-yi').textContent = f.yi || '—';
+      $('omikuji-ji').textContent = f.ji || '—';
+      stick.textContent = no;
+      requestRefresh();   // 签纸从一行提示变成整张签，块高度会变一点：合并着重新测量分割段
+    }
+    // 签纸平时收着，鼠标移到签箱这一栏上由 CSS 弹出来（:hover）；手机没有悬停：摇出签直接弹（is-open），点别处收起
+    var hold = null, busy = false, touch = false, swallow = false;
+
+    // 按住：每帧摇一下（越摇越急、越摇越大），签跟着一点点往上探（藏在孔下 105% → 露出一小截 70%），摇满 OMIKUJI_HOLD 出签
+    function startHold() {
+      var t0 = performance.now(), last = t0, phase = 0;
+      hold = { raf: 0, angle: 0 };
+      box.classList.add('is-busy');   // 摇的时候签纸先收起
+      stick.style.transition = 'none';
+      hold.raf = requestAnimationFrame(function step(now) {
+        var p = Math.min(1, (now - t0) / OMIKUJI_HOLD);
+        phase += (now - last) / 1000 * Math.PI * 2 * (3 + 4 * p);   // 每秒 3 下 → 7 下
+        last = now;
+        hold.angle = reduceMotion ? 0 : Math.sin(phase) * (2 + 7 * p);   // 2° → 9°
+        btn.style.transform = 'rotate(' + hold.angle.toFixed(2) + 'deg)';
+        stick.style.translate = '0 ' + (105 - 35 * p).toFixed(1) + '%';
+        if (p < 1) hold.raf = requestAnimationFrame(step);
+        else finish();
+      });
+    }
+    function stopHold() {   // 停摇：从当前角度晃两下回正
+      cancelAnimationFrame(hold.raf);
+      var a = hold.angle;
+      hold = null;
+      btn.style.transform = '';
+      stick.style.transition = '';
+      if (a) btn.animate([{ transform: 'rotate(' + a + 'deg)' }, { transform: 'rotate(' + (-0.4 * a) + 'deg)' }, { transform: 'rotate(0deg)' }], { duration: 320, easing: 'ease-out' });
+    }
+    function cancelHold() {   // 没摇满就松手：签缩回孔里，签纸照旧
+      if (!hold) return;
+      stopHold();
+      stick.style.translate = '';
+      box.classList.remove('is-busy');
+    }
+    function finish() {
+      stopHold();
+      swallow = true;   // 摇满时手可能还按着：松手那一下的 click 不算
+      busy = true;
+      var i = Math.floor(Math.random() * list.length);
+      state.used++;
+      state.last = i;
+      save();
+      paintLeft();
+      fill(i);
+      stick.style.translate = '';
+      stick.classList.add('is-out');   // 整支签冒出来（CSS 过渡）
+      setTimeout(function () {
+        box.classList.remove('is-busy');   // 鼠标还在签箱上就弹出来
+        if (touch) box.classList.add('is-open');
+        busy = false;
+      }, 420);
+    }
+    function nope() {   // 今天抽过了还来按：轻轻晃一下
+      if (!reduceMotion) btn.animate([{ transform: 'rotate(0deg)' }, { transform: 'rotate(-3deg)' }, { transform: 'rotate(2deg)' }, { transform: 'rotate(0deg)' }], { duration: 380, easing: 'ease-in-out' });
+    }
+
+    btn.addEventListener('pointerdown', function (e) {
+      touch = e.pointerType === 'touch';
+      swallow = false;
+      if (e.button !== 0 || hold || busy || spent()) return;
+      try { btn.setPointerCapture(e.pointerId); } catch (err) { /* 拿不到也照样摇，只是手挪出签箱就算松手 */ }   // 按着手稍微挪出签箱也照样摇
+      startHold();
+    });
+    btn.addEventListener('pointerup', cancelHold);
+    btn.addEventListener('pointercancel', cancelHold);   // 手机上手指一滑变成滚动页面：不算
+    btn.addEventListener('lostpointercapture', cancelHold);
+    btn.addEventListener('contextmenu', function (e) { e.preventDefault(); });   // 手机长按不弹菜单
+    btn.addEventListener('click', function () {
+      if (swallow) { swallow = false; return; }
+      if (busy || !spent()) return;   // 还没抽：要按住，光点一下不出签
+      nope();
+      if (touch) box.classList.toggle('is-open');   // 手机上：今天抽过了，点一下看看那一支
+    });
+    // 键盘：按住回车 / 空格一样算（自己处理，不让按钮自己触发 click）
+    btn.addEventListener('keydown', function (e) {
+      if (e.key !== 'Enter' && e.key !== ' ') return;
+      e.preventDefault();
+      if (e.repeat || hold || busy) return;
+      touch = swallow = false;
+      if (spent()) nope();
+      else startHold();
+    });
+    btn.addEventListener('keyup', function (e) {
+      if (e.key !== 'Enter' && e.key !== ' ') return;
+      e.preventDefault();
+      cancelHold();
+    });
+    btn.addEventListener('blur', cancelHold);
+    document.addEventListener('pointerdown', function (e) { if (!box.contains(e.target)) box.classList.remove('is-open'); });
+    slip.classList.add('is-empty');
+    if (state.last >= 0) { fill(state.last); stick.classList.add('is-out'); }   // 今天抽过：直接摆出最后那支
+    paintLeft();
+  }
+
+  // ========== 咖啡集点卡（头脑风暴下面）==========
+  // 每天来盖一个章：点亮着的那个杯子 → 一枚木头印章落下来，盖上朱红的章（印着那天的日期）。集满 10 个 → 剪票钳伸过来在右边的兑换联上
+  // 「咔」地剪出一个星形孔，兑换出一支隐藏签（index.pug 的 SECRET_FORTUNE：签纸从兑换联上方弹出来，点别处收起；之后鼠标移到兑换联上 / 点它再看）。
+  // 盖过哪几天、兑没兑换记在访客自己的浏览器里（localStorage，按本地日期；存储不可用就只算这次打开的页面）
+  var POINTS_KEY = 'about-points', POINTS_MAX = 10;
+  // 剪票钳（竖着、钳口朝下）：两条钳臂各是「一边的把手 + 另一边的钳头」，绕中间的轴（24, 90）转 = 捏一下；把手中间一根弹簧
+  var PUNCH_SVG = '<svg viewBox="0 0 48 128" aria-hidden="true">' +
+    '<path d="M15 64l3-4 3 8 3-8 3 8 3-8 3 4" fill="none" stroke="#c8ccd2" stroke-width="1.6" stroke-linejoin="round"/>' +
+    '<g class="punch-arm"><path d="M21 90 8 14" stroke="#8d939c" stroke-width="6.5" stroke-linecap="round"/><path d="M10.6 54 6.8 12" stroke="#b8433a" stroke-width="10" stroke-linecap="round"/>' +
+    '<path d="M25 90l4 21" stroke="#8d939c" stroke-width="6.5" stroke-linecap="round"/><rect x="24" y="108" width="12" height="11" rx="2" fill="#5d636c"/></g>' +
+    '<g class="punch-arm"><path d="M27 90 40 14" stroke="#a3a9b2" stroke-width="6.5" stroke-linecap="round"/><path d="M37.4 54 41.2 12" stroke="#c9544a" stroke-width="10" stroke-linecap="round"/>' +
+    '<path d="M23 90l-4 21" stroke="#a3a9b2" stroke-width="6.5" stroke-linecap="round"/><rect x="12" y="108" width="12" height="11" rx="2" fill="#6d737c"/></g>' +
+    '<circle cx="24" cy="90" r="4.4" fill="#4e535b"/><circle cx="23" cy="89" r="1.4" fill="#9aa0a8"/></svg>';
+
+  function initPoints() {
+    var card = document.getElementById('points');
+    if (!card) return;
+    var extra = card.parentNode, slots = card.querySelectorAll('.about-points-slot');
+    var stub = document.getElementById('points-stub'), paper = stub.querySelector('.about-points-stub-paper');
+    var foot = document.getElementById('points-foot'), note = document.getElementById('points-stub-note');
+    var now = new Date(), day = now.getFullYear() + '-' + pad2(now.getMonth() + 1) + '-' + pad2(now.getDate());
+    var state = { days: [], won: '' };
+    try {
+      var saved = JSON.parse(localStorage.getItem(POINTS_KEY) || 'null');
+      if (saved && Array.isArray(saved.days)) {
+        saved.days.forEach(function (d) {
+          if (/^\d{4}-\d\d-\d\d$/.test(d) && state.days.indexOf(d) < 0 && state.days.length < POINTS_MAX) state.days.push(d);
+        });
+        state.won = state.days.length >= POINTS_MAX && saved.won ? String(saved.won) : '';
+      }
+    } catch (e) { /* 存储不可用：只算这次打开的页面 */ }
+    function save() { try { localStorage.setItem(POINTS_KEY, JSON.stringify(state)); } catch (e) { /* 忽略 */ } }
+
+    function mark(i, fresh) {   // 第 i 格盖上 state.days[i] 那天的章
+      var d = state.days[i], m = document.createElement('span');
+      m.className = 'about-points-mark' + (fresh ? ' is-new' : '');
+      m.style.setProperty('--rot', (hash32(+d.replace(/-/g, '')) % 41 - 20) + 'deg');
+      m.innerHTML = '<i></i><b>' + d.slice(5).replace('-', '.') + '</b>';
+      slots[i].appendChild(m);
+      slots[i].classList.add('is-stamped');
+    }
+    function paint() {
+      var n = state.days.length, done = state.days.indexOf(day) >= 0;
+      [].forEach.call(slots, function (s, i) {
+        var on = !done && i === n;
+        s.classList.toggle('is-today', on);
+        s.disabled = !on;
+        s.setAttribute('aria-label', i < n ? '第 ' + (i + 1) + ' 个章：' + state.days[i] : on ? '盖今天的章' : '第 ' + (i + 1) + ' 格');
+      });
+      foot.textContent = '已集 ' + n + ' / ' + POINTS_MAX + ' · ' + (n >= POINTS_MAX ? '集满啦' : done ? '今天盖过啦，明天再来' : '点亮着的杯子盖章');
+      card.classList.toggle('is-won', !!state.won);
+      stub.disabled = !state.won;
+      note.textContent = state.won ? '已兑换 · 看看签' : '集满 ' + POINTS_MAX + ' 章兑换';
+    }
+    function bump() { if (!reduceMotion) card.animate([{ translate: '0 0' }, { translate: '0 1.5px' }, { translate: '0 0' }], { duration: 160 }); }
+
+    var busy = false;
+    function stampToday() {
+      var i = state.days.length;
+      if (busy || i >= POINTS_MAX || state.days.indexOf(day) >= 0) return;
+      busy = true;
+      state.days.push(day);
+      save();
+      var slot = slots[i];
+      slot.classList.remove('is-today');
+      function done() {
+        mark(i, true);
+        paint();
+        busy = false;
+        if (state.days.length >= POINTS_MAX && !state.won) setTimeout(punch, 500);
+      }
+      if (reduceMotion) { done(); return; }
+      var tool = document.createElement('span');
+      tool.className = 'about-points-stamper';
+      slot.appendChild(tool);
+      // 印章从上面落下来 → 盖下去那一刻出章、卡片一震 → 抬起来走掉
+      tool.animate([{ opacity: 0, transform: 'translateY(-40px)' }, { opacity: 1, transform: 'translateY(-30px)', offset: 0.35 }, { opacity: 1, transform: 'translateY(0)' }],
+        { duration: 360, easing: 'cubic-bezier(0.5, 0, 0.9, 0.5)' }).onfinish = function () {
+        done();
+        bump();
+        tool.animate([{ opacity: 1, transform: 'translateY(0)' }, { opacity: 0, transform: 'translateY(-34px)' }],
+          { duration: 300, delay: 90, easing: 'ease-out', fill: 'forwards' }).onfinish = function () { tool.remove(); };
+      };
+    }
+    [].forEach.call(slots, function (s) { s.addEventListener('click', stampToday); });
+
+    // 集满：剪票钳从右上方伸过来，钳口对准兑换联顶上捏一下——咔，剪出星形孔、掉下一粒星星纸屑；钳子走开，兑换联变成金色，隐藏签弹出来
+    function punch() {
+      if (state.won) return;
+      state.won = day;
+      save();
+      function reveal() { paper.classList.add('is-punched'); paint(); extra.classList.add('is-reveal'); }
+      if (reduceMotion) { reveal(); return; }
+      var tool = document.createElement('span');
+      tool.className = 'about-points-punch';
+      tool.innerHTML = PUNCH_SVG;
+      stub.appendChild(tool);
+      var arms = tool.querySelectorAll('.punch-arm');
+      tool.animate([{ opacity: 0, transform: 'translate(40px, -46px) rotate(16deg)' }, { opacity: 1, transform: 'none' }],
+        { duration: 420, easing: 'cubic-bezier(0.2, 0.8, 0.3, 1)' }).onfinish = function () {
+        arms[0].animate([{ transform: 'rotate(0deg)' }, { transform: 'rotate(7deg)' }, { transform: 'rotate(0deg)' }], { duration: 300, easing: 'ease-in-out' });
+        arms[1].animate([{ transform: 'rotate(0deg)' }, { transform: 'rotate(-7deg)' }, { transform: 'rotate(0deg)' }], { duration: 300, easing: 'ease-in-out' }).onfinish = function () {
+          tool.animate([{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'translate(34px, -50px) rotate(12deg)' }],
+            { duration: 340, delay: 140, easing: 'ease-in', fill: 'forwards' }).onfinish = function () { tool.remove(); setTimeout(reveal, 120); };
+        };
+        setTimeout(function () {   // 钳口合上的那一刻
+          paper.classList.add('is-punched');
+          bump();
+          var chip = document.createElement('span');
+          chip.className = 'about-points-chip';
+          stub.appendChild(chip);
+          chip.animate([{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'translate(8px, 46px) rotate(220deg)' }],
+            { duration: 800, easing: 'cubic-bezier(0.4, 0, 0.8, 0.6)', fill: 'forwards' }).onfinish = function () { chip.remove(); };
+          var sfx = document.createElement('span');
+          sfx.className = 'about-points-sfx';
+          sfx.textContent = '咔嚓！';
+          stub.appendChild(sfx);
+          sfx.animate([{ opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1.12, offset: 0.2 }, { opacity: 1, scale: 1, offset: 0.4 }, { opacity: 0, scale: 1 }],
+            { duration: 900, easing: 'ease-out', fill: 'forwards' }).onfinish = function () { sfx.remove(); };
+        }, 150);
+      };
+    }
+
+    // 兑换过之后：点兑换联开 / 关隐藏签（手机没有悬停），点别处收起
+    stub.addEventListener('click', function () { if (state.won) extra.classList.toggle('is-reveal'); });
+    document.addEventListener('pointerdown', function (e) { if (!extra.contains(e.target)) extra.classList.remove('is-reveal'); });
+
+    if (state.days.length >= POINTS_MAX && !state.won) { state.won = day; save(); }   // 盖满那天没等剪票就关了页面：直接算兑换过
+    for (var i = 0; i < state.days.length; i++) mark(i, false);
+    if (state.won) paper.classList.add('is-punched');
+    paint();
+  }
+
+  // ========== 打盹的店猫（集点卡右边）==========
+  // Minecraft 的猫：照 Minecraft Wiki 上 11 种毛色的猫材质（64 × 32）取的颜色，外加一只店里原创的玛奇朵（模型一样，花纹照焦糖玛奇朵设计：
+  // 浓缩咖啡色底毛、肩背一团奶泡、背上一道焦糖淋酱、白爪子白尾巴尖、焦糖色眼睛），拼成一只侧身趴着、脸朝外的小猫——
+  // 身子 = 身体右侧面横过来（胸口在右），脑袋 = 脑袋正面 + 鼻子正面 + 两只耳朵正面，前爪往前伸、下巴枕在上面，尾巴斜着搭到坐垫上。
+  // 画在 28 × 11 的小画布上（CSS 放大 4 倍、保持像素硬边），每次打开页面随机来一只值班。
+  // 睡着时闭眼、一起一伏、头上飘 z（CSS）；鼠标移上去耳朵抖两下；点一下醒过来（抬头睁眼、轻轻一跳）说一句话，2.6 秒后接着睡：
+  // 第一下报名字（今天是焦糖值班～），第二下说自己是什么猫，之后随机。
+  // 每只猫：name = 品种（照中文 Minecraft Wiki），nick = 名字（都取自店里的菜单；Jellie 照着一只真猫画的，就叫原名），line = 第二下要说的话（不写就是「我是一只 X 喵」），
+  // p = 调色板，d = 146 格的颜色序号（0-9a-zA-Z，. = 空），顺序：尾巴 6、身子 16 × 6、前爪 7 × 2、脖子 2、脑袋 5 × 4、鼻子 3 × 2、耳朵 2
+  var NAPCAT_SKINS = [
+    { id: 'jellie', name: 'Jellie', nick: 'Jellie', line: '我是照着一只真猫画的喵', p: '424040,4b4a4a,525251,747474,f0f0f0,e6e6e6,d7d7d7,fcf9fb,c1c1c1,626261,b1bf9d,131927,b57da3', d: '012323145565774456737555128456064455192345011775001874101345129235201115222186100035299216211856921366545555656666886521411ab7ba77c77477747c747422' },
+    { id: 'tabby', name: '虎斑猫', nick: '摩卡', p: '5a4330,6f5741,82664e,8f735a,cdb8a4,e6dac4,4f3d2b,f1e9dc,eddb5c,b38b31,b37775', d: '0101102223450122340001231100131221130124546012450600252211371224576012450601232100022221340122441001236206102122315545334338979844444244424a457533' },
+    { id: 'black', name: '西服猫', nick: '奥利奥', p: '1b1826,eaeaea,242430,cecece,6a9b32,55535e,b37775,afafb0', d: '00000100023100002300000200000200000200002300002300002300002100002100000200000200000200000200000000000000000002233111310000014041000000000056577722' },
+    { id: 'red', name: '红虎斑猫', nick: '焦糖', p: 'e0ac4f,eaeaea,dca04b,e6d5b2,dd994b,d79042,eab75a,d78b43,e3a752,ce7e37,e0a74f,e3af53,5b882a,b79150,b37775,d8b46f,cfb27c', d: '000001022231445023260022066002745002266003666603544403866001666601544592666002660002552202600022022222a5a56b0003311131099901c0c10000000000dedfgf00' },
+    { id: 'siamese', name: '暹罗猫', nick: '拿铁', p: '2f2721,dcd1c3,cdbeb2,bcb6ad,e7ddc9,9a918c,52453c,62544a,eaeaea,397dc2', d: '00000012222341112244411244411244441244441244441144441144441144441144441224411254412262112265122365223344444335676666236000689098660665605450560600' },
+    { id: 'british_shorthair', name: '英国短毛猫', nick: '伯爵', p: '7b7e80,878a8a,9a9d9b,a6a7a6,bcbcbc,ead59d,131927', d: '01112222211133312133321143332134332232232243332134321123332133232244322243222133321123322133212121111122222221211100113444356465430344222430322211' },
+    { id: 'calico', name: '花猫', nick: '米苏', p: '413b33,4e4941,d19f50,dfbf8b,dcdede,c08c4c,cacdcf,937c59,e7e9ea,bababa,ead59d,131927,ffffff,8edef5,dfa3a1', d: '012344225666255346225566252246225344252010551100727100072772002223013344104446078466228446284646466666223344464666996601233abcbd08e82c444c8e844465' },
+    { id: 'persian', name: '波斯猫', nick: '布丁', p: 'c9a675,eccc95,fae1b7,fbebce,9b7d67,74b1f2,25314e,df907e', d: '011122222110221100222110221000211211222210211221321101332211321211332111321001222100221111221004210044222222212111001033333567652212221212......11' },
+    { id: 'ragdoll', name: '布偶猫', nick: '棉花糖', p: '85756a,a99f95,d9d6d2,efefef,f7f7f7,d0e6fd,3a4970,ffffff', d: '01112233333232332133221134442144431144322144332144323143322244332144433143332143331134322233332133221022222221211100320232056765270323777370777711' },
+    { id: 'white', name: '白猫', nick: '方糖', p: 'd3d3d3,eaedf0,f3f5f6,fcf9fb,c1c1c1,e8e8ad,131927,b3e3e7,b57da3', d: '01123332110133211033311133321033321133212133333133323133322132332132221133131033121123211012210121110012111101000044013333356367338332333238323211' },
+    { id: 'all_black', name: '黑猫', nick: '美式', p: '07070d,0c0b14,12101c,161523,040407,dabb5a,b67b40,8c6b82', d: '01123332110133211033311133321033321133212133333133323133322132332132221133131033121123211012210121110012111101000044013333356365337332333237323211' },
+    { id: 'macchiato', name: '原创猫', nick: '玛奇朵', line: '我是店里原创的猫，焦糖玛奇朵配色喵', p: '5c3a26,553522,432a1c,ddd1bd,f7f1e8,f4ece0,62402a,efe6d8,e2d7c4,4a2e1f,74503a,d9a04e,cf9445,6e4a32,e6a83a,1c1410,d8999b', d: '012134450673576678448878573158448678461109a06112ab0669c01612c01169dc0619ab0119b16012c16662ab0009a606096962191273435874ad5ddef7fe15556954524g485329' }
+  ];
+  var NAPCAT_DIGITS = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  var NAPCAT_SAY = ['喵', '喵~', '喵？', '呼噜呼噜…', '……zzz', '别吵，在上班', '今天盖章了吗？', '集满十个章有惊喜喵'];
+
+  // 画一帧（sleep / twitch / awake）到 28 × 11 的画布上
+  function napcatFrame(ctx, skin, frame) {
+    var pal = skin.p.split(','), d = skin.d, k = 0, px = {}, i, u, v, r, c;
+    function next() { var ch = d.charAt(k++); return ch === '.' ? '' : pal[NAPCAT_DIGITS.indexOf(ch)]; }
+    function put(x, y, col, f) {   // f：方块侧面压暗一点（Minecraft 的光照），脸朝外的那几面不压
+      if (!col || x < 0 || y < 0 || x >= 28 || y >= 11) return;
+      var n = parseInt(col, 16);
+      px[x + ',' + y] = 'rgb(' + Math.round((n >> 16) * f) + ',' + Math.round((n >> 8 & 255) * f) + ',' + Math.round((n & 255) * f) + ')';
+    }
+    [[5, 6], [4, 7], [3, 8], [2, 9], [1, 10], [0, 10]].forEach(function (p) { put(p[0], p[1], next(), 0.86); });   // 尾巴
+    for (v = 0; v < 16; v++) for (u = 0; u < 6; u++) put(21 - v, 5 + u, next(), 0.88);                               // 身子
+    for (v = 3; v < 10; v++) for (u = 0; u < 2; u++) put(16 + v, 9 + u, next(), 0.82);                               // 前爪
+    // 脑袋：睡着时下巴枕在前爪上；醒了抬起 1 格，空出来的脖子用胸口的颜色补上
+    var hy = frame === 'awake' ? 4 : 5, neck = [next(), next()], face = [];
+    if (frame === 'awake') for (i = 19; i < 24; i++) put(i, 8, neck[i < 21 ? 0 : 1], 0.9);
+    for (r = 0; r < 4; r++) for (c = 0; c < 5; c++) { face.push(next()); put(19 + c, hy + r, face[face.length - 1], 1); }
+    for (r = 0; r < 2; r++) for (c = 0; c < 3; c++) put(20 + c, hy + 2 + r, next(), 1);
+    var ear1 = next(), ear2 = next();
+    put(19, hy - 1, ear1, 0.95);
+    if (frame === 'twitch') put(23, hy, ear2, 0.8);   // 右边那只耳朵往下一压
+    else put(23, hy - 1, ear2, 0.95);
+    if (frame !== 'awake') [0, 1, 3, 4].forEach(function (cc) { put(19 + cc, hy + 1, face[cc], 0.5); });   // 闭眼：眼睛那排换成上一排毛色压暗的一道
+    // 外框：猫四周空着的格子描深色（背景花的时候也认得出）
+    var own = {};
+    Object.keys(px).forEach(function (key) { own[key] = 1; });
+    Object.keys(own).forEach(function (key) {
+      var p = key.split(','), x = +p[0], y = +p[1];
+      [[1, 0], [-1, 0], [0, 1], [0, -1]].forEach(function (dd) {
+        var nx = x + dd[0], ny = y + dd[1];
+        if (nx >= 0 && ny >= 0 && nx < 28 && ny < 11 && !own[nx + ',' + ny]) px[nx + ',' + ny] = '#2f2a27';
+      });
+    });
+    ctx.clearRect(0, 0, 28, 11);
+    Object.keys(px).forEach(function (key) {
+      var p = key.split(',');
+      ctx.fillStyle = px[key];
+      ctx.fillRect(+p[0], +p[1], 1, 1);
+    });
+  }
+
+  function initNapcat() {
+    var cat = document.getElementById('napcat');
+    if (!cat) return;
+    var cv = cat.querySelector('.about-napcat-body'), ctx = cv && cv.getContext ? cv.getContext('2d') : null;
+    if (!ctx) { cat.hidden = true; return; }
+    var skin = NAPCAT_SKINS[Math.floor(Math.random() * NAPCAT_SKINS.length)];
+    cat.setAttribute('aria-label', '摸摸店猫（今天值班的是' + skin.nick + '，一只' + skin.name + '）');
+    var awake = false, timer = 0, flick = [], last = -1, step = 0;
+    function show(f) { napcatFrame(ctx, skin, f); }
+    show('sleep');
+    // 鼠标移上去：耳朵抖两下
+    cat.addEventListener('pointerenter', function (e) {
+      if (e.pointerType !== 'mouse' || awake) return;
+      flick.forEach(clearTimeout);
+      flick = [0, 140, 280, 420].map(function (t, j) { return setTimeout(function () { if (!awake) show(j % 2 ? 'sleep' : 'twitch'); }, t); });
+    });
+    cat.addEventListener('click', function () {
+      var text;
+      if (step === 0) text = '今天是' + skin.nick + '值班～';
+      else if (step === 1) text = skin.line || '我是一只' + skin.name + '喵';
+      else {
+        var i = Math.floor(Math.random() * (NAPCAT_SAY.length - 1));
+        if (i >= last && last >= 0) i++;   // 不连着说同一句
+        last = i;
+        text = NAPCAT_SAY[i];
+      }
+      step++;
+      awake = true;
+      flick.forEach(clearTimeout);
+      show('awake');
+      cat.classList.add('is-awake');
+      var pop = document.createElement('span');
+      pop.className = 'ab-cafe-pop';
+      pop.textContent = text;
+      pop.style.left = '77%';
+      pop.style.top = '12px';
+      cat.appendChild(pop);
+      pop.addEventListener('animationend', function () { pop.remove(); });
+      if (!reduceMotion) cv.animate([{ translate: '0 0' }, { translate: '0 -5px' }, { translate: '0 0' }], { duration: 280, easing: 'ease-out' });
+      clearTimeout(timer);
+      timer = setTimeout(function () { awake = false; cat.classList.remove('is-awake'); show('sleep'); }, 2600);
+    });
+  }
+
+  // ========== 最新发布（刚出炉，今日特调菜单卡右边那张出餐小票）==========
+  // 按创建日期（date）取最新三篇：最新的一篇写标题 + 分类 / 日期 / 几天前出炉，更早的两篇各一行（标题 + 日期）。
+  // ledger.json 的 list 已经按 date 从早到晚排好（scripts/about-ledger.js）；拿不到数据就整张小票藏起来（见启动处的 catch）
+  function initFresh(d) {
+    var box = document.getElementById('fresh');
+    if (!box) return;
+    var list = (d && d.list) || [];
+    if (!list.length) { box.hidden = true; return; }
+    var recent = list.slice(-3).reverse(), today = todayDate();
+    function ago(p) {
+      var n = Math.max(0, Math.round((today - parseYmd(p.d)) / 864e5));
+      return n === 0 ? '今天出炉' : n + ' 天前出炉';
+    }
+    var a = recent[0], link = document.getElementById('fresh-link');
+    link.textContent = a.t;
+    link.href = a.u;
+    document.getElementById('fresh-meta').textContent = [a.c, a.d, ago(a)].filter(Boolean).join(' · ');
+    [1, 2].forEach(function (k) {
+      var el = document.getElementById('fresh-' + k), p = recent[k];
+      if (!el) return;
+      if (!p) { el.hidden = true; return; }
+      el.href = p.u;
+      el.querySelector('.about-fresh-item-title').textContent = p.t;
+      el.querySelector('.about-fresh-item-date').textContent = p.d;
+    });
+    requestRefresh();   // 换成真内容后块高度可能变一点：合并着重新测量分割段
   }
 
   // ========== 摄影磁贴：照片轮换 ==========
@@ -2015,6 +2440,7 @@
       slideIn(0);
       if (hint) hint.style.opacity = 0;
       document.documentElement.classList.remove('ab-pre');   // 接手：上面几样已经用行内样式藏好了
+      transitReady();   // 从主站预渲染过来：星空画好了（initPixelHero 挂载时同步画上），告诉主站可以切过来了
       var started = false;
       function go() {
         if (started) return;
@@ -2041,7 +2467,9 @@
       }
       var loaded = document.readyState === 'complete' ? Promise.resolve() : new Promise(function (r) { window.addEventListener('load', r, { once: true }); });
       var fonts = document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();
-      function soon() { requestAnimationFrame(function () { requestAnimationFrame(go); }); }   // 等最后一批重画上屏
+      function soon() {
+        requestAnimationFrame(function () { requestAnimationFrame(go); });   // 等最后一批重画上屏（预渲染中 rAF 不跑：切过来之后才开始划进来）
+      }
       Promise.all([loaded, fonts]).then(soon, soon);
       setTimeout(soon, INTRO_WAIT);   // 慢网下不至于一直只有星空
     }
@@ -2588,11 +3016,31 @@
     });
   }
 
+  // ========== 从主站过来：顶上的进度条接着走完、收回 ==========
+  // 和主站 pace 那条一个样子（居中的小胶囊，about.css 的 .ab-pace）：切过来时停在 90%，入场播完走到 100%，再往上收回、拿掉。
+  // 不播入场的话（没有 GSAP 等），马上告诉主站（星空紧接着由 initPixelHero 同步画好）、收起进度条
+  function initTransitBar() {
+    if (!transit) return;
+    var el = document.createElement('div');
+    el.className = 'ab-pace';
+    el.setAttribute('aria-hidden', 'true');
+    el.innerHTML = '<i></i>';
+    document.body.appendChild(el);
+    if (!heroIntro) transitReady();
+    introDone.then(function () {
+      el.classList.add('is-full');
+      setTimeout(function () {
+        el.classList.add('is-gone');
+        setTimeout(function () { el.remove(); }, 400);
+      }, 380);
+    });
+  }
+
   // ========== 屏幕外的循环动画暂停 ==========
-  // 正文里一直循环的 CSS 动画（信封三角、打卡本 AFKfishing、终端光标、今日特调的热气、头脑风暴进度条的彩虹）：
+  // 正文里一直循环的 CSS 动画（信封三角、打卡本 AFKfishing、终端光标、今日特调的热气、头脑风暴进度条的彩虹、集点卡上亮着的那格、店猫的呼吸和 z）：
   // 滚出屏幕就暂停（加 .ab-off，见 about.css），离屏幕还有一屏远时就恢复——滚到眼前之前早已在动，看不出停过；
   // 暂停停在原来那一帧，恢复后接着走，错开的相位不乱。屏幕外它们照样让浏览器每帧重算样式、重绘整页，很占主线程（2026-10-03 排查）
-  var LOOPS = '.ab-letter-toggle, .ab-afk, .about-term-cursor, .about-special-cup, .about-muse-progress';
+  var LOOPS = '.ab-letter-toggle, .ab-afk, .about-term-cursor, .about-special-cup, .about-muse-progress, .about-points, .about-napcat';
 
   function initOffscreenPause() {
     if (!('IntersectionObserver' in window)) return;
@@ -2610,6 +3058,7 @@
     tickClocks();
     setInterval(tickClocks, 1000);
 
+    initTransitBar();
     initPixelHero();
     initCafe();
     initSolo();
@@ -2627,10 +3076,17 @@
     initOffscreenPause();
     initPhotoTile();
     initMuse();
-    loadLedger().then(function (d) {
+    initOmikuji();
+    initPoints();
+    initNapcat();
+    ledgerDone = loadLedger().then(function (d) {
       initLedger(d);
       initSpecial(d);
-    }).catch(function () {});
+      initFresh(d);
+    }).catch(function () {
+      var fresh = document.getElementById('fresh');   // 没有数据：最新发布那张卡不留空壳
+      if (fresh) fresh.hidden = true;
+    });
 
     if (animOn) {
       initAnimations();

@@ -1188,8 +1188,7 @@ html.ab-pre .about-nav {
 /* 纸卡："本子"层。颗粒纹理 + 顶部内高光 + 内缩虚线（缝线感） */
 .about-idcard,
 .about-heatmap-panel,
-.about-bento-cell,
-.about-special {
+.about-bento-cell {
   position: relative;
   background:
     var(--ab-grain),
@@ -1202,8 +1201,7 @@ html.ab-pre .about-nav {
 
 .about-idcard::after,
 .about-heatmap-panel::after,
-.about-bento-cell::after,
-.about-special::after {
+.about-bento-cell::after {
   content: '';
   position: absolute;
   inset: 7px;
@@ -2688,6 +2686,300 @@ html.ab-anim .ab-letter:not(.is-signed) .ab-letter-motto span { clip-path: inset
 
 .about-post-clip .ab-icon { stroke-width: 1.4; }
 
+/* --- 抽签盒：头脑风暴左边一栏——一张和纸卡：顶上横拉一根注连绳、垂着两条纸垂，中间日式六角签箱（SVG），下面两行小字，底边一抹青海波。
+   抽到的签纸平时收着，鼠标移到这一栏上才从签箱右边弹出来（键盘聚焦签箱、手机上点签箱 = is-open）。按住签箱摇签的时候先收起（is-busy），摇出签再弹。见 about.js initOmikuji --- */
+.about-omikuji {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 44px 0 32px;
+  text-align: center;
+  background: var(--ab-grain-paper), #fffaf0;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(60, 38, 18, 0.16), 0 16px 30px -18px rgba(60, 38, 18, 0.55);
+}
+
+/* 注连绳 + 两条纸垂：绳子两头各伸出卡片 8px，中间垂下来、也更粗；签冒出来时顶到绳子下沿（绳子盖在签箱上面） */
+.about-omikuji::before {
+  content: '';
+  position: absolute;
+  z-index: 3;
+  top: 2px;
+  left: -8px;
+  right: -8px;
+  height: 64px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='216' height='64'%3E%3Crect x='44.5' y='18' width='3' height='4' fill='%23fffdf8' stroke='%23a8977e' stroke-width='.7'/%3E%3Cpolygon points='41.5,21 50.5,21 50.5,29 55.5,29 55.5,37 50.5,37 50.5,45 55.5,45 55.5,53 46.5,53 46.5,45 41.5,45 41.5,37 46.5,37 46.5,29 41.5,29' fill='%23fffdf8'/%3E%3Cg fill='%23ebe2d2'%3E%3Crect x='46.5' y='29' width='9' height='8'/%3E%3Crect x='46.5' y='45' width='9' height='8'/%3E%3C/g%3E%3Cpolygon points='41.5,21 50.5,21 50.5,29 55.5,29 55.5,37 50.5,37 50.5,45 55.5,45 55.5,53 46.5,53 46.5,45 41.5,45 41.5,37 46.5,37 46.5,29 41.5,29' fill='none' stroke='%23a8977e' stroke-width='.8' stroke-linejoin='round'/%3E%3Crect x='168.5' y='18' width='3' height='4' fill='%23fffdf8' stroke='%23a8977e' stroke-width='.7'/%3E%3Cpolygon points='165.5,21 174.5,21 174.5,29 169.5,29 169.5,37 174.5,37 174.5,45 169.5,45 169.5,53 160.5,53 160.5,45 165.5,45 165.5,37 160.5,37 160.5,29 165.5,29' fill='%23fffdf8'/%3E%3Cg fill='%23ebe2d2'%3E%3Crect x='160.5' y='29' width='9' height='8'/%3E%3Crect x='160.5' y='45' width='9' height='8'/%3E%3C/g%3E%3Cpolygon points='165.5,21 174.5,21 174.5,29 169.5,29 169.5,37 174.5,37 174.5,45 169.5,45 169.5,53 160.5,53 160.5,45 165.5,45 165.5,37 160.5,37 160.5,29 165.5,29' fill='none' stroke='%23a8977e' stroke-width='.8' stroke-linejoin='round'/%3E%3Cpath d='M0,8.8 6,9.2 12,9.6 18,10 24,10.3 30,10.7 36,11 42,11.3 48,11.5 54,11.8 60,12 66,12.1 72,12.3 78,12.4 84,12.6 90,12.6 96,12.7 102,12.7 108,12.8 114,12.7 120,12.7 126,12.6 132,12.6 138,12.4 144,12.3 150,12.1 156,12 162,11.8 168,11.5 174,11.3 180,11 186,10.7 192,10.3 198,10 204,9.6 210,9.2 216,8.8 216,15.2 210,16.3 204,17.3 198,18.3 192,19.2 186,20 180,20.8 174,21.5 168,22.2 162,22.8 156,23.3 150,23.7 144,24.1 138,24.5 132,24.8 126,25 120,25.1 114,25.2 108,25.2 102,25.2 96,25.1 90,25 84,24.8 78,24.5 72,24.1 66,23.7 60,23.3 54,22.8 48,22.2 42,21.5 36,20.8 30,20 24,19.2 18,18.3 12,17.3 6,16.3 0,15.2Z' fill='%23d6b169' stroke='%237c5a28' stroke-width='1.6' stroke-linejoin='round'/%3E%3Cpath d='M5.2 10.1L9.8 15.8 M10.5 10.5L15.5 16.7 M15.8 10.8L21.2 17.6 M21.2 11.1L26.8 18.4 M26.5 11.4L32.5 19.2 M31.9 11.7L38.1 19.9 M37.2 12L43.8 20.5 M42.6 12.2L49.4 21.2 M48 12.5L55 21.7 M53.4 12.7L60.6 22.2 M58.8 12.8L66.2 22.7 M64.3 13L71.7 23.1 M69.7 13.1L77.3 23.4 M75.1 13.3L82.9 23.7 M80.6 13.4L88.4 24 M86.1 13.4L93.9 24.2 M91.5 13.5L99.5 24.3 M97 13.5L105 24.4 M102.5 13.5L110.5 24.4 M108 13.5L116 24.4 M113.5 13.5L121.5 24.4 M119 13.5L127 24.3 M124.6 13.4L132.4 24.1 M130.1 13.3L137.9 23.9 M135.7 13.2L143.3 23.6 M141.2 13.1L148.8 23.3 M146.8 12.9L154.2 22.9 M152.4 12.8L159.6 22.5 M158 12.6L165 22 M163.6 12.4L170.4 21.5 M169.2 12.1L175.8 20.9 M174.8 11.9L181.2 20.2 M180.4 11.6L186.6 19.6 M186.1 11.3L191.9 18.8 M191.7 11L197.3 18 M197.4 10.6L202.6 17.2 M203.1 10.3L207.9 16.3 M208.7 9.9L213.3 15.4' stroke='%239c7438' stroke-width='1.5' stroke-linecap='round'/%3E%3Cpath d='M6,10.8 12,11.2 18,11.6 24,11.9 30,12.3 36,12.6 42,12.9 48,13.1 54,13.3 60,13.6 66,13.7 72,13.9 78,14 84,14.2 90,14.2 96,14.3 102,14.3 108,14.3 114,14.3 120,14.3 126,14.2 132,14.2 138,14 144,13.9 150,13.7 156,13.6 162,13.3 168,13.1 174,12.9 180,12.6 186,12.3 192,11.9 198,11.6 204,11.2 210,10.8' fill='none' stroke='%23f2dfab' stroke-width='1.2' stroke-opacity='.85' stroke-linecap='round'/%3E%3C/svg%3E") center top / 216px 64px no-repeat;
+  pointer-events: none;
+}
+
+/* 底边的青海波：朱红细线，往上渐隐 */
+.about-omikuji::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 30px;
+  border-radius: 0 0 4px 4px;
+  background: var(--ab-grain-paper), url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='10'%3E%3Cdefs%3E%3Cg id='s' stroke='%23c63c2c' stroke-width='.9'%3E%3Ccircle r='9.6' fill='%23fffaf0'/%3E%3Ccircle r='6.6' fill='none'/%3E%3Ccircle r='3.6' fill='none'/%3E%3C/g%3E%3C/defs%3E%3Cuse href='%23s' x='-10' y='-5'/%3E%3Cuse href='%23s' x='10' y='-5'/%3E%3Cuse href='%23s' x='30' y='-5'/%3E%3Cuse href='%23s' x='0' y='0'/%3E%3Cuse href='%23s' x='20' y='0'/%3E%3Cuse href='%23s' x='-10' y='5'/%3E%3Cuse href='%23s' x='10' y='5'/%3E%3Cuse href='%23s' x='30' y='5'/%3E%3Cuse href='%23s' x='0' y='10'/%3E%3Cuse href='%23s' x='20' y='10'/%3E%3Cuse href='%23s' x='-10' y='15'/%3E%3Cuse href='%23s' x='10' y='15'/%3E%3Cuse href='%23s' x='30' y='15'/%3E%3C/svg%3E") 0 100% / 20px 10px repeat;
+  opacity: 0.55;
+  -webkit-mask-image: linear-gradient(transparent, #000 75%);
+  mask-image: linear-gradient(transparent, #000 75%);
+  pointer-events: none;
+}
+
+.about-omikuji-box {
+  position: relative;
+  width: 132px;
+  height: 222px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: var(--ab-cursor-hand);
+  transform-origin: 50% 92%;
+  transition: rotate 0.3s ease;
+  -webkit-appearance: none;
+  appearance: none;
+  /* 要按住 3 秒：长按别选中字、别弹系统菜单（iOS） */
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.about-omikuji-box:hover { rotate: -3deg; }
+.about-omikuji-box:focus-visible { outline: 2px dashed var(--ab-accent); outline-offset: 4px; }
+
+.about-omikuji-svg {
+  position: absolute;
+  left: 6px;
+  top: 22px;
+  width: 120px;
+  height: 200px;
+  overflow: visible;
+}
+
+.about-omikuji-shadow { fill: rgba(60, 38, 18, 0.18); }
+.about-omikuji-side-l { fill: #8c5a2e; }
+.about-omikuji-side-f { fill: #b27440; }
+.about-omikuji-side-r { fill: #9c6533; }
+.about-omikuji-grain line { stroke: rgba(60, 34, 14, 0.2); stroke-width: 1; }
+.about-omikuji-band { fill: #d4a24a; }
+.about-omikuji-top { fill: #d29a5c; stroke: #8c5a2e; stroke-width: 1; stroke-linejoin: round; }
+.about-omikuji-hole { fill: #3a2414; }
+.about-omikuji-label { fill: #c63c2c; }
+.about-omikuji-label-line { fill: none; stroke: rgba(255, 236, 200, 0.7); stroke-width: 1; }
+
+.about-omikuji-label-text {
+  fill: #fff3dc;
+  font-family: var(--ab-hand);
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  writing-mode: vertical-rl;
+}
+
+/* 签：这一格的底边对准顶面的签孔，签只露出孔以上的那一截；平时整支藏在格子下面，抽到时往上冒出来（is-out） */
+.about-omikuji-stick-clip {
+  position: absolute;
+  z-index: 2;
+  left: 66px;
+  top: -34px;
+  width: 18px;
+  height: 92px;
+  overflow: hidden;
+  translate: -50% 0;
+  pointer-events: none;
+}
+
+.about-omikuji-stick {
+  position: absolute;
+  left: 3px;
+  bottom: 0;
+  width: 12px;
+  height: 88px;
+  padding-top: 7px;
+  border-radius: 6px 6px 1px 1px;
+  background: linear-gradient(90deg, #d6b97e, #f0ddb0 45%, #d1b077);
+  box-shadow: inset 0 0 0 1px rgba(120, 84, 40, 0.35);
+  font-family: var(--ab-hand);
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 12px;
+  letter-spacing: 1px;
+  color: #b0322a;
+  writing-mode: vertical-rl;
+  translate: 0 105%;
+  transition: translate 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.about-omikuji-stick.is-out { translate: 0 16%; }
+
+.about-omikuji-name {
+  margin: 6px 0 0;
+  font-family: var(--ab-hand);
+  font-size: 1.15rem;
+  font-weight: 700;
+  line-height: 1.3;
+  color: #c63c2c;
+}
+
+.about-omikuji-name span {
+  display: block;
+  font-family: var(--ab-mono);
+  font-size: 0.62rem;
+  font-weight: 400;
+  letter-spacing: 0.22em;
+  color: var(--ab-accent-text);
+}
+
+.about-omikuji-left {
+  margin: 4px 0 0;
+  font-family: var(--ab-hand);
+  font-size: 0.9rem;
+  color: var(--ab-text-dim);
+}
+
+/* 签纸：米白和纸 + 朱红双线框；顶上一条朱红横带（御 神 籤 + 签号），下面吉凶竖写、签文、宜 / 忌；左上角系着一截红绳 */
+.about-omikuji-slip {
+  position: absolute;
+  z-index: 8;
+  top: 48px;
+  left: calc(50% + 44px);
+  width: 290px;
+  padding-bottom: 16px;
+  text-align: left;
+  background: var(--ab-grain-paper), #fffaf0;
+  border: 1px solid rgba(198, 60, 44, 0.45);
+  border-radius: 2px;
+  box-shadow: 0 2px 0 rgba(110, 80, 50, 0.1), 0 20px 36px -16px rgba(90, 58, 26, 0.6);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateX(-12px) rotate(-4deg) scale(0.94);
+  transform-origin: 0 0;
+  transition: opacity 0.2s ease, transform 0.32s cubic-bezier(0.22, 1, 0.36, 1), visibility 0s linear 0.32s;
+}
+
+/* 弹出：鼠标在签箱这一栏上（签纸也算这一栏，移到签纸上读也不会收起）、键盘聚焦签箱、手机上点了签箱 */
+.about-omikuji:hover .about-omikuji-slip,
+.about-omikuji:has(.about-omikuji-box:focus-visible) .about-omikuji-slip,
+.about-omikuji.is-open .about-omikuji-slip {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: rotate(-1.4deg);
+  transition: opacity 0.2s ease, transform 0.32s cubic-bezier(0.22, 1, 0.36, 1), visibility 0s;
+}
+
+/* 摇签的时候先收起，换好这一签再弹 */
+.about-omikuji.is-busy .about-omikuji-slip {
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(-12px) rotate(-4deg) scale(0.94);
+}
+
+.about-omikuji-slip::before {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  border: 1px solid rgba(198, 60, 44, 0.22);
+  pointer-events: none;
+}
+
+/* 红绳结：签纸左上角一个小绳圈 + 两截绳头 */
+.about-omikuji-slip::after {
+  content: '';
+  position: absolute;
+  z-index: 1;
+  top: 8px;
+  left: -15px;
+  width: 24px;
+  height: 12px;
+  border: 2px solid #c63c2c;
+  border-right-color: transparent;
+  border-radius: 50%;
+  rotate: -18deg;
+}
+
+.about-omikuji-slip-band {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 5px 5px 0;
+  padding: 6px 12px;
+  background: #c63c2c;
+  font-family: var(--ab-hand);
+  color: #fff3dc;
+}
+
+.about-omikuji-slip-title { font-size: 0.92rem; font-weight: 700; letter-spacing: 0.3em; }
+.about-omikuji-slip-no { font-size: 0.86rem; letter-spacing: 0.12em; }
+
+.about-omikuji-slip-body {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 4px 16px;
+  padding: 14px 18px 0 16px;
+}
+
+.about-omikuji-lv {
+  margin: 0;
+  font-family: var(--ab-hand);
+  font-size: 2.4rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.12em;
+  color: #c63c2c;
+  writing-mode: vertical-rl;
+}
+
+.about-omikuji-text {
+  margin: 0 0 12px;
+  font-family: var(--ab-hand);
+  font-size: 1.05rem;
+  line-height: 1.65;
+  color: var(--ab-ink);
+}
+
+.about-omikuji-yiji {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 6px 10px;
+  margin: 0;
+  font-family: var(--ab-hand);
+  font-size: 0.98rem;
+  color: #4a4038;
+}
+
+.about-omikuji-yiji dt {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 3px;
+  background: #c63c2c;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #fff6e6;
+}
+
+.about-omikuji-yiji dt.is-ji { background: #5a4d42; }
+.about-omikuji-yiji dd { margin: 0; }
+
+/* 还没抽：签纸上只有一行提示 */
+.about-omikuji-slip.is-empty .about-omikuji-lv,
+.about-omikuji-slip.is-empty .about-omikuji-yiji,
+.about-omikuji-slip.is-empty .about-omikuji-slip-no { display: none; }
+.about-omikuji-slip.is-empty .about-omikuji-slip-body { grid-template-columns: minmax(0, 1fr); }
+.about-omikuji-slip.is-empty .about-omikuji-text { margin: 0; color: var(--ab-ink-dim); }
+
 /* --- Block 3 顶部：左边标题 + 写作账本，右边草稿箱便利贴 --- */
 .about-writing-top {
   display: grid;
@@ -2934,24 +3226,53 @@ html.ab-anim .ab-letter:not(.is-signed) .ab-letter-motto span { clip-path: inset
 
 .about-draft-queue li.is-done::before { content: '✓'; }
 
-/* 今日特调（第三部分最下面，整宽纸卡）：左边一块咖啡馆小黑板，右边一行菜单 */
-.about-special {
+/* 今日特调 + 刚出炉（第三部分，写作账本下面、精选文章上面）：和上下几块一样是摆在桌上的东西，并排两样——
+   左边一张木夹子夹着的菜单卡（小黑板斜靠在它左边、伸出卡外一截），右边一张贴着胶带的出餐小票（刚出炉） */
+.about-special-row {
   display: flex;
   align-items: center;
-  gap: 34px;
-  margin-top: 30px;
-  padding: 26px 30px;
-  overflow: hidden;
-  transition: border-color 0.25s ease;
+  gap: 44px;
+  margin: 0 0 44px;   /* 在精选文章上面：和下面那几张卡隔开 */
 }
 
-.about-special:hover { border-color: rgba(184, 104, 20, 0.45); }
+/* 菜单卡：米色厚卡纸、直角、微微歪着，投影和下面的文章卡一样 */
+.about-special {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  margin-left: 30px;   /* 小黑板往左伸出卡外 30px，外沿和上面的账本对齐 */
+  padding: 30px 30px 24px 0;
+  background: var(--ab-grain-paper), #fbf4e6;
+  border-radius: 3px;
+  box-shadow: 0 1px 0 rgba(110, 80, 50, 0.12), 0 16px 30px -14px rgba(90, 58, 26, 0.45);
+  transform: rotate(-0.6deg);
+}
 
-/* 小黑板：木框 + 墨绿板面 + 粉笔字 / 粉笔画的咖啡杯（热气往上飘），框下沿搁着一截粉笔 */
+/* 木夹子（晾衣夹）：夹在卡片上沿，一半露在卡外 */
+.about-special-peg {
+  position: absolute;
+  z-index: 3;
+  top: -26px;
+  left: 58%;
+  width: 18px;
+  height: 50px;
+  rotate: 6deg;
+  filter: drop-shadow(0 2px 2px rgba(60, 38, 18, 0.35));
+}
+
+.about-special-peg .peg-wood { fill: #dcb77d; stroke: #9a7342; stroke-width: 1; }
+.about-special-peg .peg-wood.is-r { fill: #c99f63; }
+.about-special-peg .peg-spring { fill: none; stroke: #7d838c; stroke-width: 2; stroke-linecap: round; }
+
+/* 小黑板：木框 + 墨绿板面 + 粉笔字 / 粉笔画的咖啡杯（热气往上飘），框下沿搁着一截粉笔；斜靠在菜单卡左边，伸出卡外一截 */
 .about-special-board {
   position: relative;
-  z-index: 1;
+  z-index: 2;
   flex: none;
+  margin-left: -30px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -2969,7 +3290,7 @@ html.ab-anim .ab-letter:not(.is-signed) .ab-letter-motto span { clip-path: inset
     inset 0 0 0 1px rgba(0, 0, 0, 0.3),
     0 0 0 1px rgba(70, 42, 20, 0.45),
     0 12px 20px -10px rgba(60, 38, 18, 0.55);
-  transform: rotate(-2.2deg);
+  transform: rotate(-4deg);
 }
 
 .about-special-board-en {
@@ -3118,49 +3439,190 @@ html.ab-anim .ab-letter:not(.is-signed) .ab-letter-motto span { clip-path: inset
   color: var(--ab-text-dim);
 }
 
+/* 换一杯：手写字 + 虚线下划线（和文章卡的「读一读 →」一路）；趁热读：一枚做旧的朱红小印章 */
 .about-special-actions {
   display: flex;
   flex: none;
-  gap: 10px;
+  align-items: center;
+  gap: 18px;
 }
 
 .about-special-reroll,
 .about-special-go {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
   margin: 0;
-  padding: 5px 14px 6px;
-  border-radius: 999px;
   font-family: var(--ab-hand);
-  font-size: 0.92rem;
+  font-size: 0.95rem;
+  font-weight: 700;
   line-height: 1.2;
   text-decoration: none;
   cursor: var(--ab-cursor-hand);
   -webkit-appearance: none;
   appearance: none;
-  transition: background 0.2s ease, translate 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
 }
 
 .about-special-reroll {
-  border: 1.5px dashed rgba(184, 104, 20, 0.55);
-  background: transparent;
+  padding: 0 1px 2px;
+  border: 0;
+  border-bottom: 1.5px dashed rgba(184, 104, 20, 0.6);
+  background: none;
   color: var(--ab-accent-deep);
+  transition: color 0.2s ease, opacity 0.2s ease;
 }
 
-.about-special-reroll:hover { background: rgba(240, 161, 78, 0.12); }
+.about-special-reroll:hover { color: var(--ab-accent-text); }
 .about-special-reroll:disabled { opacity: 0.45; cursor: var(--ab-cursor); }
 .about-special-reroll span { display: inline-block; transition: rotate 0.5s ease; }
 .about-special-reroll:not(:disabled):hover span { rotate: 180deg; }
 
 .about-special-go {
-  border: 1.5px solid var(--ab-accent-deep);
-  background: var(--ab-accent);
-  color: var(--ab-accent-ink);
-  box-shadow: 0 2px 0 var(--ab-accent-deep);
+  padding: 3px 10px 2px;
+  border: 2px solid currentColor;
+  border-radius: 4px;
+  color: rgba(186, 50, 38, 0.9);
+  letter-spacing: 0.08em;
+  rotate: -5deg;
+  -webkit-mask-image: var(--ab-stamp-mask);
+  mask-image: var(--ab-stamp-mask);
+  -webkit-mask-size: 120px;
+  mask-size: 120px;
+  transition: rotate 0.2s ease, scale 0.2s ease;
 }
 
-.about-special-go:hover { translate: 0 -1px; box-shadow: 0 3px 0 var(--ab-accent-deep); }
+.about-special-go:hover { rotate: -1deg; scale: 1.06; }
+
+/* 刚出炉（最新发布）：一张出餐小票——窄长、顶上贴一截胶带、下沿锯齿撕口（和上面的写作账本一个路数），往右歪一点。
+   外层负责投影和歪角，内层负责锯齿遮罩。最新的一篇写大一点，更早的两篇各一行；数据见 about.js initFresh，拿不到时整张藏起来 */
+.about-fresh {
+  position: relative;
+  flex: 0 0 300px;
+  min-width: 0;
+  filter: drop-shadow(0 1px 1px rgba(90, 58, 26, 0.14)) drop-shadow(0 12px 12px rgba(90, 58, 26, 0.16));
+  transform: rotate(1.6deg);
+}
+
+.about-fresh[hidden] { display: none; }
+
+.about-fresh-paper {
+  display: flex;
+  flex-direction: column;
+  padding: 20px 22px 28px;
+  border-radius: 3px 3px 0 0;
+  background: var(--ab-grain-paper), var(--ab-paper);
+  -webkit-mask: conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) 50% / 12px 100%;
+  mask: conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) 50% / 12px 100%;
+}
+
+.about-fresh-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-family: var(--ab-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  color: var(--ab-accent-text);
+}
+
+/* 红墨水小圆戳 NEW（双圈） */
+.about-fresh-stamp {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 34px;
+  height: 34px;
+  border: 1.5px solid currentColor;
+  border-radius: 50%;
+  outline: 1px solid currentColor;
+  outline-offset: -4.5px;
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: rgba(186, 58, 42, 0.78);
+  rotate: -14deg;
+}
+
+.about-fresh-title {
+  display: block;
+  margin-top: 6px;
+  overflow: hidden;
+  font-family: var(--ab-hand);
+  font-size: 1.22rem;
+  font-weight: 700;
+  line-height: 1.4;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  text-decoration: none;
+  color: var(--ab-text);
+  transition: color 0.2s ease;
+}
+
+.about-fresh-title:hover,
+.about-fresh-title:focus-visible { color: var(--ab-accent-deep); outline: none; }
+
+.about-fresh-meta {
+  overflow: hidden;
+  font-family: var(--ab-mono);
+  font-size: 0.68rem;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--ab-text-dim);
+}
+
+.about-fresh-list {
+  margin-top: 10px;
+  border-top: 1px dashed rgba(110, 80, 50, 0.3);
+}
+
+.about-fresh-item {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 6px 0;
+  text-decoration: none;
+  color: var(--ab-text);
+  border-bottom: 1px dashed rgba(110, 80, 50, 0.22);
+}
+
+.about-fresh-item:last-child { border-bottom: 0; }
+.about-fresh-item[hidden] { display: none; }
+
+.about-fresh-item-title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  font-family: var(--ab-hand);
+  font-size: 0.98rem;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  transition: color 0.2s ease;
+}
+
+.about-fresh-item:hover .about-fresh-item-title,
+.about-fresh-item:focus-visible .about-fresh-item-title { color: var(--ab-accent-deep); }
+
+.about-fresh-item:focus-visible { outline: none; }
+
+.about-fresh-item-date {
+  flex: none;
+  font-family: var(--ab-mono);
+  font-size: 0.64rem;
+  color: var(--ab-text-dim);
+}
+
+/* 小票最底下一行 */
+.about-fresh-foot {
+  margin: 12px 0 0;
+  padding-top: 8px;
+  border-top: 1px dashed rgba(110, 80, 50, 0.3);
+  font-family: var(--ab-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.24em;
+  text-align: center;
+  color: var(--ab-text-dim);
+}
 
 .about-posts-more {
   display: table;
@@ -3454,63 +3916,436 @@ html.ab-anim .ab-letter:not(.is-signed) .ab-letter-motto span { clip-path: inset
 }
 
 /* --- Block 4：头脑风暴（第四部分最前面；左边一朵想法云，右边一本顶端线圈的方格便签本；翻页见 about.js initMuse）--- */
-.about-muse {
+/* 头脑风暴 + 抽签盒：左边签箱卡（200px，原来大云朵那一栏）；右边一栏上面是便签本，紧跟着下面是集点卡 + 打盹的店猫，
+   整栏在签箱卡旁边上下居中（上下空出来的一样多） */
+.about-desk {
   display: grid;
   grid-template-columns: 200px minmax(0, 1fr);
-  align-items: center;
   gap: 30px;
   margin-bottom: 64px;
 }
 
-.about-muse-head {
+.about-desk-side {
+  align-self: center;
+  display: flex;
+  flex-direction: column;
+  gap: 44px;
+  min-width: 0;
+}
+
+.about-muse { min-width: 0; }
+
+.about-desk-extra {
   position: relative;
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+}
+
+/* 咖啡集点卡：一张牛皮纸卡，左边 10 个杯子格（每天盖一个章），右边一截兑换联（虚线撕口隔开）。
+   投影用 filter 包住整张（兑换联剪了孔以后，孔边也有影子）。见 about.js initPoints */
+.about-points {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  color: #5a3c2a;
+  filter: drop-shadow(0 1px 1px rgba(90, 58, 26, 0.18)) drop-shadow(0 10px 12px rgba(90, 58, 26, 0.2));
+  transform: rotate(-0.5deg);
+}
+
+.about-points-main {
+  flex: 1;
+  min-width: 0;
+  padding: 10px 16px 10px 18px;
+  border-radius: 6px 0 0 6px;
+  background: var(--ab-grain-paper), #ead8b6;
+}
+
+.about-points-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 12px;
+  font-family: var(--ab-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.16em;
+  color: #8a5a2c;
+}
+
+.about-points-slots {
+  display: grid;
+  grid-template-columns: repeat(10, minmax(0, 1fr));
+  gap: 6px;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.about-points-slots li { display: grid; place-items: center; }
+
+/* 一格：虚线圆圈里一只淡淡的杯子；第 10 格写个「隐」；今天能盖的那格描实线、一明一暗地亮着 */
+.about-points-slot {
+  position: relative;
+  width: 100%;
+  max-width: 36px;
+  aspect-ratio: 1;
+  margin: 0;
+  padding: 0;
+  border: 1.5px dashed rgba(110, 72, 36, 0.42);
+  border-radius: 50%;
+  background: rgba(255, 250, 240, 0.35);
+  color: rgba(110, 72, 36, 0.28);
+  cursor: var(--ab-cursor);
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.about-points-slot::before {
+  content: '';
+  position: absolute;
+  inset: 24%;
+  background: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 22' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 8h14v4.5a6 6 0 0 1-6 6H9a6 6 0 0 1-6-6z'/%3E%3Cpath d='M17 10h1.5a3 3 0 0 1 0 6H17'/%3E%3Cpath d='M8 2.5c-1 1.2 1 2.2 0 3.4M12 2.5c-1 1.2 1 2.2 0 3.4'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 22' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 8h14v4.5a6 6 0 0 1-6 6H9a6 6 0 0 1-6-6z'/%3E%3Cpath d='M17 10h1.5a3 3 0 0 1 0 6H17'/%3E%3Cpath d='M8 2.5c-1 1.2 1 2.2 0 3.4M12 2.5c-1 1.2 1 2.2 0 3.4'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+.about-points-slot.is-last { border-color: rgba(176, 134, 52, 0.7); color: rgba(150, 110, 40, 0.55); }
+
+.about-points-slot.is-last::before {
+  content: '隐';
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: none;
+  -webkit-mask: none;
+  mask: none;
+  font-family: var(--ab-hand);
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.about-points-slot.is-stamped::before { visibility: hidden; }
+
+.about-points-slot.is-today {
+  border-style: solid;
+  border-color: var(--ab-accent-deep);
+  color: var(--ab-accent-deep);
+  cursor: var(--ab-cursor-hand);
+  animation: ab-points-glow 1.8s ease-in-out infinite;
+}
+
+.about-points-slot:focus-visible { outline: 2px dashed var(--ab-accent); outline-offset: 3px; }
+
+@keyframes ab-points-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(240, 161, 78, 0); }
+  50% { box-shadow: 0 0 0 5px rgba(240, 161, 78, 0.38); }
+}
+
+/* 盖上的章：朱红双圈、做旧，中间一只实心杯子 + 盖章那天的日期；每枚歪的角度不一样（--rot） */
+.about-points-mark {
+  position: absolute;
+  inset: -3px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 200px;
+  justify-content: center;
+  gap: 1px;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+  outline: 1px solid currentColor;
+  outline-offset: -5px;
+  color: rgba(186, 50, 38, 0.86);
+  rotate: var(--rot, 0deg);
+  -webkit-mask-image: var(--ab-stamp-mask);
+  mask-image: var(--ab-stamp-mask);
+  -webkit-mask-size: 90px;
+  mask-size: 90px;
+  pointer-events: none;
+}
+
+.about-points-mark i {
+  width: 40%;
+  aspect-ratio: 24 / 22;
+  background: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 22'%3E%3Cpath d='M3 8h14v4.5a6 6 0 0 1-6 6H9a6 6 0 0 1-6-6z'/%3E%3Cpath d='M17 10h1.5a3 3 0 0 1 0 6H17' fill='none' stroke='%23000' stroke-width='2'/%3E%3Cpath d='M8 2.5c-1 1.2 1 2.2 0 3.4M12 2.5c-1 1.2 1 2.2 0 3.4' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 22'%3E%3Cpath d='M3 8h14v4.5a6 6 0 0 1-6 6H9a6 6 0 0 1-6-6z'/%3E%3Cpath d='M17 10h1.5a3 3 0 0 1 0 6H17' fill='none' stroke='%23000' stroke-width='2'/%3E%3Cpath d='M8 2.5c-1 1.2 1 2.2 0 3.4M12 2.5c-1 1.2 1 2.2 0 3.4' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+.about-points-mark b { font: 700 7.5px/1 var(--ab-mono); letter-spacing: 0; }
+.about-points-mark.is-new { animation: ab-points-ink 0.36s ease-out; }
+
+@keyframes ab-points-ink {
+  0% { opacity: 0; scale: 1.5; }
+  60% { opacity: 1; scale: 0.94; }
+  100% { scale: 1; }
+}
+
+/* 盖章时落下来的那枚木头印章：圆头木柄 + 方木座 + 一层朱红印泥（只在动画时出现，about.js 临时加进那一格） */
+.about-points-stamper {
+  position: absolute;
+  z-index: 5;
+  left: 50%;
+  bottom: 6px;
+  width: 34px;
+  height: 46px;
+  margin-left: -17px;
+  background:
+    radial-gradient(circle at 50% 8px, #c58b52 0 7px, transparent 7.5px),
+    linear-gradient(#a8703c, #a8703c) 50% 12px / 8px 16px no-repeat,
+    linear-gradient(#8b5a2e, #6e4522) 50% 28px / 34px 11px no-repeat,
+    linear-gradient(#b8392b, #b8392b) 50% 39px / 30px 4px no-repeat;
+  filter: drop-shadow(0 3px 3px rgba(60, 38, 18, 0.35));
+  pointer-events: none;
+}
+
+.about-points-foot { font-family: var(--ab-hand); font-size: 0.86rem; letter-spacing: 0.02em; color: #7a5a40; }
+
+/* 兑换联：虚线撕口隔开，斜纹牛皮纸；集满兑换后（is-won）变成淡金色、可以点 / 悬停看签。
+   剪票之后（is-punched）顶上剪出一个星形孔（遮罩挖空，透得见后面） */
+.about-points-stub {
+  position: relative;
+  flex: 0 0 112px;
+  display: flex;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: inherit;
   text-align: center;
+  cursor: var(--ab-cursor);
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.about-points-stub-paper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  padding: 22px 6px 7px;
+  line-height: 1.2;
+  border-left: 2px dashed rgba(110, 72, 36, 0.45);
+  border-radius: 0 6px 6px 0;
+  background: var(--ab-grain-paper), repeating-linear-gradient(-45deg, rgba(255, 255, 255, 0.2) 0 6px, transparent 6px 12px), #e2cba3;
+}
+
+.about-points-stub-paper.is-punched {
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpolygon points='8.0,1.0 9.8,6.1 15.2,6.3 10.9,9.6 12.5,14.7 8.0,11.7 3.5,14.7 5.1,9.6 0.8,6.3 6.2,6.1'/%3E%3C/svg%3E"), linear-gradient(#000 0 0);
+  -webkit-mask-position: 50% 4px, 0 0;
+  -webkit-mask-size: 16px 16px, 100% 100%;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-composite: xor;
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpolygon points='8.0,1.0 9.8,6.1 15.2,6.3 10.9,9.6 12.5,14.7 8.0,11.7 3.5,14.7 5.1,9.6 0.8,6.3 6.2,6.1'/%3E%3C/svg%3E"), linear-gradient(#000 0 0);
+  mask-position: 50% 4px, 0 0;
+  mask-size: 16px 16px, 100% 100%;
+  mask-repeat: no-repeat;
+  mask-composite: exclude;
+}
+
+.about-points-stub-en { font-family: var(--ab-mono); font-size: 0.56rem; letter-spacing: 0.18em; color: #8a5a2c; }
+.about-points-stub-title { font-family: var(--ab-hand); font-size: 1.1rem; font-weight: 700; letter-spacing: 0.1em; color: #5a3c2a; }
+.about-points-stub-note { font-family: var(--ab-hand); font-size: 0.74rem; color: #7a5a40; text-wrap: balance; }
+
+.about-points.is-won .about-points-stub { cursor: var(--ab-cursor-hand); }
+.about-points.is-won .about-points-stub-paper { background: var(--ab-grain-paper), repeating-linear-gradient(-45deg, rgba(255, 255, 255, 0.24) 0 6px, transparent 6px 12px), #efd598; }
+.about-points.is-won .about-points-stub-title { color: #8a5a10; }
+.about-points-stub:focus-visible { outline: 2px dashed var(--ab-accent); outline-offset: 3px; }
+
+/* 剪票钳（只在剪票动画时出现）：钳口朝下咬在兑换联顶上，两条钳臂绕中间的轴各转一下 = 捏一下 */
+.about-points-punch {
+  position: absolute;
+  z-index: 6;
+  left: 50%;
+  bottom: calc(100% - 20px);
+  width: 44px;
+  height: 117px;
+  margin-left: -22px;
+  pointer-events: none;
+  filter: drop-shadow(0 4px 4px rgba(40, 24, 12, 0.35));
+}
+
+.about-points-punch svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.about-points-punch .punch-arm { transform-origin: 24px 90px; }
+
+/* 剪下来的那粒星星纸屑 */
+.about-points-chip {
+  position: absolute;
+  z-index: 6;
+  left: 50%;
+  top: 4px;
+  width: 16px;
+  height: 16px;
+  margin-left: -8px;
+  background: #e2cba3;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpolygon points='8.0,1.0 9.8,6.1 15.2,6.3 10.9,9.6 12.5,14.7 8.0,11.7 3.5,14.7 5.1,9.6 0.8,6.3 6.2,6.1'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpolygon points='8.0,1.0 9.8,6.1 15.2,6.3 10.9,9.6 12.5,14.7 8.0,11.7 3.5,14.7 5.1,9.6 0.8,6.3 6.2,6.1'/%3E%3C/svg%3E") center / contain no-repeat;
+  pointer-events: none;
+}
+
+/* 剪票那一下冒出来的「咔嚓！」 */
+.about-points-sfx {
+  position: absolute;
+  z-index: 7;
+  right: -18px;
+  top: -24px;
+  font-family: var(--ab-hand);
+  font-size: 1.1rem;
+  font-weight: 700;
+  white-space: nowrap;
+  color: #b8392b;
+  text-shadow: 0 0 3px rgba(255, 251, 243, 0.95), 0 0 8px rgba(255, 251, 243, 0.8);
+  rotate: 10deg;
+  pointer-events: none;
+}
+
+/* 隐藏签：和抽签盒的签纸一个样子（.about-omikuji-slip），换成墨黑横带 + 金色；从兑换联上方弹出来。
+   鼠标移到兑换过的兑换联上 / 键盘聚焦它 / 点它（is-reveal）时弹出 */
+.about-omikuji-slip.is-secret {
+  top: auto;
+  left: auto;
+  right: 136px;
+  bottom: calc(100% + 12px);
+  border-color: rgba(176, 134, 52, 0.6);
+  transform: translateY(10px) rotate(3deg) scale(0.94);
+  transform-origin: 100% 100%;
+}
+
+.about-desk-extra.is-reveal .about-omikuji-slip.is-secret,
+.about-desk-extra:has(.about-points.is-won .about-points-stub:hover) .about-omikuji-slip.is-secret,
+.about-desk-extra:has(.about-points-stub:focus-visible) .about-omikuji-slip.is-secret {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: rotate(1.2deg);
+  transition: opacity 0.2s ease, transform 0.32s cubic-bezier(0.22, 1, 0.36, 1), visibility 0s;
+}
+
+.about-omikuji-slip.is-secret::before { border-color: rgba(176, 134, 52, 0.3); }
+.about-omikuji-slip.is-secret::after { border-color: #b0863a; border-right-color: transparent; }
+.about-omikuji-slip.is-secret .about-omikuji-slip-band { background: #2b2a33; color: #f0d48a; }
+.about-omikuji-slip.is-secret .about-omikuji-lv { color: #b0863a; }
+.about-omikuji-slip.is-secret .about-omikuji-yiji dt { background: #b0863a; }
+.about-omikuji-slip.is-secret .about-omikuji-yiji dt.is-ji { background: #5a4d42; }
+
+/* 打盹的店猫：Minecraft 的猫——照 Minecraft Wiki 上 11 种毛色的猫材质拼的一只侧身趴着、脸朝外的小猫（外加一只店里原创的玛奇朵），每次打开页面随机来一只
+   （about.js initNapcat 画在 28 × 11 的小画布上，这里放大 4 倍、保持像素硬边）；下面垫一块黄羊毛坐垫。
+   睡着时一起一伏、头上飘 z；点一下醒过来（is-awake）说句话 */
+.about-napcat {
+  position: relative;
+  flex: none;
+  width: 112px;
+  height: 56px;
+  margin: 0 0 4px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: var(--ab-cursor-hand);
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.about-napcat-cushion {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 112px;
+  height: 12px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 3' shape-rendering='crispEdges'%3E%3Cpath fill='%23f3cc5c' d='M1 0h2v1h-2zM5 0h2v1h-2zM9 0h2v1h-2zM14 0h3v1h-3zM18 0h4v1h-4zM23 0h1v1h-1z'/%3E%3Cpath fill='%23efc653' d='M3 0h2v1h-2zM7 0h2v1h-2zM11 0h3v1h-3zM17 0h1v1h-1zM22 0h1v1h-1zM24 0h3v1h-3z'/%3E%3Cpath fill='%236e4c12' d='M0 1h1v1h-1zM27 1h1v1h-1zM0 2h28v1h-28z'/%3E%3Cpath fill='%23dcaa30' d='M1 1h3v1h-3zM9 1h1v1h-1zM12 1h1v1h-1zM14 1h2v1h-2zM17 1h1v1h-1z'/%3E%3Cpath fill='%23e1b034' d='M4 1h1v1h-1zM8 1h1v1h-1zM10 1h1v1h-1zM18 1h1v1h-1zM22 1h1v1h-1zM25 1h1v1h-1z'/%3E%3Cpath fill='%23edbf45' d='M5 1h1v1h-1zM11 1h1v1h-1zM13 1h1v1h-1zM16 1h1v1h-1zM19 1h1v1h-1zM21 1h1v1h-1zM23 1h1v1h-1zM26 1h1v1h-1z'/%3E%3Cpath fill='%23e8b83a' d='M6 1h2v1h-2zM20 1h1v1h-1zM24 1h1v1h-1z'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
+  pointer-events: none;
+}
+
+.about-napcat-body {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 112px;
+  height: 44px;
+  image-rendering: pixelated;
+  transform-origin: 50% 100%;
+  animation: ab-napcat-breathe 3.2s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.about-napcat.is-awake .about-napcat-body { animation: none; }
+.about-napcat:focus-visible { outline: 2px dashed var(--ab-accent); outline-offset: 3px; }
+
+@keyframes ab-napcat-breathe {
+  0%, 100% { scale: 1 1; }
+  50% { scale: 1.01 1.05; }
+}
+
+.about-napcat-z {
+  position: absolute;
+  left: 82%;
+  top: 14px;
+  pointer-events: none;
+}
+
+.about-napcat-z i {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  font: italic 700 12px/1 var(--ab-mono);
+  color: #554d47;
+  text-shadow: 0 0 3px rgba(255, 251, 243, 0.95);
+  opacity: 0;
+  animation: ab-napcat-z 3.6s linear infinite;
+}
+
+.about-napcat-z i:nth-child(2) { font-size: 14px; animation-delay: 1.2s; }
+.about-napcat-z i:nth-child(3) { font-size: 17px; animation-delay: 2.4s; }
+.about-napcat.is-awake .about-napcat-z { display: none; }
+
+@keyframes ab-napcat-z {
+  0% { opacity: 0; translate: 0 0; }
+  15% { opacity: 0.85; }
+  100% { opacity: 0; translate: 16px -28px; }
+}
+
+/* 页顶的标题：一朵小云 + 头脑风暴 + 一行小字 */
+.about-muse-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  margin: -14px 0 8px;
 }
 
 .about-muse-cloud {
-  display: block;
-  width: 200px;
+  flex: none;
+  width: 38px;
   height: auto;
   overflow: visible;
-  fill: rgba(255, 251, 243, 0.92);
+  fill: rgba(255, 251, 243, 0.95);
   stroke: var(--ab-text);
-  stroke-width: 2;
+  stroke-width: 8;
   stroke-linejoin: round;
-  filter: drop-shadow(0 10px 12px rgba(90, 58, 26, 0.16));
 }
 
-/* 标题写在云的正中（云身在 viewBox 里的中心 ≈ 103, 57） */
 .about-muse-title {
-  position: absolute;
-  top: 57px;
-  left: 6px;
-  right: 0;
+  flex: none;
   margin: 0;
-  transform: translateY(-50%);
   font-family: var(--ab-hand);
-  font-size: 1.5rem;
+  font-size: 1.15rem;
   font-weight: 700;
   line-height: 1;
   color: var(--ab-ink);
 }
 
 .about-muse-en {
-  margin-top: 4px;
+  min-width: 0;
+  overflow: hidden;
   font-family: var(--ab-mono);
-  font-size: 0.66rem;
-  letter-spacing: 0.24em;
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  white-space: nowrap;
+  text-overflow: ellipsis;
   color: var(--ab-accent-text);
-}
-
-.about-muse-sub {
-  margin-top: 2px;
-  font-family: var(--ab-hand);
-  font-size: 0.9rem;
-  color: var(--ab-text-dim);
 }
 
 /* 便签本：底下垫着两页（错开一点，看得出是一沓），最上面一页是方格纸 */
@@ -4311,6 +5146,38 @@ html.ab-anim .about-split-media.is-band img {
 
 .about-footer-dim { font-size: 0.78rem; opacity: 0.75; }
 
+/* 从主站过来时（主站点「关于店长」先预渲染这一页）顶上那条进度条：和主站 pace 的一个样子（居中的小胶囊、金色渐变），
+   切过来时停在 90%，入场播完走到 100%（is-full），再往上收回（is-gone）。见 about.js initTransitBar */
+.ab-pace {
+  position: fixed;
+  z-index: 2147482000;
+  top: 4px;
+  left: 0;
+  right: 0;
+  width: 7rem;
+  height: 8px;
+  margin: auto;
+  overflow: hidden;
+  border-radius: 8px;
+  background: #eaecf2;
+  pointer-events: none;
+  transition: opacity 0.3s ease, top 0.3s ease;
+}
+
+.ab-pace i {
+  position: absolute;
+  top: 0;
+  right: 100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to right, #f3d397, #fcad02);
+  translate: 90% 0;
+  transition: translate 0.35s ease-out;
+}
+
+.ab-pace.is-full i { translate: 100% 0; }
+.ab-pace.is-gone { opacity: 0; top: -8px; }
+
 /* 屏幕外暂停的循环动画（about.js initOffscreenPause 给元素加 .ab-off；离屏幕还有一屏远时就去掉，滚到眼前前早已恢复） */
 .ab-off,
 .ab-off * { animation-play-state: paused !important; }
@@ -4360,14 +5227,23 @@ html.ab-fallback .about-panel { display: none; }
   .about-bento-code { grid-column: span 1; }
   .about-bento-code { grid-template-columns: minmax(0, 1fr); gap: 22px; }
   .about-bento-main .about-bento-doodle { width: 120px; }
-  .about-special { flex-direction: column; align-items: stretch; gap: 24px; padding: 24px 22px; }
-  .about-special-board { align-self: center; }
+  .about-special-row { flex-direction: column; align-items: stretch; gap: 34px; }
+  .about-special { flex-direction: column; align-items: stretch; gap: 18px; margin: 34px 0 0; padding: 0 22px 22px; }
+  .about-special-board { align-self: center; margin: -34px 0 0; }
+  .about-special-peg { left: auto; right: 26px; }
+  .about-fresh { flex: none; width: min(100%, 330px); margin: 0 auto; }
   .about-special-foot { flex-wrap: wrap; }
 
   .about-writing-top { grid-template-columns: minmax(0, 1fr); }
   .about-draft { width: min(100%, 300px); margin: 4px auto 0; transform: rotate(1.4deg); }
   .about-ledger-years { padding-left: 0; border-left: 0; }
 
+  .about-omikuji { width: 200px; margin: 0 auto; }
+  .about-omikuji-slip { top: 276px; left: 50%; width: min(300px, 86vw); transform: translate(-50%, -8px) scale(0.96); transform-origin: 50% 0; }
+  .about-omikuji:hover .about-omikuji-slip,
+  .about-omikuji:has(.about-omikuji-box:focus-visible) .about-omikuji-slip,
+  .about-omikuji.is-open .about-omikuji-slip { transform: translate(-50%, 0) rotate(-0.8deg); }
+  .about-omikuji.is-busy .about-omikuji-slip { transform: translate(-50%, -8px) scale(0.96); }
   .about-posts { grid-template-columns: minmax(0, 1fr); gap: 24px; }
   .about-post-feature { grid-row: auto; }
 
@@ -4375,8 +5251,16 @@ html.ab-fallback .about-panel { display: none; }
   .about-fandom-feature { padding: 10px 10px 0; transform: rotate(-0.5deg); }
   .about-fandom-body { padding: 14px 6px 16px; }
   .about-fandom-title { font-size: 1.4rem; }
-  .about-muse { grid-template-columns: minmax(0, 1fr); gap: 18px; margin-bottom: 48px; }
-  .about-muse-head { justify-self: center; }
+  .about-desk { grid-template-columns: minmax(0, 1fr); gap: 36px; margin-bottom: 48px; }
+  .about-desk-side { gap: 24px; }
+  .about-desk-extra { flex-direction: column; align-items: stretch; gap: 10px; }
+  .about-points-main { padding: 12px 14px 10px 15px; }
+  .about-points-slots { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .about-points-stub { flex-basis: 90px; }
+  .about-points-foot { font-size: 0.8rem; }
+  .about-points-stub-en { letter-spacing: 0.04em; }
+  .about-napcat { align-self: flex-end; margin-right: 6px; }
+  .about-omikuji-slip.is-secret { right: 0; width: min(300px, 86vw); }
   .about-muse-sheet { --mx: 38px; padding: 30px 18px 14px 50px; }
   .about-muse-mark { left: 8px; top: 16px; font-size: 2.8rem; }
   .about-muse-text { font-size: 1.12rem; }
