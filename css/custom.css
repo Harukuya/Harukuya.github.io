@@ -972,3 +972,29 @@ a.article-sort-item-img {
   pointer-events: auto;
   transform: translate(-50%, 0) rotate(-2deg);
 }
+
+/* 「关于店长」几个字上隔一会儿扫过一道暖金色的流光（2026-10-10）：用 background-clip: text 在字形里画一条斜着的亮带，从左往右扫过去，
+   扫完停一会儿再来。亮带以外是 currentColor（字原本的颜色：顶部大图上白、往下滚的白底导航上深色、悬停变色都照旧）——
+   所以只把字的填充色设成透明（-webkit-text-fill-color），color 不动。
+   主题给菜单字加的 text-shadow 会盖在这层渐变上面把字弄脏，换成同样的 drop-shadow；白底导航 / 没有顶图的页面主题本来就不加阴影 */
+#nav a.site-page[href="/about/"] > span {
+  background: linear-gradient(105deg, currentColor 0 41%, #ffd98a 46%, #fff6dc 50%, #ffd98a 54%, currentColor 59% 100%) 100% 0 / 250% 100% no-repeat;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: none;
+  filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.3));
+  animation: tc-about-shine 4.5s ease-in-out infinite;
+}
+
+/* 白底导航上浅金色不显眼：换成深一点的琥珀色亮带 */
+#page-header.nav-fixed #nav a.site-page[href="/about/"] > span,
+#page-header.not-top-img #nav a.site-page[href="/about/"] > span {
+  background-image: linear-gradient(105deg, currentColor 0 41%, #e8912f 46%, #ffb547 50%, #e8912f 54%, currentColor 59% 100%);
+  filter: none;
+}
+
+@keyframes tc-about-shine {
+  0% { background-position: 100% 0; }
+  32%, 100% { background-position: 0 0; }
+}
