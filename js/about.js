@@ -1516,7 +1516,7 @@
     { id: 'macchiato', name: '原创猫', nick: '玛奇朵', line: '我是店里原创的猫，焦糖玛奇朵配色喵', p: '5c3a26,553522,432a1c,ddd1bd,f7f1e8,f4ece0,62402a,efe6d8,e2d7c4,4a2e1f,74503a,d9a04e,cf9445,6e4a32,e6a83a,1c1410,d8999b', d: '012134450673576678448878573158448678461109a06112ab0669c01612c01169dc0619ab0119b16012c16662ab0009a606096962191273435874ad5ddef7fe15556954524g485329' }
   ];
   var NAPCAT_DIGITS = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  var NAPCAT_SAY = ['喵', '喵~', '喵？', '呼噜呼噜…', '……zzz', '别吵，在上班', '今天盖章了吗？', '集满十个章有惊喜喵'];
+  var NAPCAT_SAY = ['喵', '喵~', '喵？', '呼噜呼噜…', '……zzz', '别吵，在上班', '今天盖章了吗？', '集满十个章有惊喜喵', '老吴！老吴！', '内个...内个...内个...'];
 
   // 画一帧（sleep / twitch / awake）到 28 × 11 的画布上
   function napcatFrame(ctx, skin, frame) {
@@ -1565,7 +1565,7 @@
     if (!ctx) { cat.hidden = true; return; }
     var skin = NAPCAT_SKINS[Math.floor(Math.random() * NAPCAT_SKINS.length)];
     cat.setAttribute('aria-label', '摸摸店猫（今天值班的是' + skin.nick + '，一只' + skin.name + '）');
-    var awake = false, timer = 0, flick = [], last = -1, step = 0;
+    var awake = false, timer = 0, flick = [], last = -1, step = 0, nextLine = null;
     function show(f) { napcatFrame(ctx, skin, f); }
     show('sleep');
     // 鼠标移上去：耳朵抖两下
@@ -1578,11 +1578,17 @@
       var text;
       if (step === 0) text = '今天是' + skin.nick + '值班～';
       else if (step === 1) text = skin.line || '我是一只' + skin.name + '喵';
+      else if (nextLine !== null) {
+        text = nextLine;
+        nextLine = null;
+        last = NAPCAT_SAY.indexOf(text);
+      }
       else {
-        var i = Math.floor(Math.random() * (NAPCAT_SAY.length - 1));
+        var i = Math.floor(Math.random() * (NAPCAT_SAY.length - (last >= 0 ? 1 : 0)));
         if (i >= last && last >= 0) i++;   // 不连着说同一句
         last = i;
         text = NAPCAT_SAY[i];
+        if (text === '老吴！老吴！') nextLine = '内个...内个...内个...';
       }
       step++;
       awake = true;

@@ -994,6 +994,14 @@ a.article-sort-item-img {
   filter: none;
 }
 
+/* 夜间模式：和其他菜单字一样的橙色微光（主题给菜单字的 text-shadow: 0 0 2px 橙色），顶图上 / 白底导航上 / 没有顶图的页面都是。
+   同样不能用 text-shadow（会盖在流光上把字弄脏），换成一样大小的 drop-shadow */
+[data-theme="dark"] #nav a.site-page[href="/about/"] > span,
+[data-theme="dark"] #page-header.nav-fixed #nav a.site-page[href="/about/"] > span,
+[data-theme="dark"] #page-header.not-top-img #nav a.site-page[href="/about/"] > span {
+  filter: drop-shadow(0 0 2px rgb(255, 158, 53));
+}
+
 @keyframes tc-about-shine {
   0% { background-position: 100% 0; }
   32%, 100% { background-position: 0 0; }
