@@ -1516,7 +1516,7 @@
     { id: 'macchiato', name: '原创猫', nick: '玛奇朵', line: '我是店里原创的猫，焦糖玛奇朵配色喵', p: '5c3a26,553522,432a1c,ddd1bd,f7f1e8,f4ece0,62402a,efe6d8,e2d7c4,4a2e1f,74503a,d9a04e,cf9445,6e4a32,e6a83a,1c1410,d8999b', d: '012134450673576678448878573158448678461109a06112ab0669c01612c01169dc0619ab0119b16012c16662ab0009a606096962191273435874ad5ddef7fe15556954524g485329' }
   ];
   var NAPCAT_DIGITS = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  var NAPCAT_SAY = ['喵', '喵~', '喵？', '呼噜呼噜…', '……zzz', '别吵，在上班', '今天盖章了吗？', '集满十个章有惊喜喵', '老吴！老吴！', '内个...内个...内个...'];
+  var NAPCAT_SAY = ['喵', '喵~', '喵？', '呼噜呼噜…', '……zzz', '别吵，在上班', '今天盖章了吗？', '集满十个章有惊喜喵', '老吴！老吴！'];
 
   // 画一帧（sleep / twitch / awake）到 28 × 11 的画布上
   function napcatFrame(ctx, skin, frame) {
@@ -1605,6 +1605,138 @@
       if (!reduceMotion) cv.animate([{ translate: '0 0' }, { translate: '0 -5px' }, { translate: '0 0' }], { duration: 280, easing: 'ease-out' });
       clearTimeout(timer);
       timer = setTimeout(function () { awake = false; cat.classList.remove('is-awake'); show('sleep'); }, 2600);
+    });
+  }
+
+  // ========== 另一面：流萤相片翻面 ==========
+  // 点一下相片（整张盖着透明按钮 #fandom-flip）：左上、右上两截纸胶带先后揭下来 → 相片抬起来绕竖轴翻到背面；再点一下翻回来，胶带一截截贴回去。
+  // 背面一片夜色，FANDOM_LINES（index.pug）的句子在各处一句句浮现：一个字一个字亮起来，停一会儿（句子越长停越久），糊开飘走。
+  // 同时最多 FANDOM_MAX 句，随机摆位、互不挨着，都是横排，大小 / 颜色各不一样；正亮着的和刚放过的那句不会马上再来。
+  // 只在翻到背面时放；相片滚出屏幕（.ab-off，见 initOffscreenPause）或切到别的标签页时先不放新的
+  var FANDOM_MAX = 3;
+  var FANDOM_WRAP = 12;   // 超过这么多字就断成两行，第二行往右错开一点
+  var FANDOM_SIZES = ['0.86rem', '1rem', '1.1rem', '1.2rem', '1.32rem'];   // 随机从第二档起挑；第一档只留给手机上一行放不下时往小里退
+
+  // 断成两行：在最靠近正中的那个标点后面断（标点跟着前半句），一个标点都没有就从正中断
+  function fandomRows(text) {
+    if (text.length <= FANDOM_WRAP) return [text];
+    var mid = text.length / 2, cut = 0, re = /[，、；：！？。,;:!?]+/g, m;
+    while ((m = re.exec(text))) {
+      var at = m.index + m[0].length;
+      if (at < text.length && (!cut || Math.abs(at - mid) < Math.abs(cut - mid))) cut = at;
+    }
+    if (!cut) cut = Math.ceil(mid);
+    return [text.slice(0, cut), text.slice(cut)];
+  }
+
+  function initFandom() {
+    var box = document.getElementById('fandom'), btn = document.getElementById('fandom-flip');
+    if (!box || !btn) return;
+    var card = box.querySelector('.about-fandom-card'), back = box.querySelector('.about-fandom-back'), tapes = box.querySelectorAll('.ab-tape');
+    var lines = [];
+    try { lines = JSON.parse(box.getAttribute('data-lines') || '[]'); } catch (e) { /* 没有句子：照样翻面 */ }
+    var flipped = false, busy = false, timer = 0, live = [], last = '';
+
+    function side(t) { return t.classList.contains('ab-tape-tr') ? 1 : -1; }   // 右上那截往右上揭，左上那截往左上
+    // 揭胶带：外头先翘起来一点，再整截扯走
+    function peel(t, i) {
+      var s = side(t);
+      return t.animate([
+        { opacity: 1, translate: '0 0', rotate: '0deg', scale: 1 },
+        { opacity: 1, translate: s * 4 + 'px -6px', rotate: s * 7 + 'deg', scale: 1.08, offset: 0.3 },
+        { opacity: 0, translate: s * 36 + 'px -38px', rotate: s * 26 + 'deg', scale: 1.14 }
+      ], { duration: 460, delay: i * 130, easing: 'cubic-bezier(0.35, 0.1, 0.4, 1)', fill: 'backwards' });
+    }
+    // 贴回去：从上面一点落下来、压平
+    function stick(t, i, delay) {
+      var s = side(t);
+      return t.animate([
+        { opacity: 0, translate: s * 10 + 'px -16px', rotate: s * 8 + 'deg', scale: 1.16 },
+        { opacity: 1, translate: '0 0', rotate: '0deg', scale: 1 }
+      ], { duration: 280, delay: delay + i * 110, easing: 'cubic-bezier(0.3, 0.7, 0.4, 1)', fill: 'backwards' });
+    }
+    // 翻面：转到一半（侧着的时候）往外抬一点
+    function turn(to, delay) {
+      return card.animate([
+        { transform: 'translateZ(0) rotateY(' + (to ? 0 : 180) + 'deg)' },
+        { transform: 'translateZ(70px) rotateY(90deg)', offset: 0.5 },
+        { transform: 'translateZ(0) rotateY(' + (to ? 180 : 0) + 'deg)' }
+      ], { duration: 820, delay: delay, easing: 'cubic-bezier(0.45, 0.05, 0.3, 1)', fill: 'backwards' });
+    }
+
+    function pick() {   // 不挑正亮着的，也不挑刚放过的那句（只有一两句时放宽）
+      var pool = lines.filter(function (t) { return t !== last && !live.some(function (o) { return o.text === t; }); });
+      if (!pool.length) pool = lines.filter(function (t) { return !live.some(function (o) { return o.text === t; }); });
+      return pool.length ? pool[Math.floor(Math.random() * pool.length)] : null;
+    }
+    function show() {
+      var text = pick();
+      if (!text) return;
+      var el = document.createElement('p'), k = 0, tone = Math.random(), size = 1 + Math.floor(Math.random() * (FANDOM_SIZES.length - 1));
+      el.className = 'about-fandom-line' + (tone < 0.25 ? ' is-gold' : tone < 0.5 ? ' is-teal' : '');
+      el.style.fontSize = FANDOM_SIZES[size];
+      el.style.setProperty('--r', ((Math.random() * 2 - 1) * 2.5).toFixed(1) + 'deg');
+      el.style.setProperty('--shift', (1.5 + Math.random() * 1.5).toFixed(2) + 'em');   // 两行时第二行往右错开多少
+      el.innerHTML = fandomRows(text).map(function (r) {
+        return '<span>' + r.split('').map(function (ch) { return '<i style="--i:' + (k++) + '">' + ch + '</i>'; }).join('') + '</span>';
+      }).join('');
+      el.style.visibility = 'hidden';
+      back.appendChild(el);
+      // 摆位：在背面里（金线框往里一点）随机找地方，和正亮着的句子至少隔开 16px；试 30 次都挤不下，这回就不放。
+      // 相片窄（手机）放不下一整行时字号往小里退
+      var W = back.clientWidth, H = back.clientHeight, padX = W * 0.07, padY = H * 0.07, spot = null;
+      while (el.offsetWidth > W - 2 * padX && size > 0) el.style.fontSize = FANDOM_SIZES[--size];
+      var w = el.offsetWidth, h = el.offsetHeight;
+      for (var n = 0; n < 30 && !spot; n++) {
+        var x = padX + Math.random() * Math.max(0, W - 2 * padX - w), y = padY + Math.random() * Math.max(0, H - 2 * padY - h);
+        if (live.every(function (o) { return x + w + 16 < o.x || x > o.x + o.w + 16 || y + h + 16 < o.y || y > o.y + o.h + 16; })) spot = { x: x, y: y };
+      }
+      if (!spot) { el.remove(); return; }
+      el.style.left = spot.x.toFixed(1) + 'px';
+      el.style.top = spot.y.toFixed(1) + 'px';
+      el.style.visibility = '';
+      var item = { el: el, text: text, x: spot.x, y: spot.y, w: w, h: h };
+      live.push(item);
+      last = text;
+      // 字全亮完之后停 2.6 秒 + 每个字 90 毫秒，再飘走
+      item.t = setTimeout(function () {
+        el.classList.add('is-out');
+        el.addEventListener('animationend', function (e) {
+          if (e.target !== el) return;
+          el.remove();
+          live = live.filter(function (o) { return o !== item; });
+        });
+      }, k * 85 + 900 + 2600 + k * 90);
+    }
+    function tick() {
+      if (!flipped) return;
+      if (!box.classList.contains('ab-off') && !document.hidden && live.length < FANDOM_MAX) show();
+      timer = setTimeout(tick, 1600 + Math.random() * 1200);
+    }
+    function clear() {
+      clearTimeout(timer);
+      live.forEach(function (o) { clearTimeout(o.t); o.el.remove(); });
+      live = [];
+    }
+
+    btn.addEventListener('click', function () {
+      if (busy) return;
+      flipped = !flipped;
+      box.classList.toggle('is-flipped', flipped);
+      btn.setAttribute('aria-pressed', String(flipped));
+      btn.setAttribute('aria-label', flipped ? '把相片翻回正面' : '把相片翻到背面');
+      if (reduceMotion) { if (flipped) tick(); else clear(); return; }
+      busy = true;
+      var anims;
+      if (flipped) {
+        anims = [].map.call(tapes, peel).concat(turn(true, 330));
+        anims[anims.length - 1].onfinish = tick;
+      } else {
+        clearTimeout(timer);
+        setTimeout(clear, 410);   // 转到侧着、背面看不见了再清掉句子
+        anims = [turn(false, 0)].concat([].map.call(tapes, function (t, i) { return stick(t, i, 640); }));
+      }
+      Promise.all(anims.map(function (a) { return a.finished; })).then(function () { busy = false; }, function () { busy = false; });
     });
   }
 
@@ -3043,10 +3175,11 @@
   }
 
   // ========== 屏幕外的循环动画暂停 ==========
-  // 正文里一直循环的 CSS 动画（信封三角、打卡本 AFKfishing、终端光标、今日特调的热气、头脑风暴进度条的彩虹、集点卡上亮着的那格、店猫的呼吸和 z）：
+  // 正文里一直循环的 CSS 动画（信封三角、打卡本 AFKfishing、终端光标、今日特调的热气、头脑风暴进度条的彩虹、集点卡上亮着的那格、店猫的呼吸和 z、
+  // 流萤相片背面一句句浮现的句子——这个是脚本在放，看到 .ab-off 就先不放新的）：
   // 滚出屏幕就暂停（加 .ab-off，见 about.css），离屏幕还有一屏远时就恢复——滚到眼前之前早已在动，看不出停过；
   // 暂停停在原来那一帧，恢复后接着走，错开的相位不乱。屏幕外它们照样让浏览器每帧重算样式、重绘整页，很占主线程（2026-10-03 排查）
-  var LOOPS = '.ab-letter-toggle, .ab-afk, .about-term-cursor, .about-special-cup, .about-muse-progress, .about-points, .about-napcat';
+  var LOOPS = '.ab-letter-toggle, .ab-afk, .about-term-cursor, .about-special-cup, .about-muse-progress, .about-points, .about-napcat, .about-fandom-feature';
 
   function initOffscreenPause() {
     if (!('IntersectionObserver' in window)) return;
@@ -3085,6 +3218,7 @@
     initOmikuji();
     initPoints();
     initNapcat();
+    initFandom();
     ledgerDone = loadLedger().then(function (d) {
       initLedger(d);
       initSpecial(d);
