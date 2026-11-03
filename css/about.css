@@ -4225,7 +4225,7 @@ html.ab-anim .ab-letter:not(.is-signed) .ab-letter-motto span { clip-path: inset
 
 .about-points-stub-en { font-family: var(--ab-mono); font-size: 0.56rem; letter-spacing: 0.18em; color: #8a5a2c; }
 .about-points-stub-title { font-family: var(--ab-hand); font-size: 1.1rem; font-weight: 700; letter-spacing: 0.1em; color: #5a3c2a; }
-.about-points-stub-note { font-family: var(--ab-hand); font-size: 0.74rem; color: #7a5a40; text-wrap: balance; }
+.about-points-stub-note { font-family: var(--ab-hand); font-size: 0.74rem; color: #7a5a40; text-wrap: balance; white-space: pre-line; }
 
 .about-points.is-won .about-points-stub { cursor: var(--ab-cursor-hand); }
 .about-points.is-won .about-points-stub-paper { background: var(--ab-grain-paper), repeating-linear-gradient(-45deg, rgba(255, 255, 255, 0.24) 0 6px, transparent 6px 12px), #efd598; }
@@ -4279,21 +4279,40 @@ html.ab-anim .ab-letter:not(.is-signed) .ab-letter-motto span { clip-path: inset
   pointer-events: none;
 }
 
-/* 隐藏签：和抽签盒的签纸一个样子（.about-omikuji-slip），换成墨黑横带 + 金色；从兑换联上方弹出来。
-   鼠标移到兑换过的兑换联上 / 键盘聚焦它 / 点它（is-reveal）时弹出 */
-.about-omikuji-slip.is-secret {
-  top: auto;
-  left: auto;
+/* 签夹：兑换出来的大大吉，从兑换联上方弹出来——鼠标移到兑换过的兑换联上（再移到签夹上也不收）/ 键盘聚焦 / 点兑换联（is-reveal）。
+   签纸一张张叠在同一格里（一样高 = 最高那张的高度）；多于一支（is-stack）：最上面盖一张封面，左上角一只铜圆环串着，
+   每张绕着圆环的孔（19px, 19px）转——离最上面越远偏得越多（about.js layout），点一下最上面那张荡到最后面 */
+.about-secrets {
+  position: absolute;
+  z-index: 8;
   right: 136px;
   bottom: calc(100% + 12px);
-  border-color: rgba(176, 134, 52, 0.6);
+  display: grid;
+  width: 290px;
+  text-align: left;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
   transform: translateY(10px) rotate(3deg) scale(0.94);
   transform-origin: 100% 100%;
+  transition: opacity 0.2s ease, transform 0.32s cubic-bezier(0.22, 1, 0.36, 1), visibility 0s linear 0.32s;
 }
 
-.about-desk-extra.is-reveal .about-omikuji-slip.is-secret,
-.about-desk-extra:has(.about-points.is-won .about-points-stub:hover) .about-omikuji-slip.is-secret,
-.about-desk-extra:has(.about-points-stub:focus-visible) .about-omikuji-slip.is-secret {
+/* 签夹和兑换联之间那道缝也算签夹：鼠标从兑换联往上移到签夹上，不会半路收起 */
+.about-secrets::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100%;
+  height: 16px;
+}
+
+.about-desk-extra.is-reveal .about-secrets,
+.about-desk-extra:has(.about-points.is-won .about-points-stub:hover) .about-secrets,
+.about-desk-extra:has(.about-points-stub:focus-visible) .about-secrets,
+.about-secrets:hover,
+.about-secrets:focus-visible {
   opacity: 1;
   visibility: visible;
   pointer-events: auto;
@@ -4301,6 +4320,149 @@ html.ab-anim .ab-letter:not(.is-signed) .ab-letter-motto span { clip-path: inset
   transition: opacity 0.2s ease, transform 0.32s cubic-bezier(0.22, 1, 0.36, 1), visibility 0s;
 }
 
+.about-secrets:focus-visible { outline: 2px dashed var(--ab-accent); outline-offset: 6px; }
+
+/* 两个类：压过手机版签纸的 transform-origin（.about-omikuji-slip，写在后面的媒体查询里） */
+.about-secrets .about-secrets-card {
+  grid-area: 1 / 1;
+  transform-origin: 19px 19px;
+}
+
+/* 放进签夹的签纸：不再自己弹出 / 收起，跟着签夹显示；点它算点签夹 */
+.about-secrets .about-omikuji-slip {
+  position: relative;
+  top: auto;
+  left: auto;
+  width: auto;
+  opacity: 1;
+  visibility: inherit;
+  pointer-events: none;
+  transform: none;
+  transition: none;
+}
+
+.about-secrets.is-stack .about-secrets-card { transition: rotate 0.32s cubic-bezier(0.22, 1, 0.36, 1); }
+
+/* 串在圆环上：每张左上角打一个铜扣眼（盖掉签纸原来那截绳结），横带的字往右让一让 */
+.about-secrets.is-stack .about-secrets-card::after {
+  content: '';
+  position: absolute;
+  z-index: 2;
+  top: 12px;
+  left: 12px;
+  width: 14px;
+  height: 14px;
+  border: 2.5px solid #d3af5f;
+  border-radius: 50%;
+  background: #1d1b21;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(110, 80, 26, 0.55);
+  rotate: none;
+}
+
+.about-secrets.is-stack .about-omikuji-slip-band { padding-left: 30px; }
+
+/* 铜圆环：后半圈在所有签纸下面（只露出签纸外面那截）、前半圈在最上面（从孔里穿出来翻过上沿）；一粗一细两道描边 = 暗面 + 高光 */
+.about-secrets-ring {
+  position: absolute;
+  left: -22px;
+  top: -22px;
+  display: none;
+  width: 52px;
+  height: 52px;
+  overflow: visible;
+  transform-origin: 41px 41px;
+  pointer-events: none;
+}
+
+.about-secrets.is-stack .about-secrets-ring { display: block; }
+.about-secrets-ring.is-back { z-index: 0; }
+.about-secrets-ring.is-front { z-index: 999; }
+.about-secrets-ring .o { fill: none; stroke: #7a5b1f; stroke-width: 3.8; }
+.about-secrets-ring .i { fill: none; stroke: #e6c879; stroke-width: 1.6; }
+
+/* 封面（多于一支时盖在最上面）：墨黑底、淡金色青海波（中间压暗一点让字干净），里面一圈金线；
+   左边一条竖着的米色题签「集签 · 大大吉」（朱红细框），右边一大个金色数字 = 一共兑到几支，最下面一行小字提示 */
+.about-secrets-cover {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 16px 18px 16px 44px;
+  color: #f0d48a;
+  background:
+    radial-gradient(70% 85% at 64% 50%, rgba(43, 42, 51, 0.94) 35%, rgba(43, 42, 51, 0.4) 100%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='10'%3E%3Cdefs%3E%3Cg id='s' stroke='%23d9b45f' stroke-opacity='.4' stroke-width='.8'%3E%3Ccircle r='9.6' fill='%232b2a33'/%3E%3Ccircle r='6.6' fill='none'/%3E%3Ccircle r='3.6' fill='none'/%3E%3C/g%3E%3C/defs%3E%3Cuse href='%23s' x='-10' y='-5'/%3E%3Cuse href='%23s' x='10' y='-5'/%3E%3Cuse href='%23s' x='30' y='-5'/%3E%3Cuse href='%23s' x='0' y='0'/%3E%3Cuse href='%23s' x='20' y='0'/%3E%3Cuse href='%23s' x='-10' y='5'/%3E%3Cuse href='%23s' x='10' y='5'/%3E%3Cuse href='%23s' x='30' y='5'/%3E%3Cuse href='%23s' x='0' y='10'/%3E%3Cuse href='%23s' x='20' y='10'/%3E%3Cuse href='%23s' x='-10' y='15'/%3E%3Cuse href='%23s' x='10' y='15'/%3E%3Cuse href='%23s' x='30' y='15'/%3E%3C/svg%3E") 0 0 / 20px 10px repeat,
+    #2b2a33;
+  border: 1px solid rgba(176, 134, 52, 0.6);
+  border-radius: 2px;
+  box-shadow: 0 2px 0 rgba(110, 80, 50, 0.1), 0 20px 36px -16px rgba(90, 58, 26, 0.6);
+}
+
+.about-secrets-cover[hidden] { display: none; }
+
+.about-secrets-cover::before {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  border: 1px solid rgba(240, 212, 138, 0.32);
+  pointer-events: none;
+}
+
+.about-secrets-cover-label {
+  flex: none;
+  padding: 14px 7px;
+  font-family: var(--ab-hand);
+  font-size: 1.12rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.2em;
+  color: #2b2a33;
+  writing-mode: vertical-rl;
+  background: var(--ab-grain-paper), #f5ead2;
+  outline: 1px solid rgba(198, 60, 44, 0.75);
+  outline-offset: -4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
+}
+
+.about-secrets-cover-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  text-align: center;
+}
+
+.about-secrets-cover-en { font-family: var(--ab-mono); font-size: 0.58rem; letter-spacing: 0.32em; color: rgba(240, 212, 138, 0.7); }
+.about-secrets-cover-num { position: relative; font-family: var(--ab-hand); line-height: 1; }
+
+.about-secrets-cover-num b {
+  display: inline-block;
+  font-size: 3.2rem;
+  font-weight: 700;
+  color: #f6dc94;
+  text-shadow: 0 0 14px rgba(240, 196, 100, 0.35);
+}
+
+.about-secrets-cover-num small { margin-left: 4px; font-size: 1rem; }
+.about-secrets-cover-sub { font-family: var(--ab-hand); font-size: 0.92rem; letter-spacing: 0.14em; }
+.about-secrets-cover-hint { margin-top: 6px; font-family: var(--ab-hand); font-size: 0.74rem; color: rgba(240, 212, 138, 0.55); }
+
+/* 兑到新的一支时封面数字旁边冒出来的 +1 */
+.about-secrets-plus {
+  position: absolute;
+  left: 100%;
+  top: 0.5em;
+  margin-left: 6px;
+  font-family: var(--ab-hand);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #ffe39a;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.about-omikuji-slip.is-secret { border-color: rgba(176, 134, 52, 0.6); }
 .about-omikuji-slip.is-secret::before { border-color: rgba(176, 134, 52, 0.3); }
 .about-omikuji-slip.is-secret::after { border-color: #b0863a; border-right-color: transparent; }
 .about-omikuji-slip.is-secret .about-omikuji-slip-band { background: #2b2a33; color: #f0d48a; }
@@ -5337,7 +5499,7 @@ html.ab-fallback .about-panel { display: none; }
   .about-points-foot { font-size: 0.8rem; }
   .about-points-stub-en { letter-spacing: 0.04em; }
   .about-napcat { align-self: flex-end; margin-right: 6px; }
-  .about-omikuji-slip.is-secret { right: 0; width: min(300px, 86vw); }
+  .about-secrets { right: 0; width: min(300px, 86vw); }
   .about-muse-sheet { --mx: 38px; padding: 30px 18px 14px 50px; }
   .about-muse-mark { left: 8px; top: 16px; font-size: 2.8rem; }
   .about-muse-text { font-size: 1.12rem; }

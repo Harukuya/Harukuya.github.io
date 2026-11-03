@@ -1361,9 +1361,15 @@
 
   // ========== 咖啡集点卡（头脑风暴下面）==========
   // 每天来盖一个章：点亮着的那个杯子 → 一枚木头印章落下来，盖上朱红的章（印着那天的日期）。集满 10 个 → 剪票钳伸过来在右边的兑换联上
-  // 「咔」地剪出一个星形孔，兑换出一支隐藏签（index.pug 的 SECRET_FORTUNE：签纸从兑换联上方弹出来，点别处收起；之后鼠标移到兑换联上 / 点它再看）。
-  // 盖过哪几天、兑没兑换记在访客自己的浏览器里（localStorage，按本地日期；存储不可用就只算这次打开的页面）
+  // 「咔」地剪出一个星形孔，兑换出一支大大吉（index.pug 的 SECRET_FORTUNES：没兑到过的先出，全兑到过了再随机重复），飞进签夹；
+  // 随后这张卡换成一张新卡，从头再集（当天已经盖过，第二天再盖新卡的第一个章）。
+  // 签夹（#points-slips，鼠标移到兑换联上 / 点兑换联时从上方弹出来，点别处收起）：一支就是一张签纸；多于一支时最上面盖一张封面
+  // 「集签 · 大大吉」写着一共几支，左上角一只圆环串着，点一下最上面那张绕着圆环荡到最后面，一张张往后翻。
+  // 这一轮盖过哪几天、最后盖章是哪天、兑到过哪几支（SECRET_FORTUNES 的序号，按兑换先后）记在访客自己的浏览器里
+  // （localStorage，按本地日期；存储不可用就只算这次打开的页面）。
+  // 本机调试：/about/?points=9&slips=3 = 先摆好 9 个章（今天能盖第 10 个）、3 支大大吉，只算这次打开的页面，不写进浏览器
   var POINTS_KEY = 'about-points', POINTS_MAX = 10;
+  var LOCAL_DEV = /^(localhost|127\.0\.0\.1|\[::1\]|::1)$|\.localhost$/.test(location.hostname);
   // 剪票钳（竖着、钳口朝下）：两条钳臂各是「一边的把手 + 另一边的钳头」，绕中间的轴（24, 90）转 = 捏一下；把手中间一根弹簧
   var PUNCH_SVG = '<svg viewBox="0 0 48 128" aria-hidden="true">' +
     '<path d="M15 64l3-4 3 8 3-8 3 8 3-8 3 4" fill="none" stroke="#c8ccd2" stroke-width="1.6" stroke-linejoin="round"/>' +
@@ -1379,18 +1385,45 @@
     var extra = card.parentNode, slots = card.querySelectorAll('.about-points-slot');
     var stub = document.getElementById('points-stub'), paper = stub.querySelector('.about-points-stub-paper');
     var foot = document.getElementById('points-foot'), note = document.getElementById('points-stub-note');
-    var now = new Date(), day = now.getFullYear() + '-' + pad2(now.getMonth() + 1) + '-' + pad2(now.getDate());
-    var state = { days: [], won: '' };
+    var box = document.getElementById('points-slips'), tpl = document.getElementById('points-slip-tpl');
+    var cover = box.querySelector('.about-secrets-cover'), count = document.getElementById('points-count');
+    var ringFront = box.querySelector('.about-secrets-ring.is-front'), rings = box.querySelectorAll('.about-secrets-ring');
+    var secrets = [];
+    try { secrets = JSON.parse(box.getAttribute('data-secrets') || '[]'); } catch (e) { /* 读不出文案：签纸上只有签号 */ }
+    function dayKey(t) { return t.getFullYear() + '-' + pad2(t.getMonth() + 1) + '-' + pad2(t.getDate()); }
+    function okDay(d) { return typeof d === 'string' && /^\d{4}-\d\d-\d\d$/.test(d); }
+    var now = new Date(), day = dayKey(now);
+    var state = { days: [], last: '', got: [] }, keep = true;
     try {
       var saved = JSON.parse(localStorage.getItem(POINTS_KEY) || 'null');
       if (saved && Array.isArray(saved.days)) {
         saved.days.forEach(function (d) {
-          if (/^\d{4}-\d\d-\d\d$/.test(d) && state.days.indexOf(d) < 0 && state.days.length < POINTS_MAX) state.days.push(d);
+          if (okDay(d) && state.days.indexOf(d) < 0 && state.days.length < POINTS_MAX) state.days.push(d);
         });
-        state.won = state.days.length >= POINTS_MAX && saved.won ? String(saved.won) : '';
+        state.last = okDay(saved.last) ? saved.last : state.days[state.days.length - 1] || '';
+        if (Array.isArray(saved.got)) saved.got.forEach(function (i) { if (i === Math.floor(i) && i >= 0) state.got.push(i); });
+        else if (saved.won && state.days.length >= POINTS_MAX) { state.got.push(0); state.days = []; }   // 旧版：只有一支隐藏签（就是现在的第一支），兑过之后一直停在集满
       }
     } catch (e) { /* 存储不可用：只算这次打开的页面 */ }
-    function save() { try { localStorage.setItem(POINTS_KEY, JSON.stringify(state)); } catch (e) { /* 忽略 */ } }
+    var qp = LOCAL_DEV && /[?&]points=(\d+)/.exec(location.search), qs = LOCAL_DEV && /[?&]slips=(\d+)/.exec(location.search);
+    if (qp || qs) {   // 本机调试（见上面）
+      keep = false;
+      state = { days: [], last: '', got: [] };
+      for (var j = Math.min(qp ? +qp[1] : 0, POINTS_MAX - 1); j > 0; j--) state.days.push(dayKey(new Date(now.getFullYear(), now.getMonth(), now.getDate() - j)));
+      state.last = state.days[state.days.length - 1] || '';
+      for (j = 0; j < (qs ? +qs[1] : 0); j++) state.got.push(j % Math.max(1, secrets.length));
+    }
+    // 集满的那一轮存成新的一轮（兑到的那支已经记进 got）：剪票、换卡的动画放到一半关掉页面，也不会重复兑换、不会停在集满
+    function save() {
+      if (!keep) return;
+      try { localStorage.setItem(POINTS_KEY, JSON.stringify({ days: state.days.length >= POINTS_MAX ? [] : state.days, last: state.last, got: state.got })); } catch (e) { /* 忽略 */ }
+    }
+    function pickSecret() {   // 没兑到过的先出；全兑到过了就在所有里随机
+      var pool = [], i;
+      for (i = 0; i < secrets.length; i++) if (state.got.indexOf(i) < 0) pool.push(i);
+      if (!pool.length) for (i = 0; i < secrets.length; i++) pool.push(i);
+      return pool.length ? pool[Math.floor(Math.random() * pool.length)] : 0;
+    }
 
     function mark(i, fresh) {   // 第 i 格盖上 state.days[i] 那天的章
       var d = state.days[i], m = document.createElement('span');
@@ -1400,8 +1433,9 @@
       slots[i].appendChild(m);
       slots[i].classList.add('is-stamped');
     }
+    var shown = 0;   // 签夹里摆着几支（兑换的动画放完之前比 got 少一支：兑换联先别变金）
     function paint() {
-      var n = state.days.length, done = state.days.indexOf(day) >= 0;
+      var n = state.days.length, done = state.last === day;
       [].forEach.call(slots, function (s, i) {
         var on = !done && i === n;
         s.classList.toggle('is-today', on);
@@ -1409,26 +1443,29 @@
         s.setAttribute('aria-label', i < n ? '第 ' + (i + 1) + ' 个章：' + state.days[i] : on ? '盖今天的章' : '第 ' + (i + 1) + ' 格');
       });
       foot.textContent = '已集 ' + n + ' / ' + POINTS_MAX + ' · ' + (n >= POINTS_MAX ? '集满啦' : done ? '今天盖过啦，明天再来' : '点亮着的杯子盖章');
-      card.classList.toggle('is-won', !!state.won);
-      stub.disabled = !state.won;
-      note.textContent = state.won ? '已兑换 · 看看签' : '集满 ' + POINTS_MAX + ' 章兑换';
+      card.classList.toggle('is-won', shown > 0);
+      stub.disabled = !shown;
+      note.textContent = shown ? '已兑 ' + shown + ' 支\n看看签' : '集满 ' + POINTS_MAX + ' 章兑换';
     }
     function bump() { if (!reduceMotion) card.animate([{ translate: '0 0' }, { translate: '0 1.5px' }, { translate: '0 0' }], { duration: 160 }); }
 
-    var busy = false;
+    var busy = false;   // 盖章 → 剪票 → 兑换放完之前：不能再盖、签夹不能翻
     function stampToday() {
       var i = state.days.length;
-      if (busy || i >= POINTS_MAX || state.days.indexOf(day) >= 0) return;
+      if (busy || i >= POINTS_MAX || state.last === day) return;
       busy = true;
       state.days.push(day);
+      state.last = day;
+      var full = state.days.length >= POINTS_MAX;
+      if (full) state.got.push(pickSecret());
       save();
       var slot = slots[i];
       slot.classList.remove('is-today');
       function done() {
         mark(i, true);
         paint();
-        busy = false;
-        if (state.days.length >= POINTS_MAX && !state.won) setTimeout(punch, 500);
+        if (full) setTimeout(punch, 500);
+        else busy = false;
       }
       if (reduceMotion) { done(); return; }
       var tool = document.createElement('span');
@@ -1445,12 +1482,9 @@
     }
     [].forEach.call(slots, function (s) { s.addEventListener('click', stampToday); });
 
-    // 集满：剪票钳从右上方伸过来，钳口对准兑换联顶上捏一下——咔，剪出星形孔、掉下一粒星星纸屑；钳子走开，兑换联变成金色，隐藏签弹出来
+    // 集满：剪票钳从右上方伸过来，钳口对准兑换联顶上捏一下——咔，剪出星形孔、掉下一粒星星纸屑；钳子走开，兑换联变成金色，大大吉飞进签夹（award）
     function punch() {
-      if (state.won) return;
-      state.won = day;
-      save();
-      function reveal() { paper.classList.add('is-punched'); paint(); extra.classList.add('is-reveal'); }
+      function reveal() { paper.classList.add('is-punched'); award(); }
       if (reduceMotion) { reveal(); return; }
       var tool = document.createElement('span');
       tool.className = 'about-points-punch';
@@ -1482,13 +1516,160 @@
       };
     }
 
-    // 兑换过之后：点兑换联开 / 关隐藏签（手机没有悬停），点别处收起
-    stub.addEventListener('click', function () { if (state.won) extra.classList.toggle('is-reveal'); });
-    document.addEventListener('pointerdown', function (e) { if (!extra.contains(e.target)) extra.classList.remove('is-reveal'); });
+    // 换新卡：集满的这张往左下滑走、淡出 → 章清掉、兑换联的星形孔补上 → 新的一张从右上方落下来，轻轻一震
+    function renew() {
+      function reset() {
+        state.days = [];
+        [].forEach.call(card.querySelectorAll('.about-points-mark'), function (m) { m.remove(); });
+        [].forEach.call(slots, function (s) { s.classList.remove('is-stamped'); });
+        paper.classList.remove('is-punched');
+        paint();
+      }
+      if (reduceMotion) { reset(); return; }
+      var out = card.animate([{ opacity: 1, translate: '0 0', rotate: '0deg' }, { opacity: 0, translate: '-16px 18px', rotate: '-4deg' }],
+        { duration: 380, easing: 'cubic-bezier(0.5, 0, 0.9, 0.6)', fill: 'forwards' });
+      out.onfinish = function () {
+        reset();
+        card.animate([{ opacity: 0, translate: '14px -30px', rotate: '3deg' }, { opacity: 1, translate: '0 0', rotate: '0deg' }],
+          { duration: 480, easing: 'cubic-bezier(0.2, 0.9, 0.3, 1.12)' }).onfinish = bump;
+        out.cancel();
+      };
+    }
 
-    if (state.days.length >= POINTS_MAX && !state.won) { state.won = day; save(); }   // 盖满那天没等剪票就关了页面：直接算兑换过
+    // ---- 签夹 ----
+    // deck = 签夹里从上到下：[封面（多于一支时）, 最新的一支, …, 最早的一支]；top = 现在最上面的是 deck 里第几张（往后翻就 +1，转一圈回到封面）
+    var deck = [], top = 0, swinging = false;
+    function makeSlip(k) {   // 第 k 支（按兑换的先后，从 1 数）
+      var f = secrets[state.got[k - 1] % secrets.length] || {}, el = tpl.content.firstElementChild.cloneNode(true), dd = el.querySelectorAll('dd');
+      var no = '第' + (k < 100 ? cnNum(k) : k) + '支';
+      el.querySelector('.about-omikuji-slip-no').textContent = no;
+      el.querySelector('.about-omikuji-text').textContent = f.text || '';
+      dd[0].textContent = f.yi || '—';
+      dd[1].textContent = f.ji || '—';
+      el.setAttribute('data-label', no + '大大吉：' + (f.text || '') + ' 宜' + (f.yi || '—') + '，忌' + (f.ji || '—'));
+      return el;
+    }
+    // 离最上面隔了 d 张：越往下层级越低、绕着圆环的孔往右下多偏一点（偏到第 3 张为止，再往下都藏在后面）
+    function layout() {
+      var len = deck.length;
+      deck.forEach(function (el, i) {
+        var d = (i - top + len) % len;
+        el.style.zIndex = len - d;
+        el.style.rotate = len > 1 ? Math.min(d, 3) * 2.4 + 'deg' : '';
+      });
+      cover.hidden = deck.indexOf(cover) < 0;
+      box.classList.toggle('is-stack', len > 1);
+      if (len > 1) {   // 一叠：整个签夹是一个按钮，读的是最上面那张
+        box.setAttribute('role', 'button');
+        box.tabIndex = 0;
+        box.setAttribute('aria-label', (deck[top] === cover ? '签夹：集签 · 大大吉，一共 ' + shown + ' 支' : deck[top].getAttribute('data-label')) + '。点一下往后翻');
+      } else {
+        box.removeAttribute('role');
+        box.removeAttribute('tabindex');
+        box.removeAttribute('aria-label');
+      }
+    }
+    function build() {   // 照兑换记录重新摆一遍，封面朝上
+      deck.forEach(function (el) { if (el !== cover) el.remove(); });
+      shown = state.got.length;
+      deck = shown > 1 ? [cover] : [];
+      for (var k = shown; k >= 1; k--) deck.push(box.insertBefore(makeSlip(k), ringFront));
+      count.textContent = shown;
+      top = 0;
+      layout();
+    }
+    // 往后翻：最上面那张绕着圆环往左下荡出去（稍微抬起来一点），荡到头绕到最后面，再荡回来垫在最底下；其余的各往上挪一层
+    function swing(then) {
+      var el = deck[top];
+      if (deck.length < 2 || swinging) return;
+      if (reduceMotion) { top = (top + 1) % deck.length; layout(); if (then) then(); return; }
+      swinging = true;
+      var out = el.animate([{ rotate: el.style.rotate || '0deg', scale: 1 }, { rotate: '40deg', scale: 1.03 }],
+        { duration: 250, easing: 'cubic-bezier(0.3, 0.5, 0.5, 1)', fill: 'forwards' });
+      out.onfinish = function () {
+        top = (top + 1) % deck.length;
+        layout();
+        el.animate([{ rotate: '40deg', scale: 1.03 }, { rotate: el.style.rotate, scale: 1 }],
+          { duration: 420, easing: 'cubic-bezier(0.2, 0.8, 0.3, 1)' }).onfinish = function () {
+          swinging = false;
+          if (then) then();
+        };
+        out.cancel();
+      };
+    }
+    // 封面上的数字换成 n：跳一下，旁边冒一个 +1
+    function bumpCount(n) {
+      count.textContent = n;
+      if (reduceMotion) return;
+      count.animate([{ scale: 1.7, opacity: 0.2 }, { scale: 0.92, opacity: 1, offset: 0.6 }, { scale: 1, opacity: 1 }], { duration: 480, easing: 'ease-out' });
+      var plus = document.createElement('span');
+      plus.className = 'about-secrets-plus';
+      plus.textContent = '+1';
+      count.parentNode.appendChild(plus);
+      plus.animate([{ opacity: 0, translate: '0 6px' }, { opacity: 1, translate: '0 -6px', offset: 0.3 }, { opacity: 0, translate: '0 -24px' }],
+        { duration: 1100, easing: 'ease-out', fill: 'forwards' }).onfinish = function () { plus.remove(); };
+    }
+
+    // 兑换（剪完票）：签夹弹出来，新的一支从兑换联那边飞进签夹，同时集满的这张卡换成新卡。
+    // 第一支：直接落进来。第二支：落在第一支上面，圆环转着穿过两张的孔，封面再从上面盖下来（数字 2）。
+    // 第三支起：封面朝上，新的一支从封面底下塞进去，封面上的数字跳一下 +1。凑成一叠的，停一会儿封面自己往后翻，露出新的这一支
+    function award() {
+      var n = state.got.length, prev = shown, el = makeSlip(n);
+      if (prev > 1) { top = 0; layout(); }   // 之前翻到别的张了：先回到封面朝上（这时签夹还收着，看不见）
+      extra.classList.add('is-reveal');
+      setTimeout(function () {
+        shown = n;
+        if (prev > 1) deck.splice(1, 0, el);
+        else deck.unshift(el);
+        box.insertBefore(el, ringFront);
+        top = 0;
+        layout();
+        paint();
+        if (reduceMotion) {
+          if (prev === 1) { deck.unshift(cover); layout(); }
+          count.textContent = n;
+          busy = false;
+          renew();
+          return;
+        }
+        el.animate([{ opacity: 0, translate: '130px 150px', rotate: '22deg', scale: 0.7 }, { opacity: 1, translate: '0 0', rotate: el.style.rotate || '0deg', scale: 1 }],
+          { duration: 560, easing: 'cubic-bezier(0.2, 0.8, 0.3, 1)' });
+        if (prev === 1) {
+          [].forEach.call(rings, function (r) {
+            r.animate([{ opacity: 0, rotate: '-70deg', scale: 0.5 }, { opacity: 1, rotate: '0deg', scale: 1 }],
+              { duration: 440, delay: 420, easing: 'cubic-bezier(0.3, 1.4, 0.5, 1)', fill: 'backwards' });
+          });
+        }
+        setTimeout(renew, 340);
+        if (prev === 0) { setTimeout(function () { busy = false; }, 600); return; }
+        setTimeout(function () {
+          if (prev === 1) {
+            deck.unshift(cover);
+            top = 0;
+            count.textContent = n;
+            layout();
+            cover.animate([{ opacity: 0, translate: '-6px -42px', rotate: '-10deg' }, { opacity: 1, translate: '0 0', rotate: '0deg' }],
+              { duration: 440, easing: 'cubic-bezier(0.2, 0.9, 0.3, 1.12)' });
+          } else bumpCount(n);
+        }, prev === 1 ? 980 : 640);
+        setTimeout(function () { swing(function () { busy = false; }); }, 2100);
+      }, 360);
+    }
+
+    // 有大大吉之后：点兑换联开 / 关签夹（手机没有悬停），点别处收起；签夹一叠时点它（或回车 / 空格）往后翻
+    stub.addEventListener('click', function () { if (shown && !busy) extra.classList.toggle('is-reveal'); });
+    document.addEventListener('pointerdown', function (e) { if (!extra.contains(e.target)) extra.classList.remove('is-reveal'); });
+    box.addEventListener('click', function () { if (!busy) swing(); });
+    box.addEventListener('keydown', function (e) {
+      if ((e.key === 'Enter' || e.key === ' ') && deck.length > 1) {
+        e.preventDefault();
+        if (!busy) swing();
+      }
+    });
+
+    if (state.days.length >= POINTS_MAX) { state.got.push(pickSecret()); state.days = []; save(); }   // 集满了还没兑（盖满那天没等剪票就关了页面）：直接兑掉、换成新的一轮
     for (var i = 0; i < state.days.length; i++) mark(i, false);
-    if (state.won) paper.classList.add('is-punched');
+    build();
     paint();
   }
 
