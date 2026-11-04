@@ -1921,6 +1921,340 @@
     });
   }
 
+  // ========== 去过的现场：票根轮播 + 翻过来看胶片 ==========
+  // 一次摆 TICKETS_SHOWN 张（about.css 用 :nth-child 藏起后面的），每 TICKETS_EVERY 毫秒轮一张：最下面那张往下淡出、排到队尾，
+  // 上面的各往下挪一格，队首等着的那张从上面落到最上面（只有 3 张时就是刚收走的那张）。
+  // 鼠标停在某张票上（它会微微浮起来）、键盘选中某张、有票翻着、票根滚出屏幕、切到别的标签页时都不轮；鼠标离开重新数 5 秒。
+  // 点一下票（回车 / 空格也行）：翻到背面，一条横着走的胶片放 data-photos 里的现场照片（第一次翻才装片、才下载）；
+  // 电脑上翻开后点胶片上的某一格（键盘：再按回车）打开看片台看大图（见下面 viewer*，手机上没有）；点票的其他地方翻回来，Esc、鼠标移开、焦点离开、点别处也翻回来
+  var TICKETS_SHOWN = 3, TICKETS_EVERY = 5000;
+
+  function initTickets() {
+    var list = document.querySelector('.about-tickets');
+    if (!list) return;
+    var wraps = [].slice.call(list.querySelectorAll('.about-ticket-wrap'));
+    var timer = 0, moving = false;
+
+    function film(w) {   // 装片：照片不够 6 格就重复凑够（走一圈不露空），再整条排两遍接成循环；每张票从不同的照片起头
+      var box = w.querySelector('.about-ticket-film'), photos = [];
+      if (box.firstChild) return;
+      try { photos = JSON.parse(w.getAttribute('data-photos') || '[]'); } catch (e) { /* 没有照片：空片 */ }
+      if (!photos.length) return;
+      var k = wraps.indexOf(w) % photos.length, order = [], roll = [];
+      for (var j = 0; j < photos.length; j++) order.push((j + k) % photos.length);
+      while (roll.length < 6) roll = roll.concat(order);
+      var reel = document.createElement('div');
+      reel.className = 'about-ticket-reel';
+      reel.style.setProperty('--dur', (roll.length * 3) + 's');
+      roll.concat(roll).forEach(function (i) {
+        var img = document.createElement('img');
+        img.alt = '';
+        img.decoding = 'async';
+        img.draggable = false;
+        img.src = photos[i];
+        img.setAttribute('data-i', i);   // 是 data-photos 里的第几张（看片台按这个找大图、翻张）
+        reel.appendChild(img);
+      });
+      box.appendChild(reel);
+    }
+    function flip(w, on) {
+      if (on === w.classList.contains('is-flipped')) return;
+      if (on) film(w);
+      w.classList.toggle('is-flipped', on);
+      w.setAttribute('aria-pressed', String(on));
+      if (!on) schedule();
+    }
+
+    function held() {
+      // 键盘焦点才算（鼠标点过的票也会留着焦点，那个不该一直拦着轮播）
+      return !!(list.querySelector('.about-ticket-wrap:hover, .about-ticket-wrap:focus-visible, .is-flipped') ||
+        list.classList.contains('ab-off') || document.hidden);
+    }
+    function schedule() { clearTimeout(timer); timer = setTimeout(tick, TICKETS_EVERY); }
+    function tick() {
+      if (!held()) step();
+      schedule();
+    }
+    function step() {
+      var kids = [].slice.call(list.children), n = Math.min(TICKETS_SHOWN, kids.length), out = kids[n - 1];
+      if (moving) return;
+      if (reduceMotion) { list.appendChild(out); list.insertBefore(list.children[n - 1], list.firstChild); return; }
+      moving = true;
+      var fade = out.animate([{ opacity: 1, translate: '0 0' }, { opacity: 0, translate: '0 16px' }],
+        { duration: 420, easing: 'cubic-bezier(0.5, 0, 0.9, 0.6)', fill: 'forwards' });
+      fade.onfinish = function () {
+        var stay = kids.slice(0, n - 1), before = stay.map(function (w) { return w.getBoundingClientRect().top; });
+        list.appendChild(out);                        // 最下面那张排到队尾（藏起来）
+        var next = list.children[n - 1];              // 队首等着的那张
+        list.insertBefore(next, list.firstChild);     // 放到最上面
+        fade.cancel();
+        stay.forEach(function (w, i) {                // 其余的从原来的位置滑到新位置（往下一格）
+          var dy = before[i] - w.getBoundingClientRect().top;
+          w.animate([{ translate: '0 ' + dy + 'px' }, { translate: '0 0' }], { duration: 560, easing: 'cubic-bezier(0.3, 0.7, 0.3, 1)' });
+        });
+        next.animate([{ opacity: 0, translate: '0 -18px' }, { opacity: 1, translate: '0 0' }],
+          { duration: 520, delay: 140, easing: 'cubic-bezier(0.2, 0.8, 0.3, 1)', fill: 'backwards' }).onfinish = function () { moving = false; };
+      };
+    }
+
+    // ---------- 看片台：翻开的票上点胶片某一格（键盘：翻开后再按回车），大图贴到票夹左边（压在流萤相片上）----------
+    // 只在两栏布局（宽 769px 以上，about.css 的 768px 断点以上）有；手机上点胶片还是翻回来，也不下载大图
+    // 不另开一层、不压暗页面。照片装在一小截黑胶片框里、带投影，跟着鼠标微微晃（视差）；切换按钮横图放照片下面、竖图放照片右边，没有说明文字。
+    // ← / → 、按钮、手机上左右滑换张；点胶片上别的格子直接换成那张；Esc、照片角上的 ×、点别处关上，照片飞回胶片那一格（那一格看不见了就原地淡掉）。
+    // 打开时票一直翻着、胶片停着（轮播也就停着），鼠标移到胶片左右两头胶片就往那边滚（edgeTo）。大图 = data-big（长边 1600，点开才下载，顺手预载左右两张）；大图到之前先把胶片上那张小图放大垫着
+    var view = null, vb = null, lastPointer = null;
+    var VIEW_BTN = 42, VIEW_GAP = 12, VIEW_FX = 10, VIEW_FY = 22;   // 按钮直径、按钮之间 / 按钮和照片的间距、胶片框左右 / 上下宽（和 about.css 对上）
+    var par = { x: 0, y: 0, tx: 0, ty: 0, raf: 0 };
+    var VIEW_MQ = window.matchMedia('(min-width: 769px)');
+    var VIEW_ZOOM = 1.25;   // 照片在原来那个大小的基础上再放大几倍（中心不动，见 viewerFit）
+    var edge = { v: 0, t: 0, raf: 0 };
+
+    function viewerBuild() {
+      var host = list.closest('.about-fandom') || document.body;
+      var el = document.createElement('div');
+      el.className = 'about-viewer';
+      el.hidden = true;
+      el.setAttribute('role', 'group');
+      el.setAttribute('aria-label', '现场照片大图');
+      var icon = function (d) { return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="' + d + '"/></svg>'; };
+      el.innerHTML =
+        '<div class="about-viewer-frame"><div class="about-viewer-photo">' +
+          '<img class="about-viewer-lo" alt="" draggable="false"><img class="about-viewer-hi" alt="" draggable="false">' +
+          '<button type="button" class="about-viewer-btn about-viewer-close" aria-label="收起大图">' + icon('M6 6l12 12M18 6L6 18') + '</button>' +
+        '</div></div>' +
+        '<div class="about-viewer-nav">' +
+          '<button type="button" class="about-viewer-btn about-viewer-prev" aria-label="上一张">' + icon('M15 5l-7 7 7 7') + '</button>' +
+          '<button type="button" class="about-viewer-btn about-viewer-next" aria-label="下一张">' + icon('M9 5l7 7-7 7') + '</button>' +
+        '</div>';
+      host.appendChild(el);
+      var q = function (s) { return el.querySelector('.about-viewer-' + s); };
+      vb = { host: host, el: el, frame: q('frame'), photo: q('photo'), lo: q('lo'), hi: q('hi'), nav: q('nav'), prev: q('prev'), next: q('next'), close: q('close') };
+      vb.prev.addEventListener('click', function () { viewerStep(-1); });
+      vb.next.addEventListener('click', function () { viewerStep(1); });
+      vb.close.addEventListener('click', function () { viewerClose(); });
+      vb.hi.addEventListener('load', function () { if (view) vb.hi.classList.add('is-ready'); });   // 换了 src 的话旧图的 load 不会再来
+      vb.lo.addEventListener('load', function () { if (view && !view.closing) viewerLayout(); });
+      // 手机上左右滑换张（照片上 touch-action: pan-y，上下滑还是滚页面）
+      var down = null;
+      vb.photo.addEventListener('pointerdown', function (e) { down = { x: e.clientX, y: e.clientY }; });
+      vb.photo.addEventListener('pointerup', function (e) {
+        var d = down; down = null;
+        if (!d || !view) return;
+        var dx = e.clientX - d.x, dy = e.clientY - d.y;
+        if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) * 1.2) viewerStep(dx < 0 ? 1 : -1);
+      });
+      document.addEventListener('pointermove', function (e) {
+        lastPointer = { x: e.clientX, y: e.clientY, type: e.pointerType };
+        if (view && !view.closing && e.pointerType === 'mouse') { parallaxTo(e.clientX, e.clientY); edgeTo(e); }
+      });
+      document.documentElement.addEventListener('mouseleave', function () { edge.v = 0; });   // 鼠标移出窗口：胶片别一直滚
+      document.addEventListener('pointerdown', function (e) {
+        lastPointer = { x: e.clientX, y: e.clientY, type: e.pointerType };
+        if (view && !el.contains(e.target) && !view.w.contains(e.target)) viewerClose();   // 点别处：收起
+      });
+      document.addEventListener('keydown', function (e) {
+        if (!view || /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName) || e.target.isContentEditable) return;
+        if (e.key === 'Escape') { e.preventDefault(); viewerClose(); }
+        else if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') { e.preventDefault(); viewerStep(e.key === 'ArrowLeft' ? -1 : 1); }
+      });
+      window.addEventListener('resize', function () {
+        if (!view || view.closing) return;
+        if (VIEW_MQ.matches) viewerLayout(); else viewerClose();   // 窗口拉窄成一栏：收起
+      });
+    }
+
+    function ratioOf(i) {   // 第 i 张的宽高比：胶片上那几格早就下载好了，直接量
+      var im = view.w.querySelector('.about-ticket-reel img[data-i="' + i + '"]');
+      if (im && im.naturalWidth) return im.naturalWidth / im.naturalHeight;
+      return vb.lo.naturalWidth ? vb.lo.naturalWidth / vb.lo.naturalHeight : 1.5;
+    }
+    // 照片框和按钮放哪（视口坐标）。先按原来的摆法定照片中心：照片 + 按钮整组的右边贴着票夹（和翻开放大的这张票）左边、空出 24px，
+    // 上下以这张票为中心、限在这一段（和屏幕）里；再以这个中心把照片放大 VIEW_ZOOM 倍——中心不动，只受屏幕边限制（左边留 16px、顶上让开页眉栏、
+    // 下面连按钮留在屏幕里），所以右边会压到翻开那张票的左边一点。按钮跟着贴在照片下面（横图）/ 右边（竖图）
+    function viewerFit() {
+      var host = vb.host.getBoundingClientRect(), side = (list.closest('.about-fandom-side') || list).getBoundingClientRect();
+      var tr = view.w.getBoundingClientRect(), ratio = ratioOf(view.i), tall = ratio < 1, vh = window.innerHeight;
+      var navW = tall ? VIEW_GAP + VIEW_BTN : 0, navH = tall ? 0 : VIEW_GAP + VIEW_BTN, cap = ratio >= 1 ? 1600 : 1600 * ratio;
+      var right = Math.min(side.left, tr.left) - 24, top = Math.max(host.top, 72), bottom = Math.min(host.bottom, vh - 16);
+      if (bottom - top < 320) { top = host.top; bottom = host.bottom; }
+      var pw0 = Math.max(80, Math.min(right - host.left - navW - VIEW_FX * 2, (bottom - top - navH - VIEW_FY * 2) * ratio, cap));
+      var W0 = pw0 + VIEW_FX * 2, H0 = pw0 / ratio + VIEW_FY * 2;
+      var cx = right - navW - W0 / 2, cy = Math.max(top, Math.min(tr.top + tr.height / 2 - (H0 + navH) / 2, bottom - H0 - navH)) + H0 / 2;
+      var halfW = Math.min(W0 / 2 * VIEW_ZOOM, cx - 16), halfH = Math.min(H0 / 2 * VIEW_ZOOM, cy - 72, vh - 16 - navH - cy);
+      var pw = Math.max(80, Math.min(halfW * 2 - VIEW_FX * 2, (halfH * 2 - VIEW_FY * 2) * ratio, cap));
+      var W = pw + VIEW_FX * 2, H = pw / ratio + VIEW_FY * 2, gx = cx - W / 2, gy = cy - H / 2;
+      var pair = VIEW_BTN * 2 + VIEW_GAP;
+      return { left: gx, top: gy, width: W, height: H, pw: pw, tall: tall,
+        navX: tall ? gx + W + VIEW_GAP : gx + (W - pair) / 2, navY: tall ? gy + (H - pair) / 2 : gy + H + VIEW_GAP };
+    }
+    function viewerLayout() {
+      var r = viewerFit(), h = vb.host.getBoundingClientRect(), s = vb.frame.style, n = vb.nav.style;
+      s.left = (r.left - h.left) + 'px'; s.top = (r.top - h.top) + 'px'; s.width = r.width + 'px'; s.height = r.height + 'px';
+      vb.nav.classList.toggle('is-side', r.tall);
+      n.left = (r.navX - h.left) + 'px'; n.top = (r.navY - h.top) + 'px';
+      return r;
+    }
+    function flyFrom(r, src) {   // 让框里的照片正好盖在胶片那一格上的 transform（框的 transform-origin 在左上角）
+      var s = src.width / r.pw;
+      return 'translate(' + (src.left - r.left - VIEW_FX * s) + 'px, ' + (src.top - r.top - VIEW_FY * s) + 'px) scale(' + s + ')';
+    }
+    function frameOf(w, i) {   // 胶片上露着的第 i 张（取离胶片正中最近的那一格）；露不出来就 null
+      var box = w.querySelector('.about-ticket-film').getBoundingClientRect(), mid = (box.left + box.right) / 2, best = null;
+      [].forEach.call(w.querySelectorAll('.about-ticket-reel img[data-i="' + i + '"]'), function (im) {
+        var r = im.getBoundingClientRect(), cx = r.left + r.width / 2;
+        if (cx > box.left && cx < box.right && (!best || Math.abs(cx - mid) < Math.abs(best.left + best.width / 2 - mid))) best = r;
+      });
+      return best;
+    }
+
+    // 视差：鼠标在照片哪边，照片就往那边挪一点、侧过去一点（鼠标到照片边上大约六成幅度，再远到顶；每帧往目标靠 10%，停稳了就不再跑）
+    function parallaxTo(x, y) {
+      var r = vb.frame.getBoundingClientRect();
+      par.tx = Math.max(-1, Math.min(1, (x - r.left - r.width / 2) / (r.width / 2 + 160)));
+      par.ty = Math.max(-1, Math.min(1, (y - r.top - r.height / 2) / (r.height / 2 + 160)));
+      if (!par.raf) par.raf = requestAnimationFrame(parallaxTick);
+    }
+    function parallaxTick() {
+      par.x += (par.tx - par.x) * 0.1;
+      par.y += (par.ty - par.y) * 0.1;
+      vb.photo.style.transform = 'perspective(1100px) translate(' + (par.x * 10).toFixed(2) + 'px, ' + (par.y * 8).toFixed(2) + 'px) ' +
+        'rotateY(' + (par.x * 6).toFixed(2) + 'deg) rotateX(' + (-par.y * 5).toFixed(2) + 'deg)';
+      par.raf = Math.abs(par.tx - par.x) + Math.abs(par.ty - par.y) > 0.001 ? requestAnimationFrame(parallaxTick) : 0;
+    }
+    // 大图开着时胶片停着；鼠标移到胶片左右两头（各占三成宽）就往那边滚：越靠边越快，最快 6 倍速，在中间停着。
+    // 只认鼠标真的指在胶片上（被大图盖住的那一截不算）。胶片是 CSS 动画（被 .is-viewing 暂停），这里直接拨它的 currentTime，转一圈接回开头
+    function edgeTo(e) {
+      var box = view.w.querySelector('.about-ticket-film'), v = 0;
+      if (box.contains(e.target)) {
+        var r = box.getBoundingClientRect(), z = r.width * 0.3, l = (r.left + z - e.clientX) / z, rr = (e.clientX - (r.right - z)) / z;
+        v = l > 0 ? -Math.min(l, 1) : rr > 0 ? Math.min(rr, 1) : 0;
+      }
+      edge.v = v;
+      if (v && !edge.raf) { edge.t = performance.now(); edge.raf = requestAnimationFrame(edgeTick); }
+    }
+    function edgeTick(now) {
+      var reel = view && !view.closing && edge.v ? view.w.querySelector('.about-ticket-reel') : null, a = reel && reel.getAnimations()[0];
+      if (!a || a.currentTime === null) { edge.raf = 0; return; }
+      var dur = a.effect.getComputedTiming().duration, dt = Math.min(now - edge.t, 50);
+      edge.t = now;
+      a.currentTime = ((a.currentTime + edge.v * 6 * dt) % dur + dur) % dur;   // 右边：往前走（胶片往左），左边：倒着走
+      edge.raf = requestAnimationFrame(edgeTick);
+    }
+
+    function parallaxReset() {   // 收起时照片摆正（0.22s 回正，不是一下跳回去）
+      cancelAnimationFrame(par.raf);
+      par.raf = 0; par.x = par.y = par.tx = par.ty = 0;
+      var t = vb.photo.style.transform;
+      vb.photo.style.transform = '';
+      if (t) vb.photo.animate([{ transform: t }, { transform: 'none' }], { duration: 220, easing: 'ease-out' });
+    }
+
+    function viewerShow(i, dir) {
+      var n = view.photos.length;
+      view.i = i = (i + n) % n;
+      vb.lo.src = view.photos[i];
+      vb.hi.classList.remove('is-ready');
+      vb.hi.src = view.big[i] || view.photos[i];
+      if (vb.hi.complete && vb.hi.naturalWidth) vb.hi.classList.add('is-ready');
+      [i + 1, i - 1].forEach(function (j) { new Image().src = view.big[(j + n) % n] || view.photos[(j + n) % n]; });
+      var r = viewerLayout();
+      if (dir) vb.frame.animate([{ opacity: 0, translate: (dir * 30) + 'px 0' }, { opacity: 1, translate: '0 0' }],
+        { duration: 280, easing: 'cubic-bezier(0.2, 0.8, 0.3, 1)' });
+      return r;
+    }
+    function viewerStep(d) { if (view && !view.closing && view.photos.length > 1) viewerShow(view.i + d, d); }
+
+    function viewerOpen(w, img, byKey) {
+      if (view) {   // 已经开着：点的是这张票胶片上的另一格，就换成那张
+        var j = +img.getAttribute('data-i');
+        if (view.w === w && !view.closing && j !== view.i) viewerShow(j, j > view.i ? 1 : -1);
+        return;
+      }
+      var photos, big;
+      try { photos = JSON.parse(w.getAttribute('data-photos') || '[]'); big = JSON.parse(w.getAttribute('data-big') || '[]'); } catch (e) { return; }
+      if (!photos.length) return;
+      if (!vb) viewerBuild();
+      view = { w: w, i: 0, photos: photos, big: big, key: byKey };
+      w.classList.add('is-viewing');
+      var src = img.getBoundingClientRect();
+      vb.nav.hidden = photos.length < 2;
+      vb.el.hidden = false;
+      var r = viewerShow(+img.getAttribute('data-i'));
+      vb.frame.animate([{ transform: flyFrom(r, src) }, { transform: 'none' }], { duration: 520, easing: 'cubic-bezier(0.2, 0.8, 0.2, 1)' });
+      vb.nav.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 240, delay: 320, easing: 'ease-out', fill: 'backwards' });
+      vb.close.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 200, delay: 380, easing: 'ease-out', fill: 'backwards' });
+      if (byKey) (photos.length > 1 ? vb.next : vb.close).focus({ preventScroll: true });
+    }
+    function viewerClose() {
+      if (!view || view.closing) return;
+      var v = view, anims = [];
+      v.closing = true;
+      edge.v = 0;
+      vb.frame.getAnimations().forEach(function (a) { a.finish(); });
+      parallaxReset();
+      var cur = vb.frame.getBoundingClientRect(), r = { left: cur.left, top: cur.top, pw: cur.width - VIEW_FX * 2 }, src = frameOf(v.w, v.i);
+      anims.push(vb.nav.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 160, fill: 'forwards' }));
+      anims.push(vb.close.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 120, fill: 'forwards' }));
+      anims.push(src   // 飞回胶片上那一格；那一格已经滚出胶片了就原地淡掉
+        ? vb.frame.animate([{ transform: 'none' }, { transform: flyFrom(r, src) }], { duration: 440, easing: 'cubic-bezier(0.5, 0, 0.2, 1)', fill: 'forwards' })
+        : vb.frame.animate([{ opacity: 1, translate: '0 0' }, { opacity: 0, translate: '0 18px' }], { duration: 240, easing: 'ease-in', fill: 'forwards' }));
+      Promise.all(anims.map(function (a) { return a.finished; })).then(function () {
+        vb.el.hidden = true;
+        anims.forEach(function (a) { a.cancel(); });
+        vb.hi.classList.remove('is-ready');
+        vb.hi.removeAttribute('src');
+        vb.lo.removeAttribute('src');
+        v.w.classList.remove('is-viewing');
+        view = null;
+        if (v.key) { v.w.focus({ preventScroll: true }); return; }
+        // 鼠标收起的：这时鼠标要是不在这张票上，就把票翻回去（不然要等下一次移进移出）
+        var at = lastPointer && lastPointer.type === 'mouse' ? document.elementFromPoint(lastPointer.x, lastPointer.y) : null;
+        if (lastPointer && lastPointer.type === 'mouse' && !(at && v.w.contains(at))) flip(v.w, false);
+      });
+    }
+    function firstShown(w) {   // 键盘打开时从哪一格开始：胶片里最靠左、整格露着的那张
+      var box = w.querySelector('.about-ticket-film').getBoundingClientRect();
+      return [].filter.call(w.querySelectorAll('.about-ticket-reel img'), function (im) {
+        return im.getBoundingClientRect().left >= box.left - 1;
+      })[0];
+    }
+
+    wraps.forEach(function (w) {
+      w.addEventListener('click', function (e) {
+        var img = e.target.closest && e.target.closest('.about-ticket-reel img');
+        if (img && w.classList.contains('is-flipped') && VIEW_MQ.matches) { viewerOpen(w, img, false); return; }
+        if (view && view.w === w) viewerClose();   // 开着大图时点这张票别的地方：收起大图、票翻回去
+        flip(w, !w.classList.contains('is-flipped'));
+      });
+      w.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && w.classList.contains('is-flipped')) {
+          if (view) return;   // 大图开着：这一下 Esc 只收起大图（document 上那个监听管），再按一下才翻回来
+          e.preventDefault(); flip(w, false); return;
+        }
+        if (e.key !== 'Enter' && e.key !== ' ') return;
+        e.preventDefault();
+        var img = VIEW_MQ.matches && w.classList.contains('is-flipped') && firstShown(w);   // 翻开着：回车打开看片台；Esc / 焦点移走翻回来
+        if (img) viewerOpen(w, img, true);
+        else flip(w, !w.classList.contains('is-flipped'));
+      });
+      // 鼠标在胶片上时胶片放慢到 0.3 倍，好对准某一格（不停：鼠标得留在票上票才翻着，停了胶片就永远不走了）
+      var box = w.querySelector('.about-ticket-film'), rate = function (r) {
+        var reel = box.querySelector('.about-ticket-reel');
+        if (reel) reel.getAnimations().forEach(function (a) { if (a.updatePlaybackRate) a.updatePlaybackRate(r); else a.playbackRate = r; });
+      };
+      box.addEventListener('pointerenter', function (e) { if (e.pointerType === 'mouse') rate(0.3); });
+      box.addEventListener('pointerleave', function () { rate(1); });
+      // 看片台开着的时候（鼠标要移到左边的大图、按钮上，焦点也会挪走），票别翻回去
+      w.addEventListener('pointerleave', function (e) { if (e.pointerType === 'mouse' && !view) flip(w, false); });
+      w.addEventListener('blur', function () { if (!view) flip(w, false); });
+    });
+    document.addEventListener('pointerdown', function (e) {
+      if (!view && !list.contains(e.target)) wraps.forEach(function (w) { flip(w, false); });
+    });
+    list.addEventListener('pointerleave', schedule);
+    if (wraps.length >= TICKETS_SHOWN) schedule();
+  }
+
   // ========== 最新发布（刚出炉，今日特调菜单卡右边那张出餐小票）==========
   // 按创建日期（date）取最新三篇：最新的一篇写标题 + 分类 / 日期 / 几天前出炉，更早的两篇各一行（标题 + 日期）。
   // ledger.json 的 list 已经按 date 从早到晚排好（scripts/about-ledger.js）；拿不到数据就整张小票藏起来（见启动处的 catch）
@@ -3357,10 +3691,10 @@
 
   // ========== 屏幕外的循环动画暂停 ==========
   // 正文里一直循环的 CSS 动画（信封三角、打卡本 AFKfishing、终端光标、今日特调的热气、头脑风暴进度条的彩虹、集点卡上亮着的那格、店猫的呼吸和 z、
-  // 流萤相片背面一句句浮现的句子——这个是脚本在放，看到 .ab-off 就先不放新的）：
+  // 流萤相片背面一句句浮现的句子、票根轮播和背面的胶片——句子和轮播是脚本在放，看到 .ab-off 就先不放新的 / 不轮）：
   // 滚出屏幕就暂停（加 .ab-off，见 about.css），离屏幕还有一屏远时就恢复——滚到眼前之前早已在动，看不出停过；
   // 暂停停在原来那一帧，恢复后接着走，错开的相位不乱。屏幕外它们照样让浏览器每帧重算样式、重绘整页，很占主线程（2026-10-03 排查）
-  var LOOPS = '.ab-letter-toggle, .ab-afk, .about-term-cursor, .about-special-cup, .about-muse-progress, .about-points, .about-napcat, .about-fandom-feature';
+  var LOOPS = '.ab-letter-toggle, .ab-afk, .about-term-cursor, .about-special-cup, .about-muse-progress, .about-points, .about-napcat, .about-fandom-feature, .about-tickets';
 
   function initOffscreenPause() {
     if (!('IntersectionObserver' in window)) return;
@@ -3400,6 +3734,7 @@
     initPoints();
     initNapcat();
     initFandom();
+    initTickets();
     ledgerDone = loadLedger().then(function (d) {
       initLedger(d);
       initSpecial(d);
