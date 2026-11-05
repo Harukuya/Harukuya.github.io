@@ -1,0 +1,1150 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><script>// 手机 / 平板上不做下面两种控制台检测（2026-10-01）：手机上本来就打不开控制台，
+// 而苹果手机上的 Chrome 会被误判成「开着控制台」——一打开主站就弹「请关闭控制台」、页面被清空。电脑上照旧
+var btfSkipDevtoolsCheck = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent) || (navigator.maxTouchPoints > 1 && /Macintosh/.test(navigator.userAgent));
+if (!btfSkipDevtoolsCheck) ((function() {var callbacks = [],timeLimit = 50,open = false;setInterval(loop, 1);return {addListener: function(fn) {callbacks.push(fn);},cancleListenr: function(fn) {callbacks = callbacks.filter(function(v) {return v !== fn;});}}
+function loop() {var startTime = new Date();debugger;if (new Date() - startTime > timeLimit) {if (!open) {callbacks.forEach(function(fn) {fn.call(null);});}open = true;window.stop();alert('你真坏，请关闭控制台！');document.body.innerHTML = "";} else {open = false;}}})()).addListener(function() {window.location.reload();});</script><script>function toDevtools(){
+  let num = 0; 
+  let devtools = new Date();
+  devtools.toString = function() {
+    num++;
+    if (num > 1) {
+        alert('你真坏，请关闭控制台！')
+        window.location.href = "about:blank"
+        blast();
+    }
+  }
+  console.log('', devtools);
+}
+if (!btfSkipDevtoolsCheck) toDevtools();
+
+</script><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>神经网络训练 | TechCafe☕️丨Have a nice day!</title><meta name="author" content="Noctuna"><meta name="copyright" content="Noctuna"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="ffffff"><meta name="description" content="从前向传播到正则化与调参">
+<meta property="og:type" content="article">
+<meta property="og:title" content="神经网络训练">
+<meta property="og:url" content="https://www.noctuna.cc/2026/11/05/NeuralNetworkTraining/index.html">
+<meta property="og:site_name" content="TechCafe☕️丨Have a nice day!">
+<meta property="og:description" content="从前向传播到正则化与调参">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://blogpic-5qb.pages.dev/img/postcover/6.png">
+<meta property="article:published_time" content="2026-11-05T15:04:08.000Z">
+<meta property="article:modified_time" content="2026-11-05T15:04:08.000Z">
+<meta property="article:author" content="Noctuna">
+<meta property="article:tag" content="机器学习">
+<meta property="article:tag" content="人工智能">
+<meta property="article:tag" content="深度学习">
+<meta property="article:tag" content="神经网络">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://blogpic-5qb.pages.dev/img/postcover/6.png"><link rel="shortcut icon" href="https://blogpic-5qb.pages.dev/img/icon/sunday.jpg"><link rel="canonical" href="https://www.noctuna.cc/2026/11/05/NeuralNetworkTraining/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=4.8.1"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.15/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":true,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"找不到您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":230},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"你已切换为繁体","cht_to_chs":"你已切换为简体","day_to_night":"你已切换为深色模式","night_to_day":"你已切换为浅色模式","bgLight":"#49b1f5","bgDark":"#1f1f1f","position":"top-left"},
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery@2.1.2/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery@2.1.2/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: true,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  }
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '神经网络训练',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2026-11-05 23:04:08'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+    win.getCSS = (url,id = false) => new Promise((resolve, reject) => {
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = url
+      if (id) link.id = id
+      link.onerror = reject
+      link.onload = link.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        link.onload = link.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(link)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', 'ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          const now = new Date()
+          const hour = now.getHours()
+          const isNight = hour <= 6 || hour >= 18
+          if (t === undefined) isNight ? activateDarkMode() : activateLightMode()
+          else if (t === 'light') activateLightMode()
+          else activateDarkMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><link rel="stylesheet" href="/css/custom.css" media="defer" onload="this.media='all'"><span id="fps"></span><link rel="stylesheet" href="https://cdn1.tianli0.top/npm/element-ui@2.15.6/packages/theme-chalk/lib/index.css"><style>.dl-night{display:none}[data-theme="dark"] .dl-day{display:none}[data-theme="dark"] .dl-night{display:block}</style><script>document.addEventListener("click",function(e){if(!e.target.closest||!e.target.closest("#article-container a[data-fancybox]"))return;document.querySelectorAll("#article-container .dl-img a[data-fancybox]").forEach(function(a){a.setAttribute("data-fancybox",a.offsetParent===null?"dl-hidden":"gallery")})},true)</script><div id="myscoll"></div><!-- hexo injector head_end start --><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-swiper/lib/swiper.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-swiper/lib/swiperstyle.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-categories-card@1.0.0/lib/categorybar.css"><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/assets/font-awesome-animation.min.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/tag_plugins.css" media="defer" onload="this.media='all'"><script src="https://npm.elemecdn.com/hexo-butterfly-tag-plugins-plus@latest/lib/assets/carousel-touch.js"></script><link rel="stylesheet" href="https://npm.elemecdn.com/hexo-butterfly-wowjs/lib/animate.min.css" media="print" onload="this.media='screen'"><link rel="stylesheet" href="https://www.fomal.cc/static/css/runtime.min.css" media="print" onload="this.media='all'"><!-- hexo injector head_end end --><meta name="generator" content="Hexo 5.4.2"></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://blogpic-5qb.pages.dev/img/avatar/neko.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">75</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">28</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 咖啡厅</span></a></div><div class="menus_item"><a class="site-page" href="/comments/"><i class="fa-fw fas fa-envelope-open"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-mug-saucer"></i><span> 关于店长</span></a></div><div class="menus_item"><a class="site-page" href="/gallery/"><i class="fa-fw fas fa-image"></i><span> 插画厅</span></a></div><div class="menus_item"><a class="site-page group hide" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> 来点什么？</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-link"></i><span> 店长们</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 档案室</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签墙</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 类目表</span></a></li></ul></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://blogpic-5qb.pages.dev/img/postcover/6.png')"><nav id="nav"><span id="blog-info"><a href="/" title="TechCafe☕️丨Have a nice day!"><span class="site-name">TechCafe☕️丨Have a nice day!</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 咖啡厅</span></a></div><div class="menus_item"><a class="site-page" href="/comments/"><i class="fa-fw fas fa-envelope-open"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-mug-saucer"></i><span> 关于店长</span></a></div><div class="menus_item"><a class="site-page" href="/gallery/"><i class="fa-fw fas fa-image"></i><span> 插画厅</span></a></div><div class="menus_item"><a class="site-page group hide" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> 来点什么？</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/link/"><i class="fa-fw fas fa-link"></i><span> 店长们</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 档案室</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签墙</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 类目表</span></a></li></ul></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">神经网络训练</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-11-05T15:04:08.000Z" title="发表于 2026-11-05 23:04:08">2026-11-05</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-11-05T15:04:08.000Z" title="更新于 2026-11-05 23:04:08">2026-11-05</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E8%BE%89%E5%A4%9C%E3%81%AE%E7%BC%96%E7%A8%8B%E4%B9%8B%E8%B7%AF/">辉夜の编程之路</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">7.5k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>26分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="神经网络训练"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><p>相关：<a href="/2026/10/07/DeepLearning1/">深度学习与神经网络</a>（含 PyTorch 代码的通用笔记）</p>
+<h2 id="0-训练在做什么"><a href="#0-训练在做什么" class="headerlink" title="0 训练在做什么"></a>0 训练在做什么</h2><p><strong>训练就是先定一个打分标准（损失函数），再沿着让分数变好的方向一小步一小步改参数（梯度下降）；每一步往哪改，用反向传播来算。</strong> 基础版梯度下降会遇到两类问题：一类是走得不好（慢、卡住、步子不合适），另一类是学得太死（背住了训练数据，换数据就不行）。本笔记后半部分都在处理这两类问题。</p>
+<div class="img-wrap"><div class="img-bg"><img class="img" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://blogpic-5qb.pages.dev/img/sc_swe/nntrain/训练流程.png" alt="<center>训练流程" style="width:520px;"/></div><span class="image-caption"><center>训练流程</span></div>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>节</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="#1-前向传播">1</a></td>
+<td>网络怎么算出输出</td>
+</tr>
+<tr>
+<td><a href="#2-输出层与激活函数">2</a></td>
+<td>softmax、sigmoid、tanh、ReLU 系列，激活放在哪</td>
+</tr>
+<tr>
+<td><a href="#3-损失函数">3</a></td>
+<td>参数、预处理、one-hot、交叉熵、MSE</td>
+</tr>
+<tr>
+<td><a href="#4-梯度下降与反向传播">4</a></td>
+<td>更新规则、链式法则、mini-batch</td>
+</tr>
+<tr>
+<td><a href="#5-优化：动量、Adam、学习率">5</a></td>
+<td>平台与鞍点、动量、Adam、学习率与调度</td>
+</tr>
+<tr>
+<td><a href="#6-梯度消失与梯度爆炸">6</a></td>
+<td>成因与对策</td>
+</tr>
+<tr>
+<td><a href="#7-泛化：欠拟合与过拟合">7</a></td>
+<td>症状、对策、验证集与测试集、网络大小</td>
+</tr>
+<tr>
+<td><a href="#8-正则化">8</a></td>
+<td>L2、L1、dropout、早停、BatchNorm</td>
+</tr>
+<tr>
+<td><a href="#9-超参数与交叉验证">9</a></td>
+<td>超参数清单、搜索方法、k 折交叉验证</td>
+</tr>
+<tr>
+<td><a href="#10-要点速查">10</a></td>
+<td>全文浓缩</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>图都是用 Python 现做的；标「实测」的来自真实跑过的小实验（NumPy），设置写在图下。</p>
+<hr>
+<h2 id="1-前向传播"><a href="#1-前向传播" class="headerlink" title="1 前向传播"></a>1 前向传播</h2><h3 id="1-1-网络就是一个函数"><a href="#1-1-网络就是一个函数" class="headerlink" title="1.1 网络就是一个函数"></a>1.1 网络就是一个函数</h3><p>以手写数字识别为例：16 × 16 = 256 个像素输入，10 个输出对应 0–9，网络就是一个函数 f: ℝ²⁵⁶ → ℝ¹⁰。训练的目标是让输入一张「2」时第 2 个输出最大。</p>
+<p>输入和输出之间的层叫<strong>隐藏层</strong>。每层的每个神经元连着下一层的每个神经元，叫<strong>全连接</strong>，这样的网络叫多层感知机（MLP）。</p>
+<h3 id="1-2-逐层计算"><a href="#1-2-逐层计算" class="headerlink" title="1.2 逐层计算"></a>1.2 逐层计算</h3><p>每一层做同一件事：<strong>矩阵乘向量，加偏置，过激活函数</strong>。</p>
+<script type="math/tex; mode=display">\mathbf a^{1}=\sigma(\mathbf W^{1}\mathbf x+\mathbf b^{1}),\qquad\mathbf a^{l}=\sigma(\mathbf W^{l}\mathbf a^{l-1}+\mathbf b^{l})</script><p>整个网络是一个嵌套函数：</p>
+<script type="math/tex; mode=display">\mathbf y=f(\mathbf x)=\sigma\Big(\mathbf W^{L}\cdots\sigma\big(\mathbf W^{2}\,\sigma(\mathbf W^{1}\mathbf x+\mathbf b^{1})+\mathbf b^{2}\big)\cdots+\mathbf b^{L}\Big)</script><ul>
+<li><strong>W 的形状 = 本层神经元数 × 上一层输出数</strong>，第 i 行是第 i 个神经元的权重</li>
+<li>一层的参数数 = 输入数 × 输出数 + 输出数（每个神经元一个偏置）</li>
+<li>写成矩阵后，整个计算就是一串矩阵乘法，GPU 正擅长这个</li>
+</ul>
+<p><strong>一个三层小例子</strong>（输入 [1, −1]，激活函数都是 sigmoid）：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>层</th>
+<th>W</th>
+<th>b</th>
+<th>激活前 z</th>
+<th>输出 a</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>[[1, −2], [−1, 1]]</td>
+<td>[1, 0]</td>
+<td>[4, −2]</td>
+<td>[0.98, 0.12]</td>
+</tr>
+<tr>
+<td>2</td>
+<td>[[2, −1], [−2, −1]]</td>
+<td>[0, 0]</td>
+<td>[1.84, −2.08]</td>
+<td>[0.86, 0.11]</td>
+</tr>
+<tr>
+<td>3</td>
+<td>[[3, −1], [−1, 4]]</td>
+<td>[−2, 2]</td>
+<td>[0.47, 1.58]</td>
+<td>[0.62, 0.83]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>手算时每层写出 z 和 a 两行，方便检查。</p>
+<div class="note danger simple"><p><strong>层与层之间别忘了激活函数</strong></p>
+<p>去掉每层的 σ，所有 W 相乘还是一个矩阵，整个网络退化成一层线性函数，叠多少层都没用。</p>
+</div>
+<h3 id="1-3-层数的叫法"><a href="#1-3-层数的叫法" class="headerlink" title="1.3 层数的叫法"></a>1.3 层数的叫法</h3><div class="table-container">
+<table>
+<thead>
+<tr>
+<th>叫法</th>
+<th>结构</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2 层网络 = 1 个隐藏层 = single-hidden-layer</td>
+<td>输入 → 隐藏层 → 输出层</td>
+</tr>
+<tr>
+<td>3 层网络 = 2 个隐藏层</td>
+<td>输入 → 隐藏层 1 → 隐藏层 2 → 输出层</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>数层数不算输入层</strong>。输入只是信号进来的地方，不做任何运算；有权重、偏置和激活的才算一层神经元。</p>
+<hr>
+<h2 id="2-输出层与激活函数"><a href="#2-输出层与激活函数" class="headerlink" title="2 输出层与激活函数"></a>2 输出层与激活函数</h2><h3 id="2-1-softmax"><a href="#2-1-softmax" class="headerlink" title="2.1 softmax"></a>2.1 softmax</h3><p><strong>多分类的输出层用 softmax</strong>。sigmoid 给每类各自打分，输出加起来不等于 1；softmax 让各类共享同一个总量 1。输入 softmax 的 z 叫 <strong>logits</strong>。</p>
+<script type="math/tex; mode=display">y_i=\frac{e^{z_i}}{\sum_{j=1}^{K}e^{z_j}}</script><p>两步：先取指数（都变正数，差距放大），再除以总和（变成占比）。</p>
+<div class="img-wrap"><div class="img-bg"><img class="img" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://blogpic-5qb.pages.dev/img/sc_swe/nntrain/softmax对比.png" alt="<center>softmax对比" style="width:720px;"/></div><span class="image-caption"><center>softmax对比</span></div>
+<ul>
+<li><strong>例</strong>：logits [3, 1, −3]，e^z ≈ [20.09, 2.72, 0.05]，和为 22.85，输出 ≈ [0.879, 0.119, 0.002]</li>
+<li>有些 logit 为 0 时，e⁰ = 1 也要加进分母。比如 [3, 1, −3] 再加 7 个 0，分母变成 29.85，p₁ 从 0.879 降到 0.673</li>
+<li><strong>所有 logits 同加一个常数，结果不变</strong>（分子分母同乘 e^c）。实现时先减去最大值，防止指数溢出</li>
+<li>softmax 不改变大小顺序，logit 最大的类概率也最大</li>
+<li><strong>温度 T</strong>：用 z / T 代替 z。T 越小分布越尖锐，T 越大越平均</li>
+<li><strong>二分类可以只用一个 sigmoid 输出</strong>：它表示 P(类 1)，P(类 0) = 1 − 它</li>
+</ul>
+<div class="note warning simple"><p><strong>softmax 输出算不算概率</strong></p>
+<p>它满足概率的形式（每个在 0–1 之间、加起来为 1），可以当作各类的概率来用。但只有模型训练得足够好时，它才接近真实的后验概率；实际网络常常过度自信，这是「校准」问题。</p>
+</div>
+<h3 id="2-2-激活函数"><a href="#2-2-激活函数" class="headerlink" title="2.2 激活函数"></a>2.2 激活函数</h3><div class="img-wrap"><div class="img-bg"><img class="img" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://blogpic-5qb.pages.dev/img/sc_swe/nntrain/激活函数与导数.png" alt="<center>激活函数与导数" style="width:720px;"/></div><span class="image-caption"><center>激活函数与导数</span></div>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>激活</th>
+<th>公式</th>
+<th>值域</th>
+<th>导数</th>
+<th>优点</th>
+<th>问题</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>sigmoid</td>
+<td>1 / (1 + e⁻ˣ)</td>
+<td>(0, 1)</td>
+<td>σ(1 − σ)，<strong>最大 0.25</strong></td>
+<td>像生物神经元的放电率</td>
+<td>两端饱和 → 梯度消失；要算指数</td>
+</tr>
+<tr>
+<td>tanh</td>
+<td>2σ(2x) − 1</td>
+<td>(−1, 1)</td>
+<td>1 − tanh²，最大 1</td>
+<td><strong>以 0 为中心</strong></td>
+<td>两端照样饱和</td>
+</tr>
+<tr>
+<td>ReLU</td>
+<td>max(0, x)</td>
+<td>[0, ∞)</td>
+<td>x &gt; 0 为 1，x &lt; 0 为 0</td>
+<td>计算快、正半轴不饱和、缓解梯度消失</td>
+<td><strong>dying ReLU</strong></td>
+</tr>
+<tr>
+<td>Leaky ReLU</td>
+<td>x ≥ 0 为 x，x &lt; 0 为 αx</td>
+<td>ℝ</td>
+<td>1 或 α</td>
+<td>负半轴有梯度</td>
+<td>多一个超参数 α</td>
+</tr>
+<tr>
+<td>ELU</td>
+<td>x ≥ 0 为 x，x &lt; 0 为 α(eˣ − 1)</td>
+<td>(−α, ∞)</td>
+<td>两侧都不为 0</td>
+<td>没有 dying ReLU</td>
+<td>要算指数</td>
+</tr>
+<tr>
+<td>Maxout</td>
+<td>max(w₁ᵀx + b₁, w₂ᵀx + b₂)</td>
+<td>ℝ</td>
+<td>—</td>
+<td>ReLU 是它的特例</td>
+<td>参数翻倍</td>
+</tr>
+<tr>
+<td>线性</td>
+<td>cx</td>
+<td>ℝ</td>
+<td>c</td>
+<td>回归的输出层</td>
+<td>放在隐藏层会让网络退化</td>
+</tr>
+</tbody>
+</table>
+</div>
+<ul>
+<li><strong>饱和</strong>：输出接近两端时曲线几乎平了，导数接近 0，梯度传不过去</li>
+<li><strong>以 0 为中心为什么好</strong>：sigmoid 输出全为正，下一层所有权重的梯度符号相同，只能一起增大或一起减小，路线走成锯齿</li>
+<li><strong>dying ReLU</strong>：某次更新让偏置变得很负，所有输入的加权和都小于 0，输出和导数恒为 0，这个神经元的权重再也不更新。学习率太大时容易出现</li>
+<li>ReLU 只是<strong>缓解</strong>梯度消失：负半轴导数为 0，很深的网络照样可能出问题</li>
+<li>现在的深度网络默认用 ReLU；学习率合适时 dying ReLU 一般可以避免</li>
+</ul>
+<p><strong>怎么判断一个函数能不能当激活函数</strong>：看它是不是非线性。分段函数要拆开看，比如「x ≥ 0 时 max(x, 0.1x)，否则 min(x, 0.1x)」两段其实都是 x，整体是直线，不能用；min(x, 0.1x) 在 0 处有折点，可以用。</p>
+<h3 id="2-3-激活函数放在哪"><a href="#2-3-激活函数放在哪" class="headerlink" title="2.3 激活函数放在哪"></a>2.3 激活函数放在哪</h3><div class="table-container">
+<table>
+<thead>
+<tr>
+<th>任务</th>
+<th>隐藏层</th>
+<th>输出层</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>多分类</td>
+<td>非线性（ReLU 等）</td>
+<td>K 个神经元 + softmax</td>
+</tr>
+<tr>
+<td>二分类</td>
+<td>非线性</td>
+<td>1 个 sigmoid</td>
+</tr>
+<tr>
+<td>回归 / 函数逼近</td>
+<td>非线性</td>
+<td><strong>线性</strong>，输出任意实数</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>隐藏层<strong>任何时候都不能全用线性</strong>；分类任务的输出层也不用线性。</p>
+<hr>
+<h2 id="3-损失函数"><a href="#3-损失函数" class="headerlink" title="3 损失函数"></a>3 损失函数</h2><h3 id="3-1-参数"><a href="#3-1-参数" class="headerlink" title="3.1 参数"></a>3.1 参数</h3><p><strong>参数 θ = 所有层的权重矩阵和偏置向量</strong>，常统称「权重」。它们由训练学出来；学习率、层数这类训练前就要定好的设置叫<strong>超参数</strong>（见 <a href="#9-1-参数-vs-超参数">9.1 参数 vs 超参数</a>）。</p>
+<script type="math/tex; mode=display">\theta=\{\mathbf W^{1},\mathbf b^{1},\mathbf W^{2},\mathbf b^{2},\dots,\mathbf W^{L},\mathbf b^{L}\}</script><h3 id="3-2-数据预处理"><a href="#3-2-数据预处理" class="headerlink" title="3.2 数据预处理"></a>3.2 数据预处理</h3><script type="math/tex; mode=display">\text{标准化：}\;x'=\frac{x-\mu}{\sigma}\qquad\text{归一化：}\;x'=\frac{x-x_{\min}}{x_{\max}-x_{\min}}</script><ul>
+<li>标准化后每个特征均值 0、标准差 1；归一化后落在 [0, 1]。图像像素 ÷ 255 是最常见的归一化</li>
+<li><strong>为什么有用</strong>：特征尺度差很多时，损失的等高线被拉成细长椭圆，梯度下降在窄谷里来回振荡；数值太大还会让 sigmoid、tanh 一开始就饱和</li>
+<li>均值和标准差只能用训练集算，验证集、测试集沿用同一组数</li>
+</ul>
+<h3 id="3-3-分类的目标写法"><a href="#3-3-分类的目标写法" class="headerlink" title="3.3 分类的目标写法"></a>3.3 分类的目标写法</h3><ul>
+<li>K 个类用 <strong>K 个输出神经元</strong></li>
+<li>第 k 类的目标是 <strong>one-hot</strong>：只有第 k 个为 1，其余为 0</li>
+<li>预测时哪个输出最大，就判为哪一类</li>
+<li>理论上，用交叉熵或 MSE 训练到全局最优时，输出逼近后验概率 P(类 k | x)，取最大就是错误率最小的贝叶斯决策。实际只能到局部最优，所以这只是一个理想情况</li>
+</ul>
+<h3 id="3-4-交叉熵、BCE、MSE"><a href="#3-4-交叉熵、BCE、MSE" class="headerlink" title="3.4 交叉熵、BCE、MSE"></a>3.4 交叉熵、BCE、MSE</h3><p><strong>二分类（1 个 sigmoid 输出）→ 二元交叉熵 BCE</strong>：</p>
+<script type="math/tex; mode=display">\mathcal L=-\frac1N\sum_{i=1}^N\Big[y_i\log\hat y_i+(1-y_i)\log(1-\hat y_i)\Big]</script><p><strong>多分类（softmax + one-hot）→ 类别交叉熵</strong>，只剩真实类那一项：</p>
+<script type="math/tex; mode=display">\mathcal L=-\frac1N\sum_{i=1}^N\log\hat y^{(i)}_{\text{真实类}}</script><p><strong>回归 → 均方误差 MSE</strong>：</p>
+<script type="math/tex; mode=display">\mathcal L=\frac1n\sum_{i=1}^{n}\big(y^{(i)}-\hat y^{(i)}\big)^2</script><div class="img-wrap"><div class="img-bg"><img class="img" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://blogpic-5qb.pages.dev/img/sc_swe/nntrain/交叉熵曲线.png" alt="<center>交叉熵曲线" style="width:640px;"/></div><span class="image-caption"><center>交叉熵曲线</span></div>
+<ul>
+<li><strong>例</strong>：真实标签 1、预测 0.85，BCE = −ln 0.85 ≈ 0.1625</li>
+<li>交叉熵的直觉：正确答案你给了多大把握？给 0.9 罚 0.105，给 0.1 罚 2.303，给 0.01 罚 4.6。<strong>越自信地答错，罚得越重</strong></li>
+<li>把「每个类都加 (1 − y)log(1 − ŷ)」的写法用在 softmax 多分类上是不对的，那是多标签（每类独立 sigmoid）的损失</li>
+<li><strong>交叉熵 = 负对数似然</strong>，所以最小化交叉熵就是最大似然估计（MLE）；再加 L2 正则就是 MAP（见 <a href="#8-1-L2-正则">8.1 L2 正则</a>）</li>
+<li>目标函数（objective）一般指要最大化的量，代价函数（cost）指要最小化的量，两者差一个负号；loss 和 cost 通常混用</li>
+</ul>
+<div class="note danger simple"><p><strong>框架里的交叉熵要喂 logits</strong></p>
+<p>PyTorch 的 <code>cross_entropy</code> 内部会先做 softmax，输入应该是 <strong>logits</strong>。先自己做 softmax 再喂进去，等于做了两次，损失数值会错。</p>
+</div>
+<h3 id="3-5-训练误差为-0-并非目标"><a href="#3-5-训练误差为-0-并非目标" class="headerlink" title="3.5 训练误差为 0 并非目标"></a>3.5 训练误差为 0 并非目标</h3><p>真正要的是在<strong>没见过的数据</strong>上表现好。训练误差可以靠「把每个训练点单独记住」降到 0，但那只是背答案，换一个稍有不同的输入就错。训练损失要小，但追求到 0 往往意味着过拟合（见 <a href="#7-泛化：欠拟合与过拟合">7 泛化：欠拟合与过拟合</a>）。</p>
+<hr>
+<h2 id="4-梯度下降与反向传播"><a href="#4-梯度下降与反向传播" class="headerlink" title="4 梯度下降与反向传播"></a>4 梯度下降与反向传播</h2><h3 id="4-1-梯度下降"><a href="#4-1-梯度下降" class="headerlink" title="4.1 梯度下降"></a>4.1 梯度下降</h3><p>梯度指向损失<strong>上升最快</strong>的方向，所以沿<strong>负梯度</strong>走。像蒙着眼下山：用脚感觉哪边最陡，往下坡迈一步，再感觉、再迈。学习率就是一步迈多大。</p>
+<ol>
+<li>随机初始化 θ⁰</li>
+<li>计算当前位置的梯度 ∇L(θ)</li>
+<li>更新：</li>
+</ol>
+<script type="math/tex; mode=display">\theta^{\text{new}}=\theta^{\text{old}}-\alpha\,\nabla\mathcal L(\theta^{\text{old}})</script><ol>
+<li>重复 2–3，直到满足终止条件</li>
+</ol>
+<p><strong>例</strong>：w = 0.04，∂L/∂w = 0.45，学习率 0.1 → w = 0.04 − 0.045 = −0.005。</p>
+<div class="img-wrap"><div class="img-bg"><img class="img" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://blogpic-5qb.pages.dev/img/sc_swe/nntrain/学习率一维.png" alt="<center>学习率一维" style="width:720px;"/></div><span class="image-caption"><center>学习率一维</span></div>
+<p>图里 L(w) = (w − 3)²，梯度是 2(w − 3)，每步 w ← w − 2α(w − 3)，离最小值的距离每步乘 (1 − 2α)：α = 0.5 时恰好为 0，一步到位；α = 1 时为 −1，永远在 0 和 6 之间跳；α &gt; 1 时绝对值大于 1，发散。</p>
+<h3 id="4-2-局部最小、非凸"><a href="#4-2-局部最小、非凸" class="headerlink" title="4.2 局部最小、非凸"></a>4.2 局部最小、非凸</h3><ul>
+<li>梯度下降在<strong>局部最小</strong>停下，不保证全局最小；但经验上对神经网络效果很好</li>
+<li>损失曲面高度<strong>非凸</strong>；每次随机初始化起点不同，会到不同的极小值，<strong>同一网络训练两次结果可能不同</strong></li>
+<li>目前没有算法能保证对任意损失函数找到全局最小（EM 算法也有同样的性质）</li>
+</ul>
+<h3 id="4-3-反向传播"><a href="#4-3-反向传播" class="headerlink" title="4.3 反向传播"></a>4.3 反向传播</h3><ul>
+<li><strong>前向传播</strong>：输入经过各层得到输出，再算损失。这一步不算梯度</li>
+<li><strong>反向传播</strong>：从输出往输入方向，用<strong>链式法则</strong>逐层算损失对各参数的偏导。下层的梯度要用到上层已经算好的那一串导数，所以从后往前算</li>
+<li>先把所有参数的梯度都算完，再统一更新（PyTorch 里先 <code>loss.backward()</code> 再 <code>optimizer.step()</code>）</li>
+<li>每更新一次 = 一次前向 + 一次反向（对一个 batch）</li>
+<li>深度学习框架都能<strong>自动求导</strong>，不用手推</li>
+</ul>
+<p><strong>最简单的例子</strong>：单个 sigmoid 神经元 + BCE，z = wx + b，ŷ = σ(z)</p>
+<script type="math/tex; mode=display">\frac{\partial\mathcal L}{\partial w}=\underbrace{\left(-\frac{y}{\hat y}+\frac{1-y}{1-\hat y}\right)}_{\partial\mathcal L/\partial\hat y}\cdot\underbrace{\hat y(1-\hat y)}_{\partial\hat y/\partial z}\cdot\underbrace{x}_{\partial z/\partial w}=(\hat y-y)\,x</script><p>同理 ∂L/∂b = ŷ − y。「sigmoid + 交叉熵」和「softmax + 交叉熵」对 logits 的梯度都是「预测 − 标签」，所以它们是标准搭配。</p>
+<h3 id="4-4-batch、mini-batch、SGD"><a href="#4-4-batch、mini-batch、SGD" class="headerlink" title="4.4 batch、mini-batch、SGD"></a>4.4 batch、mini-batch、SGD</h3><div class="table-container">
+<table>
+<thead>
+<tr>
+<th></th>
+<th>每次更新用多少样本</th>
+<th>每步速度</th>
+<th>梯度噪声</th>
+<th>用得多吗</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>批量 GD</td>
+<td>全部 N 个</td>
+<td>慢</td>
+<td>无</td>
+<td>大数据集上基本不用</td>
+</tr>
+<tr>
+<td><strong>mini-batch GD</strong></td>
+<td>32–256 个</td>
+<td>快</td>
+<td>中等</td>
+<td><strong>最常用</strong></td>
+</tr>
+<tr>
+<td>SGD（严格意义）</td>
+<td>1 个</td>
+<td>最快</td>
+<td>大，损失剧烈波动</td>
+<td>较少</td>
+</tr>
+</tbody>
+</table>
+</div>
+<ul>
+<li>mini-batch 可行，是因为一小批的梯度已经能很好地近似全体的梯度，像民意调查只问 1000 人</li>
+<li><strong>epoch</strong> = 所有训练数据用过一遍；每个 epoch 的更新次数 = ⌈N / batch 大小⌉。例：60000 张图、batch 64 → 每 epoch 938 次</li>
+<li>每个 epoch 开始前打乱数据</li>
+<li>框架里说的 SGD 通常指 mini-batch GD（可带动量）</li>
+<li>梯度带点噪声不全是坏事，有时能帮参数跳出平台和浅的局部最小</li>
+</ul>
+<hr>
+<h2 id="5-优化：动量、Adam、学习率"><a href="#5-优化：动量、Adam、学习率" class="headerlink" title="5 优化：动量、Adam、学习率"></a>5 优化：动量、Adam、学习率</h2><h3 id="5-1-平台、鞍点、局部最小"><a href="#5-1-平台、鞍点、局部最小" class="headerlink" title="5.1 平台、鞍点、局部最小"></a>5.1 平台、鞍点、局部最小</h3><div class="table-container">
+<table>
+<thead>
+<tr>
+<th>位置</th>
+<th>梯度</th>
+<th>结果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>平台（plateau）</td>
+<td>≈ 0</td>
+<td>很慢</td>
+</tr>
+<tr>
+<td>鞍点（saddle point）</td>
+<td>= 0</td>
+<td>卡住</td>
+</tr>
+<tr>
+<td>局部最小</td>
+<td>= 0</td>
+<td>卡住</td>
+</tr>
+</tbody>
+</table>
+</div>
+<ul>
+<li><strong>鞍点</strong>像马鞍中心：一个方向往上翘，另一个方向往下掉，正中间坡度为 0</li>
+<li>高维里鞍点比局部最小更常见：要成为局部最小，几百万个方向都得往上翘</li>
+</ul>
+<div class="img-wrap"><div class="img-bg"><img class="img" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://blogpic-5qb.pages.dev/img/sc_swe/nntrain/动量越过局部最小.png" alt="<center>动量越过局部最小" style="width:720px;"/></div><span class="image-caption"><center>动量越过局部最小</span></div>
+<div class="note warning simple"><p><strong>实测设置</strong></p>
+<p>一维损失由几个高斯凸起叠成；起点 θ = 0.3，学习率 α = 0.2，各走 200 步，动量 β = 0.9。普通 GD 在平台上挪了约 100 步，最后停在局部最小 θ ≈ 5；动量越过小山坡，停在全局最小 θ ≈ 8.3。<br><strong>越过局部最小不是必然的</strong>：同一个函数把 α 改成 0.1，两种方法都停在局部最小。</p>
+</div>
+<h3 id="5-2-动量"><a href="#5-2-动量" class="headerlink" title="5.2 动量"></a>5.2 动量</h3><p><strong>实际移动 = 负梯度 + 之前积累的速度</strong>：</p>
+<script type="math/tex; mode=display">\mathbf v_t=\beta\,\mathbf v_{t-1}-\alpha\,\nabla\mathcal L(\theta_{t-1}),\qquad\theta_t=\theta_{t-1}+\mathbf v_t</script><ul>
+<li>v 是「速度」，β 常取 0.9；β = 0 时退化成普通梯度下降</li>
+<li>像一个有惯性的球：平台上越滚越快；梯度为 0 时靠惯性冲过鞍点和浅坑；窄谷里左右方向的梯度一正一负互相抵消，沿谷底方向的一致累加</li>
+<li><strong>代价</strong>：惯性会冲过头，在最小值附近来回晃</li>
+<li><strong>例</strong>：L(w) = (w − 3)²，w⁰ = 0，α = 0.1。普通 GD 两步到 1.08；动量 β = 0.9 时 v¹ = 0.6、w¹ = 0.6，v² = 0.54 + 0.48 = 1.02、w² = 1.62</li>
+<li><strong>Nesterov 动量</strong>：先按动量预判下一步到哪，在预判位置算梯度，能更早刹车</li>
+</ul>
+<div class="img-wrap"><div class="img-bg"><img class="img" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://blogpic-5qb.pages.dev/img/sc_swe/nntrain/窄谷动量对比.png" alt="<center>窄谷动量对比" style="width:720px;"/></div><span class="image-caption"><center>窄谷动量对比</span></div>
+<div class="note warning simple"><p><strong>实测设置</strong></p>
+<p>L = ½(θ₁² + 40θ₂²)，起点 (−9, 1.2)，各走 40 步。普通 GD（α = 0.045）结束时 θ₁ ≈ −1.43；动量（α = 0.02，β = 0.8）结束时 θ₁ ≈ 0.15。</p>
+</div>
+<h3 id="5-3-Adam"><a href="#5-3-Adam" class="headerlink" title="5.3 Adam"></a>5.3 Adam</h3><ul>
+<li><strong>一阶矩</strong>：过去梯度的加权平均，相当于动量</li>
+<li><strong>二阶矩</strong>：过去梯度<strong>平方</strong>的加权平均，用来给每个参数单独调步长：梯度一直大的参数步子小一点，一直小的步子大一点</li>
+<li>更新大致是 θ ← θ − α · m / (√v + ε)</li>
+<li>其他：Adagrad、Adadelta、RMSprop、Nadam</li>
+<li><strong>现在最常用的是 Adam 和 SGD + 动量</strong></li>
+</ul>
+<h3 id="5-4-学习率"><a href="#5-4-学习率" class="headerlink" title="5.4 学习率"></a>5.4 学习率</h3><p>梯度只告诉方向，<strong>没告诉走多远</strong>。学习率（步长）是最重要的超参数之一。</p>
+<div class="img-wrap"><div class="img-bg"><img class="img" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://blogpic-5qb.pages.dev/img/sc_swe/nntrain/学习率损失曲线.png" alt="<center>学习率损失曲线" style="width:680px;"/></div><span class="image-caption"><center>学习率损失曲线</span></div>
+<div class="note warning simple"><p><strong>实测设置</strong></p>
+<p>10 维线性回归，400 个样本，噪声标准差 1，batch = 4，40 个 epoch。纵轴是训练 MSE 减去最小二乘解的 MSE（对数）。学习率 0.35 第一个 epoch 就发散；0.12 很快停在高处来回抖；0.0003 一路慢慢降；0.005 快速降到很低。</p>
+</div>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>训练损失曲线的形状</th>
+<th>学习率</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>先降一点就往上飙，或者变成 NaN</td>
+<td><strong>太高</strong>，发散</td>
+</tr>
+<tr>
+<td>一开始降得快，然后停在较高水平不动</td>
+<td><strong>偏高</strong>，在最小值附近跳，进不去</td>
+</tr>
+<tr>
+<td>几乎一条直线缓慢下降</td>
+<td><strong>偏低</strong></td>
+</tr>
+<tr>
+<td>快速下降后继续平稳降到很低</td>
+<td><strong>合适</strong></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="5-5-学习率调度"><a href="#5-5-学习率调度" class="headerlink" title="5.5 学习率调度"></a>5.5 学习率调度</h3><div class="img-wrap"><div class="img-bg"><img class="img" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://blogpic-5qb.pages.dev/img/sc_swe/nntrain/学习率调度.png" alt="<center>学习率调度" style="width:640px;"/></div><span class="image-caption"><center>学习率调度</span></div>
+<ul>
+<li><strong>退火 / 学习率衰减</strong>：阶梯式（每 5 个 epoch 减半，或每 20 个 epoch 除以 10）、指数衰减、余弦衰减、验证损失不再改善时就降（如因子 0.1、patience 10、最小 1e−6）</li>
+<li><strong>预热</strong>：开始时逐渐<strong>增大</strong>学习率，之后再降。刚开始参数随机、梯度很乱，先小步试探</li>
+<li>思路：先大步赶路，快到了换小步</li>
+<li>很多时候挑一个合适的固定学习率也够用</li>
+</ul>
+<div class="note danger simple"><p><strong>调度器放在哪个循环</strong></p>
+<p>按 epoch 衰减的调度器要放在外层循环。误放进内层循环，每个 batch 都衰减一次：比如每 epoch 4 个 batch、γ = 0.9，50 个 epoch 后学习率乘了 0.9²⁰⁰ ≈ 7 × 10⁻¹⁰，训练基本停了。</p>
+</div>
+<hr>
+<h2 id="6-梯度消失与梯度爆炸"><a href="#6-梯度消失与梯度爆炸" class="headerlink" title="6 梯度消失与梯度爆炸"></a>6 梯度消失与梯度爆炸</h2><p>梯度可能变得非常小（<strong>消失</strong>）或非常大（<strong>爆炸</strong>），导致参数更新太小或太大。消失比爆炸更常见，越靠近输入的层越严重。</p>
+<p><strong>成因</strong>：反向传播时，第 1 层的梯度是一长串数的连乘</p>
+<script type="math/tex; mode=display">\frac{\partial\mathcal L}{\partial w^{(1)}}\;\propto\;\prod_{l=2}^{L}\Big(w^{(l)}\cdot f'\big(z^{(l)}\big)\Big)</script><p>每个因子都小于 1 → 越乘越小；都大于 1 → 越乘越大。sigmoid 的导数最大只有 0.25，十层光这一项就最多 0.25¹⁰ ≈ 10⁻⁶。</p>
+<div class="img-wrap"><div class="img-bg"><img class="img" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://blogpic-5qb.pages.dev/img/sc_swe/nntrain/梯度消失实测.png" alt="<center>梯度消失实测" style="width:680px;"/></div><span class="image-caption"><center>梯度消失实测</span></div>
+<div class="note warning simple"><p><strong>实测设置</strong></p>
+<p>20 层全连接、每层 100 个神经元，batch 128，随机输入和目标，MSE 损失，刚初始化时计算每层权重梯度的范数，5 个随机种子平均。sigmoid、tanh 用 Xavier 初始化（方差 1/n），ReLU 用 He 初始化（方差 2/n）。</p>
+<ul>
+<li><strong>sigmoid</strong>：第 1 层的梯度只有第 20 层的约 3 × 10⁻¹³</li>
+<li>tanh、ReLU：初始化匹配时各层梯度大小基本持平</li>
+<li><strong>sigmoid + BatchNorm</strong>：每层先归一化再过 sigmoid，各层梯度基本持平</li>
+</ul>
+</div>
+<p><strong>对策</strong>：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>为什么有效</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ReLU / Leaky ReLU</td>
+<td>正半轴导数恒为 1，连乘不会因激活函数变小；Leaky 还让负半轴有梯度</td>
+</tr>
+<tr>
+<td>BatchNorm</td>
+<td>把每层输入拉回均值 0、方差 1，sigmoid、tanh 落在斜率大的区域</td>
+</tr>
+<tr>
+<td>合适的初始化</td>
+<td>Xavier / He 让每层输出和梯度的尺度保持稳定</td>
+</tr>
+<tr>
+<td>残差连接</td>
+<td>梯度可以沿跳跃连接直接传回去</td>
+</tr>
+<tr>
+<td>梯度裁剪</td>
+<td>针对爆炸：梯度范数超过阈值就按比例缩小</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>加数据、调学习率解决不了梯度消失</strong>：问题出在梯度传不回去，和数据量无关；梯度接近 0 时乘多大的学习率，更新量都接近 0。</p>
+<hr>
+<h2 id="7-泛化：欠拟合与过拟合"><a href="#7-泛化：欠拟合与过拟合" class="headerlink" title="7 泛化：欠拟合与过拟合"></a>7 泛化：欠拟合与过拟合</h2><h3 id="7-1-症状与对策"><a href="#7-1-症状与对策" class="headerlink" title="7.1 症状与对策"></a>7.1 症状与对策</h3><div class="table-container">
+<table>
+<thead>
+<tr>
+<th></th>
+<th>欠拟合</th>
+<th>刚好</th>
+<th>过拟合</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>原因</td>
+<td>模型太简单</td>
+<td>—</td>
+<td>学到了训练数据特有的模式和噪声</td>
+</tr>
+<tr>
+<td>训练误差</td>
+<td><strong>高</strong></td>
+<td>低</td>
+<td><strong>很低</strong></td>
+</tr>
+<tr>
+<td>验证误差</td>
+<td><strong>高</strong>，和训练误差接近</td>
+<td>略高于训练误差</td>
+<td><strong>远高于</strong>训练误差</td>
+</tr>
+<tr>
+<td>术语</td>
+<td>高偏差</td>
+<td>—</td>
+<td>高方差</td>
+</tr>
+<tr>
+<td>对策</td>
+<td>加大模型、加特征、训练更久</td>
+<td>—</td>
+<td>正则化、更多数据、数据增强、早停</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="img-wrap"><div class="img-bg"><img class="img" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://blogpic-5qb.pages.dev/img/sc_swe/nntrain/欠拟合与过拟合.png" alt="<center>欠拟合与过拟合" style="width:760px;"/></div><span class="image-caption"><center>欠拟合与过拟合</span></div>
+<div class="note warning simple"><p><strong>实测设置</strong></p>
+<p>15 个训练点 y = sin(2πx) + N(0, 0.25²)，300 个验证点，用多项式回归示意，多项式次数相当于网络大小。3 次时验证误差最低；12 次时训练 MSE 只有 0.007，验证 MSE 冲到 10⁶ 量级。</p>
+</div>
+<ul>
+<li><strong>偏差</strong>：模型太死板，换多少数据都差不多，但都不准</li>
+<li><strong>方差</strong>：模型太灵活，换一批训练数据学出来的就很不一样</li>
+<li>神经元已经很多、简单函数还是拟合不好时，问题多半在训练本身（学习率、迭代次数、输入没标准化），而非容量不够</li>
+</ul>
+<p><strong>看训练 / 验证曲线</strong>：</p>
+<ul>
+<li>两条线都还在上升（准确率）或下降（误差），差距不大 → 还没训练完，继续训</li>
+<li>训练一直变好，验证先变好后变差，差距越来越大 → <strong>过拟合</strong></li>
+<li>两条线贴在一起、都停在较差的水平 → <strong>欠拟合</strong></li>
+<li>注意纵轴是准确率（越高越好）还是误差（越低越好）</li>
+</ul>
+<h3 id="7-2-训练集、验证集、测试集"><a href="#7-2-训练集、验证集、测试集" class="headerlink" title="7.2 训练集、验证集、测试集"></a>7.2 训练集、验证集、测试集</h3><div class="table-container">
+<table>
+<thead>
+<tr>
+<th></th>
+<th>来自哪</th>
+<th>调权重吗</th>
+<th>用来做什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>训练集</td>
+<td>训练数据</td>
+<td><strong>调</strong>（前向 + 反向）</td>
+<td>学参数</td>
+</tr>
+<tr>
+<td><strong>验证集</strong></td>
+<td>训练数据里留出的一部分</td>
+<td><strong>不调</strong>，不做反向传播</td>
+<td>检查训练效果、挑超参数、决定何时早停</td>
+</tr>
+<tr>
+<td><strong>测试集</strong></td>
+<td>训练过程中从没用过</td>
+<td>不调</td>
+<td>最后评估一次泛化能力</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>验证集相当于发布前的内部测试：结果不好就回去改设置重训，所以它本质上仍是训练流程的一部分。测试集一旦参与了挑选，就不再能代表真实表现。</p>
+<h3 id="7-3-网络大小与容量"><a href="#7-3-网络大小与容量" class="headerlink" title="7.3 网络大小与容量"></a>7.3 网络大小与容量</h3><p><strong>容量</strong>指模型能表示多复杂的函数，大致随神经元数和层数增长。</p>
+<ul>
+<li>太小 → 欠拟合：目标函数波动越多，需要的隐藏神经元越多</li>
+<li>太大 → 过拟合：参数比数据点还多时，网络有足够的自由度穿过每个训练点，同时在点与点之间乱拐。例：11 个训练点，1-2-1 网络 7 个参数拟合得很平滑，1-9-1 网络 28 个参数就会在点之间起伏</li>
+<li><strong>神经元数量要和问题复杂度匹配</strong>，太大时配合正则化</li>
+</ul>
+<hr>
+<h2 id="8-正则化"><a href="#8-正则化" class="headerlink" title="8 正则化"></a>8 正则化</h2><h3 id="8-1-L2-正则"><a href="#8-1-L2-正则" class="headerlink" title="8.1 L2 正则"></a>8.1 L2 正则</h3><script type="math/tex; mode=display">\mathcal L_{\text{reg}}(\theta)=\underbrace{\mathcal L(\theta)}_{\text{数据损失}}+\underbrace{\lambda\sum_k\theta_k^2}_{\text{正则化损失}}</script><ul>
+<li>惩罚大权重。过拟合的曲线要拐很多急弯，需要很大的权重；罚掉大权重就只能画平缓的曲线</li>
+<li><strong>λ 是超参数</strong>：太小管不住过拟合，太大会欠拟合</li>
+<li>偏置通常不加正则</li>
+</ul>
+<p><strong>为什么也叫 weight decay</strong>：</p>
+<script type="math/tex; mode=display">\theta\leftarrow\theta-\alpha\big(\nabla\mathcal L+2\lambda\theta\big)=(1-2\alpha\lambda)\,\theta-\alpha\nabla\mathcal L</script><p>每步先把权重乘一个略小于 1 的数。PyTorch 里写成优化器的 <code>weight_decay</code> 参数。</p>
+<p><strong>例</strong>：w = 2，数据梯度 0.5，α = 0.1，λ = 0.05 → 总梯度 0.5 + 2 × 0.05 × 2 = 0.7，w = 1.93（不加正则是 1.95）。</p>
+<p><strong>和贝叶斯的关系</strong>：L2 等于给参数加高斯先验 N(0, s²) 做 <strong>MAP</strong>，因为 −log p(θ) = θ²/(2s²) + 常数；L1 对应拉普拉斯先验。</p>
+<div class="img-wrap"><div class="img-bg"><img class="img" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://blogpic-5qb.pages.dev/img/sc_swe/nntrain/L2正则实测.png" alt="<center>L2正则实测" style="width:680px;"/></div><span class="image-caption"><center>L2正则实测</span></div>
+<div class="note warning simple"><p><strong>实测设置</strong></p>
+<p>1-64-64-1 tanh 网络，20 个训练点 y = sin(πx) + N(0, 0.3²)，400 个验证点，Adam（学习率 0.01）全批量训练 20000 步，正则项 λΣW²。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>λ</th>
+<th>训练 MSE</th>
+<th>验证 MSE</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>0.000</td>
+<td>0.353</td>
+</tr>
+<tr>
+<td>0.001</td>
+<td>0.035</td>
+<td><strong>0.135</strong></td>
+</tr>
+<tr>
+<td>0.03</td>
+<td>0.160</td>
+<td>0.238</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>噪声方差是 0.09，验证 MSE 不可能低于它。λ = 0.03 时训练误差也上去了，已经偏欠拟合。</p>
+</div>
+<h3 id="8-2-L1-与弹性网络"><a href="#8-2-L1-与弹性网络" class="headerlink" title="8.2 L1 与弹性网络"></a>8.2 L1 与弹性网络</h3><script type="math/tex; mode=display">\mathcal L_{\text{reg}}=\mathcal L+\lambda\sum_k|\theta_k|\qquad\text{弹性网络：}\;\mathcal L+\lambda_1\sum_k|\theta_k|+\lambda_2\sum_k\theta_k^2</script><ul>
+<li>L1 会把很多权重<strong>压到正好为 0</strong>（稀疏，相当于自动挑特征）；L2 让权重都变小但很少恰好为 0</li>
+<li>神经网络里 L1 不太常用，效果常不如 L2</li>
+</ul>
+<h3 id="8-3-dropout"><a href="#8-3-dropout" class="headerlink" title="8.3 dropout"></a>8.3 dropout</h3><ul>
+<li>训练时每个神经元以概率 p <strong>随机丢弃</strong>（连同连接），彼此独立；p 是超参数，常取 <strong>20%–50%</strong></li>
+<li>每次随机让一部分神经元缺席，网络不能依赖特定的几个神经元，学出来的特征更稳健</li>
+<li><strong>一种集成学习</strong>：每个 mini-batch 训练的是一个不同的子网络，测试时用完整网络，近似对这些子网络取平均</li>
+<li><strong>测试时关闭</strong>：PyTorch 里 <code>model.eval()</code> 切到评估模式，再调用模型</li>
+<li>PyTorch 训练时把保留下来的输出乘 1/(1 − p)（p = 0.5 时乘 2），让训练和测试的输出期望一致，测试时不用再缩放</li>
+</ul>
+<h3 id="8-4-早停"><a href="#8-4-早停" class="headerlink" title="8.4 早停"></a>8.4 早停</h3><ul>
+<li>训练时留出<strong>验证集</strong>（如验证 : 训练 ≈ 1 : 3）</li>
+<li>验证准确率或损失连续 n 个 epoch 没有改善就停，n 叫 <strong>patience</strong>；保留验证误差最低时的权重</li>
+<li>训练误差一直降，验证误差<strong>先降后升</strong>，停在最低点</li>
+<li>它算正则化：训练越久越去拟合噪声，相当于模型越来越复杂</li>
+<li>和「验证损失不改善就降学习率」的区别：一个降学习率继续训，一个直接停</li>
+</ul>
+<div class="img-wrap"><div class="img-bg"><img class="img" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://blogpic-5qb.pages.dev/img/sc_swe/nntrain/早停实测.png" alt="<center>早停实测" style="width:760px;"/></div><span class="image-caption"><center>早停实测</span></div>
+<div class="note warning simple"><p><strong>实测设置</strong></p>
+<p>和 8.1 同一个网络和数据，λ = 0。验证误差在第 200 步最低（0.128）；一直训练到 20000 步时，训练 MSE 降到 2.5 × 10⁻⁵，验证 MSE 回升到 0.353。右图绿线是第 200 步的网络，橙线是第 20000 步的。</p>
+</div>
+<h3 id="8-5-BatchNorm"><a href="#8-5-BatchNorm" class="headerlink" title="8.5 BatchNorm"></a>8.5 BatchNorm</h3><p>对一个 batch 里的每个特征（卷积网络里是每个通道）做归一化，再做可学习的缩放和平移：</p>
+<script type="math/tex; mode=display">\hat x=\frac{x-\mu_B}{\sqrt{\sigma_B^2+\varepsilon}},\qquad y=\gamma\,\hat x+\beta</script><ul>
+<li>μ_B、σ_B² 是这个 batch 的均值和方差；ε 防止除以 0</li>
+<li><strong>γ、β 是可学习参数</strong>，每个特征 / 通道各一对，<strong>共 2 个</strong>。例：8 个通道的 BatchNorm 层有 16 个可学习参数。没有这一步，每层输出被强行固定成均值 0、方差 1，表达能力受限</li>
+<li>训练时还会记录均值方差的滑动平均，测试时用它代替 batch 统计量；这两个是统计量，不算可学习参数</li>
+</ul>
+<p>作用：</p>
+<ul>
+<li>归一化激活值，减少对初始化尺度的依赖 → 不容易梯度消失 / 爆炸</li>
+<li>减少<strong>内部协变量偏移</strong>：前面各层参数一直在变，后面层收到的输入分布一直在漂，像练投篮时篮筐一直在动</li>
+<li>训练更稳定，可以用<strong>更大的学习率</strong>，收敛更快</li>
+<li>在卷积网络里非常常见，通常放在激活函数之前</li>
+</ul>
+<hr>
+<h2 id="9-超参数与交叉验证"><a href="#9-超参数与交叉验证" class="headerlink" title="9 超参数与交叉验证"></a>9 超参数与交叉验证</h2><h3 id="9-1-参数-vs-超参数"><a href="#9-1-参数-vs-超参数" class="headerlink" title="9.1 参数 vs 超参数"></a>9.1 参数 vs 超参数</h3><div class="table-container">
+<table>
+<thead>
+<tr>
+<th></th>
+<th>是什么</th>
+<th>怎么确定</th>
+<th>例子</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>参数</strong></td>
+<td>网络里被学习的数</td>
+<td>训练（梯度下降）学出来</td>
+<td>W、b、BatchNorm 的 γ 和 β</td>
+</tr>
+<tr>
+<td><strong>超参数</strong></td>
+<td>控制结构和训练过程的设置</td>
+<td>训练前由人定，用验证集挑</td>
+<td>层数、每层神经元数、初始学习率、学习率调度、优化器类型、L2 系数、dropout 率、batch 大小、激活函数、损失函数</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="9-2-怎么搜超参数"><a href="#9-2-怎么搜超参数" class="headerlink" title="9.2 怎么搜超参数"></a>9.2 怎么搜超参数</h3><ul>
+<li><strong>网格搜索</strong>：范围内按步长逐一试遍</li>
+<li><strong>随机搜索</strong>：随机抽值，<strong>通常比网格好</strong>。往往只有少数几个超参数要紧：试 9 次、调 2 个超参数时，网格 3 × 3 每个只试了 3 个值，随机试了 9 个</li>
+<li><strong>贝叶斯优化</strong>：根据已经试过的结果，挑下一个最有希望的点</li>
+<li>学习率、λ 这类跨数量级的超参数，在对数尺度上取值</li>
+</ul>
+<h3 id="9-3-k-折交叉验证"><a href="#9-3-k-折交叉验证" class="headerlink" title="9.3 k 折交叉验证"></a>9.3 k 折交叉验证</h3><div class="img-wrap"><div class="img-bg"><img class="img" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://blogpic-5qb.pages.dev/img/sc_swe/nntrain/k折交叉验证.png" alt="<center>k折交叉验证" style="width:640px;"/></div><span class="image-caption"><center>k折交叉验证</span></div>
+<ol>
+<li>先把数据分成训练数据和测试数据</li>
+<li>训练数据分成 k 等份</li>
+<li>每轮用 1 份验证、其余训练，轮流做 k 次</li>
+<li>对 k 次结果取平均，用来比较超参数</li>
+<li>选定超参数后（通常用全部训练数据重训一次），在测试数据上评估</li>
+</ol>
+<ul>
+<li><strong>数据少时</strong>用：单独划一块验证集太浪费，而且那块碰巧好或碰巧差都会误导；数据大时训练 k 次太贵</li>
+<li><strong>测试集全程不参与</strong></li>
+<li>代价：每组超参数训练 k 次。例：2000 个训练样本、10 折、6 组超参数 → 每次 1800 训练 / 200 验证，共训练 60 次</li>
+</ul>
+<h3 id="9-4-深网络-vs-浅网络"><a href="#9-4-深网络-vs-浅网络" class="headerlink" title="9.4 深网络 vs 浅网络"></a>9.4 深网络 vs 浅网络</h3><ul>
+<li>一个隐藏层在理论上就能逼近任意连续函数（万能近似定理），但没说需要多少神经元</li>
+<li>同样数量的神经元，分到多层往往比全放一层更有效</li>
+<li>层数增加到一定程度后性能不再提升，太深还会遇到梯度消失，需要 ReLU、BatchNorm、残差连接这类部件</li>
+</ul>
+<hr>
+<h2 id="10-要点速查"><a href="#10-要点速查" class="headerlink" title="10 要点速查"></a>10 要点速查</h2><ol>
+<li><strong>前向</strong>：a^l = σ(W^l a^(l−1) + b^l)；W 形状 = 本层神经元数 × 上层输出数；「n 层网络」不算输入层；层间必须有非线性激活</li>
+<li><strong>输出层</strong>：多分类 K 个 + softmax；二分类 1 个 sigmoid；回归线性</li>
+<li><strong>softmax</strong>：e^(z_i) / Σe^(z_j)；同加常数不变；e⁰ = 1 也要进分母；温度越低越尖锐</li>
+<li><strong>激活</strong>：sigmoid 导数 ≤ 0.25、两端饱和；tanh 以 0 为中心；ReLU 快、缓解梯度消失、会 dying；Leaky ReLU 负半轴 αx</li>
+<li><strong>损失</strong>：BCE −[y ln ŷ + (1 − y) ln(1 − ŷ)]；多分类 −ln(正确类概率)；MSE (1/n)Σ(y − ŷ)²；交叉熵 = 负对数似然</li>
+<li><strong>梯度下降</strong>：θ ← θ − α∇L；只保证局部最小，依赖初始化</li>
+<li><strong>反向传播</strong>：前向算损失 → 反向链式法则算梯度 → 统一更新；sigmoid / softmax + 交叉熵对 logits 的梯度 = 预测 − 标签</li>
+<li><strong>batch</strong>：每 epoch 更新 ⌈N / batch⌉ 次；mini-batch 最常用</li>
+<li><strong>动量</strong>：v = βv − α∇L，θ = θ + v，β ≈ 0.9；平台加速、冲过鞍点、减少窄谷振荡，会在最小值附近晃</li>
+<li><strong>Adam</strong>：一阶矩 + 二阶矩，按参数自适应步长；最常用 Adam 与 SGD + 动量</li>
+<li><strong>学习率曲线</strong>：上飙 → 太高；停在高处 → 偏高；缓慢直线 → 偏低；快降后到很低 → 合适</li>
+<li><strong>梯度消失</strong>：链式法则连乘；ReLU、BatchNorm、合适的初始化、残差连接；加数据、改学习率没用</li>
+<li><strong>欠拟合 / 过拟合</strong>：都高且接近 → 欠拟合；差距大 → 过拟合</li>
+<li><strong>验证集</strong>：不调权重，用来检查、挑超参数、早停；<strong>测试集</strong>只在最后用一次</li>
+<li><strong>L2</strong>：L + λΣθ² = weight decay = 高斯先验 MAP；λ 太大欠拟合。<strong>L1</strong>：λΣ|θ|，稀疏</li>
+<li><strong>dropout</strong>：p 取 20%–50%，集成学习，测试时关闭，训练时输出乘 1/(1 − p)</li>
+<li><strong>早停</strong>：验证误差 patience 个 epoch 不改善就停，保留最好的权重</li>
+<li><strong>BatchNorm</strong>：(x − μ)/√(σ² + ε)，再 γx̂ + β；每通道 2 个可学习参数；缓解梯度消失、允许更大学习率</li>
+<li><strong>参数 vs 超参数</strong>：参数训练学出（W、b、γ、β）；超参数训练前设定、用验证集挑</li>
+<li><strong>k 折</strong>：轮流验证取平均；数据少时用；测试集不参与；每组超参数训练 k 次</li>
+</ol>
+</article><div class="post-copyright"><div class="post-copyright__title"><span class="post-copyright-info"><h>神经网络训练</h></span></div><div class="post-copyright__type"><span class="post-copyright-info"><a href="https://www.noctuna.cc/2026/11/05/NeuralNetworkTraining/">https://www.noctuna.cc/2026/11/05/NeuralNetworkTraining/</a></span></div><div class="post-copyright-m"><div class="post-copyright-m-info"><div class="post-copyright-a"><h>作者</h><div class="post-copyright-cc-info"><h>Noctuna</h></div></div><div class="post-copyright-c"><h>发布于</h><div class="post-copyright-cc-info"><h>2026-11-05</h></div></div><div class="post-copyright-u"><h>更新于</h><div class="post-copyright-cc-info"><h>2026-11-05</h></div></div><div class="post-copyright-c"><h>许可协议</h><div class="post-copyright-cc-info"><a class="icon" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a><a rel="noopener" target="_blank" title="CC BY-NC-SA 4.0" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></div></div></div></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/">机器学习</a><a class="post-meta__tags" href="/tags/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/">人工智能</a><a class="post-meta__tags" href="/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/">深度学习</a><a class="post-meta__tags" href="/tags/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C/">神经网络</a></div><div class="post_share"><div class="social-share" data-image="https://blogpic-5qb.pages.dev/img/postcover/6.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/2026/10/07/DeepLearning13/" title="深度学习与神经网络13"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://blogpic-5qb.pages.dev/img/postcover/6.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">深度学习与神经网络13</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2026/10/07/DeepLearning1/" title="深度学习与神经网络1"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://blogpic-5qb.pages.dev/img/postcover/14.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2026-10-07</div><div class="title">深度学习与神经网络1</div></div></a></div><div><a href="/2026/10/07/DeepLearning10/" title="深度学习与神经网络10"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://blogpic-5qb.pages.dev/img/postcover/21.JPG" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2026-10-07</div><div class="title">深度学习与神经网络10</div></div></a></div><div><a href="/2026/10/07/DeepLearning11/" title="深度学习与神经网络11"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://blogpic-5qb.pages.dev/img/postcover/5.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2026-10-07</div><div class="title">深度学习与神经网络11</div></div></a></div><div><a href="/2026/10/07/DeepLearning12/" title="深度学习与神经网络12"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://blogpic-5qb.pages.dev/img/postcover/12.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2026-10-07</div><div class="title">深度学习与神经网络12</div></div></a></div><div><a href="/2026/10/07/DeepLearning13/" title="深度学习与神经网络13"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://blogpic-5qb.pages.dev/img/postcover/6.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2026-10-07</div><div class="title">深度学习与神经网络13</div></div></a></div><div><a href="/2026/10/07/DeepLearning3/" title="深度学习与神经网络3"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://blogpic-5qb.pages.dev/img/postcover/17.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2026-10-07</div><div class="title">深度学习与神经网络3</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://blogpic-5qb.pages.dev/img/avatar/neko.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">Noctuna</div><div class="author-info__description">“ 𝑰 𝒂𝒎 𝒃𝒐𝒖𝒏𝒅 𝒕𝒐 𝒇𝒊𝒏𝒅... 𝒎𝒚 𝒐𝒘𝒏 𝑫𝒓𝒆𝒂𝒎 ”</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">75</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">28</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><a id="card-info-btn" href="/about/"><i></i><span>☕ Have a cup of coffee?</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/Harukuya" target="_blank" title="Github"><i class="fab fa-github" style="color: ;"></i></a><a class="social-icon" href="https://space.bilibili.com/256307110?spm_id_from=333.1007.0.0" target="_blank" title="BiliBili"><i class="fa-brands fa-bilibili" style="color: ;"></i></a><a class="social-icon" href="https://t.me/techcoffeeinside" target="_blank" title="Telegram"><i class="fa-brands fa-telegram" style="color: ;"></i></a><a class="social-icon" href="https://x.com/Noctuna0206" target="_blank" title="Twitter"><i class="fa-brands fa-twitter" style="color: ;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fa-regular fa-bookmark"></i><span>公告</span></div><div class="announcement_content"><center> 主域名：<br><a href="https://www.noctuna.cc"><b><font color="#5ea6e5">www.noctuna.cc</font></b></a><br> 联系方式：<br><a href="https://www.noctuna.cc"><b><font color="#5ea6e5">QQ 308733148</font></b></a><br> <a href="https://www.noctuna.cc">📬：<b><font color="#a591e0">noctuna0206@163.com</font></b></a><br> 碎碎念：<br><a href="https://www.noctuna.cc"><b><font color="#5ea6e5">☕ 今天过得好吗？</font></b></a><br> <a href="https://www.noctuna.cc"><b><font color="#5ea6e5">🎶 听会歌休息一下吧</font></b></a><br> <a href="https://www.noctuna.cc"><b><font color="#5ea6e5">💫 愿我们在闪耀的未来再会</font></b></a><br> <a href="https://www.noctuna.cc" style="color:#999999; font-size:0.9em;">* IconCDN已修复 *</a><br> </center></div><div id="welcome-info"></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#0-%E8%AE%AD%E7%BB%83%E5%9C%A8%E5%81%9A%E4%BB%80%E4%B9%88"><span class="toc-text">0 训练在做什么</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E5%89%8D%E5%90%91%E4%BC%A0%E6%92%AD"><span class="toc-text">1 前向传播</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-%E7%BD%91%E7%BB%9C%E5%B0%B1%E6%98%AF%E4%B8%80%E4%B8%AA%E5%87%BD%E6%95%B0"><span class="toc-text">1.1 网络就是一个函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-%E9%80%90%E5%B1%82%E8%AE%A1%E7%AE%97"><span class="toc-text">1.2 逐层计算</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-%E5%B1%82%E6%95%B0%E7%9A%84%E5%8F%AB%E6%B3%95"><span class="toc-text">1.3 层数的叫法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E8%BE%93%E5%87%BA%E5%B1%82%E4%B8%8E%E6%BF%80%E6%B4%BB%E5%87%BD%E6%95%B0"><span class="toc-text">2 输出层与激活函数</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-softmax"><span class="toc-text">2.1 softmax</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-%E6%BF%80%E6%B4%BB%E5%87%BD%E6%95%B0"><span class="toc-text">2.2 激活函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-%E6%BF%80%E6%B4%BB%E5%87%BD%E6%95%B0%E6%94%BE%E5%9C%A8%E5%93%AA"><span class="toc-text">2.3 激活函数放在哪</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0"><span class="toc-text">3 损失函数</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-%E5%8F%82%E6%95%B0"><span class="toc-text">3.1 参数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-%E6%95%B0%E6%8D%AE%E9%A2%84%E5%A4%84%E7%90%86"><span class="toc-text">3.2 数据预处理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-%E5%88%86%E7%B1%BB%E7%9A%84%E7%9B%AE%E6%A0%87%E5%86%99%E6%B3%95"><span class="toc-text">3.3 分类的目标写法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-4-%E4%BA%A4%E5%8F%89%E7%86%B5%E3%80%81BCE%E3%80%81MSE"><span class="toc-text">3.4 交叉熵、BCE、MSE</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-5-%E8%AE%AD%E7%BB%83%E8%AF%AF%E5%B7%AE%E4%B8%BA-0-%E5%B9%B6%E9%9D%9E%E7%9B%AE%E6%A0%87"><span class="toc-text">3.5 训练误差为 0 并非目标</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D%E4%B8%8E%E5%8F%8D%E5%90%91%E4%BC%A0%E6%92%AD"><span class="toc-text">4 梯度下降与反向传播</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D"><span class="toc-text">4.1 梯度下降</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-%E5%B1%80%E9%83%A8%E6%9C%80%E5%B0%8F%E3%80%81%E9%9D%9E%E5%87%B8"><span class="toc-text">4.2 局部最小、非凸</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-3-%E5%8F%8D%E5%90%91%E4%BC%A0%E6%92%AD"><span class="toc-text">4.3 反向传播</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-4-batch%E3%80%81mini-batch%E3%80%81SGD"><span class="toc-text">4.4 batch、mini-batch、SGD</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E4%BC%98%E5%8C%96%EF%BC%9A%E5%8A%A8%E9%87%8F%E3%80%81Adam%E3%80%81%E5%AD%A6%E4%B9%A0%E7%8E%87"><span class="toc-text">5 优化：动量、Adam、学习率</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#5-1-%E5%B9%B3%E5%8F%B0%E3%80%81%E9%9E%8D%E7%82%B9%E3%80%81%E5%B1%80%E9%83%A8%E6%9C%80%E5%B0%8F"><span class="toc-text">5.1 平台、鞍点、局部最小</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-2-%E5%8A%A8%E9%87%8F"><span class="toc-text">5.2 动量</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-3-Adam"><span class="toc-text">5.3 Adam</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-4-%E5%AD%A6%E4%B9%A0%E7%8E%87"><span class="toc-text">5.4 学习率</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-5-%E5%AD%A6%E4%B9%A0%E7%8E%87%E8%B0%83%E5%BA%A6"><span class="toc-text">5.5 学习率调度</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-%E6%A2%AF%E5%BA%A6%E6%B6%88%E5%A4%B1%E4%B8%8E%E6%A2%AF%E5%BA%A6%E7%88%86%E7%82%B8"><span class="toc-text">6 梯度消失与梯度爆炸</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-%E6%B3%9B%E5%8C%96%EF%BC%9A%E6%AC%A0%E6%8B%9F%E5%90%88%E4%B8%8E%E8%BF%87%E6%8B%9F%E5%90%88"><span class="toc-text">7 泛化：欠拟合与过拟合</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#7-1-%E7%97%87%E7%8A%B6%E4%B8%8E%E5%AF%B9%E7%AD%96"><span class="toc-text">7.1 症状与对策</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-2-%E8%AE%AD%E7%BB%83%E9%9B%86%E3%80%81%E9%AA%8C%E8%AF%81%E9%9B%86%E3%80%81%E6%B5%8B%E8%AF%95%E9%9B%86"><span class="toc-text">7.2 训练集、验证集、测试集</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-3-%E7%BD%91%E7%BB%9C%E5%A4%A7%E5%B0%8F%E4%B8%8E%E5%AE%B9%E9%87%8F"><span class="toc-text">7.3 网络大小与容量</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-%E6%AD%A3%E5%88%99%E5%8C%96"><span class="toc-text">8 正则化</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#8-1-L2-%E6%AD%A3%E5%88%99"><span class="toc-text">8.1 L2 正则</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-2-L1-%E4%B8%8E%E5%BC%B9%E6%80%A7%E7%BD%91%E7%BB%9C"><span class="toc-text">8.2 L1 与弹性网络</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-3-dropout"><span class="toc-text">8.3 dropout</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-4-%E6%97%A9%E5%81%9C"><span class="toc-text">8.4 早停</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-5-BatchNorm"><span class="toc-text">8.5 BatchNorm</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#9-%E8%B6%85%E5%8F%82%E6%95%B0%E4%B8%8E%E4%BA%A4%E5%8F%89%E9%AA%8C%E8%AF%81"><span class="toc-text">9 超参数与交叉验证</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#9-1-%E5%8F%82%E6%95%B0-vs-%E8%B6%85%E5%8F%82%E6%95%B0"><span class="toc-text">9.1 参数 vs 超参数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#9-2-%E6%80%8E%E4%B9%88%E6%90%9C%E8%B6%85%E5%8F%82%E6%95%B0"><span class="toc-text">9.2 怎么搜超参数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#9-3-k-%E6%8A%98%E4%BA%A4%E5%8F%89%E9%AA%8C%E8%AF%81"><span class="toc-text">9.3 k 折交叉验证</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#9-4-%E6%B7%B1%E7%BD%91%E7%BB%9C-vs-%E6%B5%85%E7%BD%91%E7%BB%9C"><span class="toc-text">9.4 深网络 vs 浅网络</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#10-%E8%A6%81%E7%82%B9%E9%80%9F%E6%9F%A5"><span class="toc-text">10 要点速查</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2026/11/05/NeuralNetworkTraining/" title="神经网络训练"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://blogpic-5qb.pages.dev/img/postcover/6.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="神经网络训练"/></a><div class="content"><a class="title" href="/2026/11/05/NeuralNetworkTraining/" title="神经网络训练">神经网络训练</a><time datetime="2026-11-05T15:04:08.000Z" title="更新于 2026-11-05 23:04:08">2026-11-05</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/10/07/DeepLearning13/" title="深度学习与神经网络13"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://blogpic-5qb.pages.dev/img/postcover/6.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="深度学习与神经网络13"/></a><div class="content"><a class="title" href="/2026/10/07/DeepLearning13/" title="深度学习与神经网络13">深度学习与神经网络13</a><time datetime="2026-10-07T15:37:23.000Z" title="更新于 2026-10-07 23:37:23">2026-10-07</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/10/07/DeepLearning12/" title="深度学习与神经网络12"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://blogpic-5qb.pages.dev/img/postcover/12.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="深度学习与神经网络12"/></a><div class="content"><a class="title" href="/2026/10/07/DeepLearning12/" title="深度学习与神经网络12">深度学习与神经网络12</a><time datetime="2026-10-07T15:36:23.000Z" title="更新于 2026-10-07 23:36:23">2026-10-07</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2023 - 2026 By Noctuna</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="简繁转换">繁</button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button><button id="go-down" type="button" title="直达底部" onclick="btf.scrollToDest(document.body.scrollHeight, 500)"><i class="fas fa-arrow-down"></i></button></div></div><div><script src="/js/utils.js?v=4.8.1"></script><script src="/js/main.js?v=4.8.1"></script><script src="/js/tw_cn.js?v=4.8.1"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.15/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@5.2.0/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload@17.8.3/dist/lazyload.iife.min.js"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.js"></script><script>function panguFn () {
+  if (typeof pangu === 'object') pangu.autoSpacingPage()
+  else {
+    getScript('https://cdn.jsdelivr.net/npm/pangu@4.0.7/dist/browser/pangu.min.js')
+      .then(() => {
+        pangu.autoSpacingPage()
+      })
+  }
+}
+
+function panguInit () {
+  if (false){
+    GLOBAL_CONFIG_SITE.isPost && panguFn()
+  } else {
+    panguFn()
+  }
+}
+
+document.addEventListener('DOMContentLoaded', panguInit)</script><div class="js-pjax"><script>if (!window.MathJax) {
+  window.MathJax = {
+    tex: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"]],
+      tags: 'ams'
+    },
+    chtml: {
+      scale: 1.1
+    },
+    options: {
+      renderActions: {
+        findScript: [10, doc => {
+          for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+            const display = !!node.type.match(/; *mode=display/)
+            const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+            const text = document.createTextNode('')
+            node.parentNode.replaceChild(text, node)
+            math.start = {node: text, delim: '', n: 0}
+            math.end = {node: text, delim: '', n: 0}
+            doc.math.push(math)
+          }
+        }, ''],
+        insertScript: [200, () => {
+          document.querySelectorAll('mjx-container').forEach(node => {
+            if (node.hasAttribute('display')) {
+              btf.wrap(node, 'div', { class: 'mathjax-overflow' })
+            } else {
+              btf.wrap(node, 'span', { class: 'mathjax-overflow' })
+            }
+          });
+        }, '', false]
+      }
+    }
+  }
+  
+  const script = document.createElement('script')
+  script.src = 'https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.min.js'
+  script.id = 'MathJax-script'
+  script.async = true
+  document.head.appendChild(script)
+} else {
+  MathJax.startup.document.state(0)
+  MathJax.texReset()
+  MathJax.typesetPromise()
+}</script></div><script defer src="https://npm.elemecdn.com/jquery@latest/dist/jquery.min.js"></script><div class="aplayer no-destroy" data-id="8866982132" data-server="tencent" data-type="playlist" data-fixed="true" data-autoplay="false" data-theme="#ffaf5e" data-order="random"> </div><canvas id="universe"></canvas><script defer src="/js/universe.js"></script><script defer src="/js/cursor.js"></script><script async src="//npm.elemecdn.com/pace-js@1.2.4/pace.min.js"></script><script async src="/js/fps.js"></script><script src="/js/f12.js"></script><script async src="https://cdn1.tianli0.top/npm/vue@2.6.14/dist/vue.min.js"></script><script async src="https://cdn1.tianli0.top/npm/element-ui@2.15.6/lib/index.js"></script><script defer data-pjax src="/js/cat.js"></script><script src="https://cdn.staticfile.org/jquery/3.6.3/jquery.min.js"></script><script async data-pjax src="/js/txmap.js"></script><script src="/js/about-transit.js"></script><script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js"></script><script>let pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+var pjax = new Pjax({
+  elements: 'a:not([target="_blank"])',
+  selectors: pjaxSelectors,
+  cacheBust: false,
+  analytics: false,
+  scrollRestoration: false
+})
+
+document.addEventListener('pjax:send', function () {
+
+  // removeEventListener scroll 
+  window.tocScrollFn && window.removeEventListener('scroll', window.tocScrollFn)
+  window.scrollCollect && window.removeEventListener('scroll', scrollCollect)
+
+  document.getElementById('rightside').style.cssText = "opacity: ''; transform: ''"
+  
+  if (window.aplayers) {
+    for (let i = 0; i < window.aplayers.length; i++) {
+      if (!window.aplayers[i].options.fixed) {
+        window.aplayers[i].destroy()
+      }
+    }
+  }
+
+  typeof typed === 'object' && typed.destroy()
+
+  //reset readmode
+  const $bodyClassList = document.body.classList
+  $bodyClassList.contains('read-mode') && $bodyClassList.remove('read-mode')
+
+  typeof disqusjs === 'object' && disqusjs.destroy()
+})
+
+document.addEventListener('pjax:complete', function () {
+  window.refreshFn()
+
+  document.querySelectorAll('script[data-pjax]').forEach(item => {
+    const newScript = document.createElement('script')
+    const content = item.text || item.textContent || item.innerHTML || ""
+    Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+    newScript.appendChild(document.createTextNode(content))
+    item.parentNode.replaceChild(newScript, item)
+  })
+
+  GLOBAL_CONFIG.islazyload && window.lazyLoadInstance.update()
+
+  typeof chatBtnFn === 'function' && chatBtnFn()
+  typeof panguInit === 'function' && panguInit()
+
+  // google analytics
+  typeof gtag === 'function' && gtag('config', '', {'page_path': window.location.pathname});
+
+  // baidu analytics
+  typeof _hmt === 'object' && _hmt.push(['_trackPageview',window.location.pathname]);
+
+  typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
+
+  // prismjs
+  typeof Prism === 'object' && Prism.highlightAll()
+})
+
+document.addEventListener('pjax:error', (e) => {
+  if (e.request.status === 404) {
+    pjax.loadUrl('/404.html')
+  }
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div class="no-result" id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=4.8.1"></script></div></div><!-- hexo injector body_end start --><script data-pjax>
+  function butterfly_swiper_injector_config(){
+    var parent_div_git = document.getElementById('recent-posts');
+    var item_html = '<div class="recent-post-item" style="height: auto;width: 100%"><div class="blog-slider swiper-container-fade swiper-container-horizontal" id="swiper_container"><div class="blog-slider__wrp swiper-wrapper" style="transition-duration: 0ms;"><div class="blog-slider__item swiper-slide" style="width: 750px; opacity: 1; transform: translate3d(0px, 0px, 0px); transition-duration: 0ms;"><a class="blog-slider__img" onclick="pjax.loadUrl(&quot;2022/08/15/mysterylovercomm/&quot;);" href="javascript:void(0);" alt=""><img width="48" height="48" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://blogpic-5qb.pages.dev/img/postcover/1.png" alt="" onerror="this.src=https://unpkg.zhimg.com/akilar-candyassets/image/loading.gif; this.onerror = null;"/></a><div class="blog-slider__content"><span class="blog-slider__code">2022-08-15</span><a class="blog-slider__title" onclick="pjax.loadUrl(&quot;2022/08/15/mysterylovercomm/&quot;);" href="javascript:void(0);" alt="">MysteryLover</a><div class="blog-slider__text">每个人，都有决定自己是谁的权利</div><a class="blog-slider__button" onclick="pjax.loadUrl(&quot;2022/08/15/mysterylovercomm/&quot;);" href="javascript:void(0);" alt="">详情       </a></div></div><div class="blog-slider__item swiper-slide" style="width: 750px; opacity: 1; transform: translate3d(0px, 0px, 0px); transition-duration: 0ms;"><a class="blog-slider__img" onclick="pjax.loadUrl(&quot;2022/12/15/mysterylover/&quot;);" href="javascript:void(0);" alt=""><img width="48" height="48" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://blogpic-5qb.pages.dev/img/postcover/1.png" alt="" onerror="this.src=https://unpkg.zhimg.com/akilar-candyassets/image/loading.gif; this.onerror = null;"/></a><div class="blog-slider__content"><span class="blog-slider__code">2022-12-15</span><a class="blog-slider__title" onclick="pjax.loadUrl(&quot;2022/12/15/mysterylover/&quot;);" href="javascript:void(0);" alt="">MysteryLover - 遥远的ta</a><div class="blog-slider__text">遥远的ta</div><a class="blog-slider__button" onclick="pjax.loadUrl(&quot;2022/12/15/mysterylover/&quot;);" href="javascript:void(0);" alt="">详情       </a></div></div><div class="blog-slider__item swiper-slide" style="width: 750px; opacity: 1; transform: translate3d(0px, 0px, 0px); transition-duration: 0ms;"><a class="blog-slider__img" onclick="pjax.loadUrl(&quot;2023/01/22/newyear/&quot;);" href="javascript:void(0);" alt=""><img width="48" height="48" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://blogpic-5qb.pages.dev/img/postcover/15.jpg" alt="" onerror="this.src=https://unpkg.zhimg.com/akilar-candyassets/image/loading.gif; this.onerror = null;"/></a><div class="blog-slider__content"><span class="blog-slider__code">2023-01-22</span><a class="blog-slider__title" onclick="pjax.loadUrl(&quot;2023/01/22/newyear/&quot;);" href="javascript:void(0);" alt="">年。</a><div class="blog-slider__text">年。</div><a class="blog-slider__button" onclick="pjax.loadUrl(&quot;2023/01/22/newyear/&quot;);" href="javascript:void(0);" alt="">详情       </a></div></div><div class="blog-slider__item swiper-slide" style="width: 750px; opacity: 1; transform: translate3d(0px, 0px, 0px); transition-duration: 0ms;"><a class="blog-slider__img" onclick="pjax.loadUrl(&quot;2025/03/01/ICMfundamental/&quot;);" href="javascript:void(0);" alt=""><img width="48" height="48" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://blogpic-5qb.pages.dev/img/postcover/14.png" alt="" onerror="this.src=https://unpkg.zhimg.com/akilar-candyassets/image/loading.gif; this.onerror = null;"/></a><div class="blog-slider__content"><span class="blog-slider__code">2025-03-01</span><a class="blog-slider__title" onclick="pjax.loadUrl(&quot;2025/03/01/ICMfundamental/&quot;);" href="javascript:void(0);" alt="">《集成电路材料科学与工程基础》第六章</a><div class="blog-slider__text">《集成电路材料科学与工程基础》第六章随笔</div><a class="blog-slider__button" onclick="pjax.loadUrl(&quot;2025/03/01/ICMfundamental/&quot;);" href="javascript:void(0);" alt="">详情       </a></div></div><div class="blog-slider__item swiper-slide" style="width: 750px; opacity: 1; transform: translate3d(0px, 0px, 0px); transition-duration: 0ms;"><a class="blog-slider__img" onclick="pjax.loadUrl(&quot;2023/04/15/dreamending/&quot;);" href="javascript:void(0);" alt=""><img width="48" height="48" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://blogpic-5qb.pages.dev/img/postcover/17.png" alt="" onerror="this.src=https://unpkg.zhimg.com/akilar-candyassets/image/loading.gif; this.onerror = null;"/></a><div class="blog-slider__content"><span class="blog-slider__code">2023-04-15</span><a class="blog-slider__title" onclick="pjax.loadUrl(&quot;2023/04/15/dreamending/&quot;);" href="javascript:void(0);" alt="">DreamEnding</a><div class="blog-slider__text">末日下的爱恋——《梦末》⏳</div><a class="blog-slider__button" onclick="pjax.loadUrl(&quot;2023/04/15/dreamending/&quot;);" href="javascript:void(0);" alt="">详情       </a></div></div><div class="blog-slider__item swiper-slide" style="width: 750px; opacity: 1; transform: translate3d(0px, 0px, 0px); transition-duration: 0ms;"><a class="blog-slider__img" onclick="pjax.loadUrl(&quot;2023/04/15/tinysnow/&quot;);" href="javascript:void(0);" alt=""><img width="48" height="48" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://blogpic-5qb.pages.dev/img/postcover/5.png" alt="" onerror="this.src=https://unpkg.zhimg.com/akilar-candyassets/image/loading.gif; this.onerror = null;"/></a><div class="blog-slider__content"><span class="blog-slider__code">2023-04-15</span><a class="blog-slider__title" onclick="pjax.loadUrl(&quot;2023/04/15/tinysnow/&quot;);" href="javascript:void(0);" alt="">TinySnow</a><div class="blog-slider__text">被操控的爱——《茸雪》❄️</div><a class="blog-slider__button" onclick="pjax.loadUrl(&quot;2023/04/15/tinysnow/&quot;);" href="javascript:void(0);" alt="">详情       </a></div></div></div><div class="blog-slider__pagination swiper-pagination-clickable swiper-pagination-bullets"></div></div></div>';
+    console.log('已挂载butterfly_swiper')
+    parent_div_git.insertAdjacentHTML("afterbegin",item_html)
+    }
+  var elist = 'undefined'.split(',');
+  var cpage = location.pathname;
+  var epage = '/';
+  var flag = 0;
+
+  for (var i=0;i<elist.length;i++){
+    if (cpage.includes(elist[i])){
+      flag++;
+    }
+  }
+
+  if ((epage ==='all')&&(flag == 0)){
+    butterfly_swiper_injector_config();
+  }
+  else if (epage === cpage){
+    butterfly_swiper_injector_config();
+  }
+  </script><script defer src="https://npm.elemecdn.com/hexo-butterfly-swiper/lib/swiper.min.js"></script><script defer data-pjax src="https://npm.elemecdn.com/hexo-butterfly-swiper/lib/swiper_init.js"></script><script data-pjax>
+    function butterfly_categories_card_injector_config(){
+      var parent_div_git = document.getElementById('recent-posts');
+      var item_html = '<style>li.categoryBar-list-item{width:32.3%;}.categoryBar-list{max-height: 380px;overflow:auto;}.categoryBar-list::-webkit-scrollbar{width:0!important}@media screen and (max-width: 650px){.categoryBar-list{max-height: 320px;}}</style><div class="recent-post-item" style="height:auto;width:100%;padding:0px;"><div id="categoryBar"><ul class="categoryBar-list"><li class="categoryBar-list-item" style="background:url(https://blogpic-5qb.pages.dev/img/cate/4.jpg);"> <a class="categoryBar-list-link" onclick="pjax.loadUrl(&quot;categories/摸点同人文/&quot;);" href="javascript:void(0);">摸点同人文</a><span class="categoryBar-list-count">9</span><span class="categoryBar-list-descr">今日特惠：焦糖玛奇朵☕</span></li><li class="categoryBar-list-item" style="background:url(https://blogpic-5qb.pages.dev/img/cate/1.jpg);"> <a class="categoryBar-list-link" onclick="pjax.loadUrl(&quot;categories/国G杂谈/&quot;);" href="javascript:void(0);">国G杂谈</a><span class="categoryBar-list-count">3</span><span class="categoryBar-list-descr">会继续吗...</span></li><li class="categoryBar-list-item" style="background:url(https://blogpic-5qb.pages.dev/img/cate/3.jpg);"> <a class="categoryBar-list-link" onclick="pjax.loadUrl(&quot;categories/辉夜の生活碎片/&quot;);" href="javascript:void(0);">辉夜の生活碎片</a><span class="categoryBar-list-count">6</span><span class="categoryBar-list-descr">也许以后会学点前端？</span></li><li class="categoryBar-list-item" style="background:url(https://blogpic-5qb.pages.dev/img/cate/9.jpg);"> <a class="categoryBar-list-link" onclick="pjax.loadUrl(&quot;categories/辉夜の软件工程之路/&quot;);" href="javascript:void(0);">辉夜の软件工程之路</a><span class="categoryBar-list-count">1</span><span class="categoryBar-list-descr">进修半导体ING...</span></li><li class="categoryBar-list-item" style="background:url(https://blogpic-5qb.pages.dev/img/cate/6.jpg);"> <a class="categoryBar-list-link" onclick="pjax.loadUrl(&quot;categories/辉夜の编程之路/&quot;);" href="javascript:void(0);">辉夜の编程之路</a><span class="categoryBar-list-count">54</span><span class="categoryBar-list-descr">“無限進步”！</span></li><li class="categoryBar-list-item" style="background:url(https://blogpic-5qb.pages.dev/img/cate/8.jpg);"> <a class="categoryBar-list-link" onclick="pjax.loadUrl(&quot;categories/辉夜の集成电路之路/&quot;);" href="javascript:void(0);">辉夜の集成电路之路</a><span class="categoryBar-list-count">1</span><span class="categoryBar-list-descr">再写了再写了</span></li><li class="categoryBar-list-item" style="background:url(https://blogpic-5qb.pages.dev/img/gallery_firefly/11.jpg);"> <a class="categoryBar-list-link" onclick="pjax.loadUrl(&quot;categories/Minecraft服务器/&quot;);" href="javascript:void(0);">Minecraft服务器</a><span class="categoryBar-list-count">1</span><span class="categoryBar-list-descr">“人是一株有思想的芦苇...”</span></li></ul></div></div>';
+      console.log('已挂载butterfly_categories_card')
+      parent_div_git.insertAdjacentHTML("afterbegin",item_html)
+      }
+    if( document.getElementById('recent-posts') && (location.pathname ==='/'|| '/' ==='all')){
+    butterfly_categories_card_injector_config()
+    }
+  </script><script async src="//at.alicdn.com/t/font_2032782_8d5kxvn09md.js"></script><div class="js-pjax"><script async="async">var arr = document.getElementsByClassName('recent-post-item');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__zoomIn');
+    arr[i].setAttribute('data-wow-duration', '1.5s');
+    arr[i].setAttribute('data-wow-delay', '0.5s');
+    arr[i].setAttribute('data-wow-offset', '100');
+    arr[i].setAttribute('data-wow-iteration', '1');
+  }</script><script async="async">var arr = document.getElementsByClassName('card-widget');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__backInRight');
+    arr[i].setAttribute('data-wow-duration', '');
+    arr[i].setAttribute('data-wow-delay', '');
+    arr[i].setAttribute('data-wow-offset', '');
+    arr[i].setAttribute('data-wow-iteration', '');
+  }</script><script async="async">var arr = document.getElementsByClassName('page-number current');
+for(var i = 0;i<arr.length;i++){
+    arr[i].classList.add('wow');
+    arr[i].classList.add('animate__zoomIn');
+    arr[i].setAttribute('data-wow-duration', '1.5s');
+    arr[i].setAttribute('data-wow-delay', '0.5s');
+    arr[i].setAttribute('data-wow-offset', '');
+    arr[i].setAttribute('data-wow-iteration', '');
+  }</script></div><script defer src="https://npm.elemecdn.com/hexo-butterfly-wowjs/lib/wow.min.js"></script><script defer src="https://npm.elemecdn.com/hexo-butterfly-wowjs/lib/wow_init.js"></script><script data-pjax>
+  function butterfly_footer_beautify_injector_config(){
+    var parent_div_git = document.getElementById('footer-wrap');
+    var item_html = '<div id="workboard"></div>';
+    console.log('已挂载butterfly_footer_beautify')
+    parent_div_git.insertAdjacentHTML("beforeend",item_html)
+    }
+  var elist = 'null'.split(',');
+  var cpage = location.pathname;
+  var epage = 'all';
+  var flag = 0;
+
+  for (var i=0;i<elist.length;i++){
+    if (cpage.includes(elist[i])){
+      flag++;
+    }
+  }
+
+  if ((epage ==='all')&&(flag == 0)){
+    butterfly_footer_beautify_injector_config();
+  }
+  else if (epage === cpage){
+    butterfly_footer_beautify_injector_config();
+  }
+  </script><script async src="/js/runtime.js"></script><!-- hexo injector body_end end --></body></html>
