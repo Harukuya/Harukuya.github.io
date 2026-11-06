@@ -1081,11 +1081,20 @@
     layout();
   }
 
+  // 分割段的接缝（离块顶多远）：默认是块的下沿；块自己要改就在这里登记一个函数（返回 px，或 null = 用默认）。
+  // 第一块：信展开着时接缝挪到打卡本下沿和第二块英文小标题的正中间（见 initIntroLetter）。分割段的起点、钉住时下一块的位置都按它算
+  var seamOf = {};
+
   // ========== 自我介绍信笺：收着的信，点一下从信封里抽出来 ==========
   // 平时信纸下半截插在信封里，只露出信头、称呼和前几行。收起时的块高按工牌算：两栏时让下面 GitHub 打卡本的下沿和工牌下沿差不多齐，
   // 单栏（手机）时露 400 左右。点信纸 / 信封正中朝下的小三角：信封往下退、信纸整张露出来，再盖到信封前面、信封缩回去一截；
   // 再点（这时朝上）或在信纸以外的地方按一下收起，反过来。信纸插在信封里 = 裁掉信封口以下的部分（信封口 = 块高 − ENV，about.css .ab-letter-env）。
   // 展开 / 收起之后块高变了：刷新 ScrollTrigger（分割段、跳章的位置跟着变）。
+  // 第二块按信收着时的版面定位（用户 2026-11-06）：信展开长出来的那截，先占第一块下面的空当（第一块内容加负的下外边距抵掉），
+  // 第二块和后面的不动、收起时也不会骤然上提。空当最多让到打卡本下沿离第二块标题还剩 ROOM_GAP；长出来的比空当多（窄屏、手机）才把多出的那截往下推。
+  // 分割段解开时也一样：分割段是把上下两块整块分开的，伸出第一块下沿的那截属于第一块，跟着它一起上移、淡出；
+  // 遮罩板、嵌入图是 body 下的固定层（z 1、2），整个内容区（main，z 3）在它们上面，第一块在内容区里提一层也碰不到它们。
+  // 嵌入图从接缝往上下露出来：信展开着时接缝挪到打卡本下沿和第二块英文小标题的正中间（seamOf），打卡本始终在接缝上方，不会压到图
   // 动画模式下：第一次进入视野时信纸从信封口升到收着的位置；第一次展开时格言一行一行写出来。其余情况直接切换、格言直接在。
   function initIntroLetter() {
     var card = document.getElementById('ab-letter');
@@ -1096,8 +1105,14 @@
     var idcard = document.getElementById('idcard');
     var heat = document.querySelector('.about-profile-main .about-heatmap-panel');
     var ENV = 74, UNDER = 30;                  // 信封高 / 展开时信纸盖住信封上沿的那一截
+    var ROOM_GAP = 80;                         // 让空当时，打卡本下沿和第二块标题之间至少留这么多
+    var prof = card.closest('.about-profile'), block = card.closest('.about-block');
+    var head2 = document.querySelector('#block-2 .about-head');
+    var brow2 = document.querySelector('#block-2 .about-eyebrow');
     var smooth = animOn && !!paper.animate;
     var open = false, busy = false, signed = !smooth, foldH = 0;
+    var prof0 = 0, room = 0, mb0 = 0, pad = 0; // 收着时第一块内容的高度 / 能让出的空当 / 原来的下外边距 / 打卡本下沿到第一块下沿
+    var seamGo = null;                         // 正在开 / 关时的分割段接缝：按要去的那个状态，点下去那一刻量好
     var inOut3 = function (u) { return u < 0.5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2; };
     var out2 = function (u) { return 1 - (1 - u) * (1 - u); };
 
@@ -1116,6 +1131,36 @@
     function setBox(H, cut) {
       card.style.height = H == null ? '' : H + 'px';
       paper.style.clipPath = cut ? 'inset(-40px -40px ' + Math.max(0, paper.offsetHeight - (H - ENV)) + 'px -40px)' : '';
+      absorb();
+    }
+    // 要展开时（还收着）量一次：第一块内容现在多高、下面能让出多少空当。
+    // 第二块标题的位置 = 第二块外层的位置（解开时带着分割段的 lift，正是它看起来的位置）+ 标题在块里的布局偏移——
+    // 不直接量标题：第二块还没滚到时，内层带着浮现动画的下移（几十 px），会把空当多算
+    function measureRoom() {
+      if (!prof || !block || !heat) { room = 0; return; }
+      prof.style.marginBottom = '';
+      prof0 = prof.offsetHeight;
+      mb0 = parseFloat(getComputedStyle(prof).marginBottom) || 0;
+      var hb = heat.getBoundingClientRect().bottom, bb = block.getBoundingClientRect().bottom;
+      var limit = bb;
+      var block2 = head2 && head2.closest('.about-block');
+      if (block2) {
+        var off = 0, e = head2;
+        while (e && e !== block2) { off += e.offsetTop; e = e.offsetParent; }
+        if (e === block2) limit = block2.getBoundingClientRect().top + off - ROOM_GAP;
+      }
+      room = Math.max(0, Math.round(limit - hb));
+      pad = Math.max(0, Math.round(bb - hb));
+    }
+    // 第一块内容长高的那截，空当以内的用负的下外边距抵掉（收着的时候一律不抵）。
+    // 伸出第一块下沿时：第一块临时提一层——第二块那一对排在后面、自成一层，
+    // 不提的话伸出去那截被第二块（透明的）盖住，点不到打卡本
+    function absorb() {
+      if (!prof || !block) return;
+      var grow = (open || busy) ? Math.max(0, prof.offsetHeight - prof0) : 0;
+      var take = Math.min(grow, room);
+      prof.style.marginBottom = take ? (mb0 - take) + 'px' : '';
+      block.style.zIndex = take > pad ? '1' : '';
     }
     // 标成展开 / 收着（isOpen）：信走到头了才标——三角跟着信封走到底（顶）再转过去（朝上 / 朝下由 CSS 按 is-folded 画，带转动过渡）
     function label(isOpen) {
@@ -1126,6 +1171,38 @@
       }
     }
     function refresh() { if (animOn) ScrollTrigger.refresh(); }
+    // el 在 anc 里的布局偏移（offsetTop 一路加上去，不算 transform：浮现动画、分割段的位移都不影响）
+    function offIn(el, anc) { var t = 0; while (el && el !== anc) { t += el.offsetTop; el = el.offsetParent; } return el === anc ? t : NaN; }
+    // 分割段接缝（用户 2026-11-06）：信展开着时，在打卡本下沿和第二块英文小标题上沿的正中间（收着时就是第一块下沿）。
+    // 第二块小标题按「第一块下沿 + 它在第二块里的偏移」算——第二块看起来就紧贴在第一块下面（分割段的 lift 正好抵掉钉住留的空）。
+    // 只要点了信，哪怕还在开 / 关的路上，接缝就按要去的那个状态（seamGo，见 toggle）；停下来以后按现在的版面算
+    var hasSeam = !!(block && heat && brow2), block2 = hasSeam ? brow2.closest('.about-block') : null;
+    function seamMid() {
+      var hb = offIn(heat, block) + heat.offsetHeight, eb = block.offsetHeight + offIn(brow2, block2);
+      return isNaN(hb) || isNaN(eb) ? null : Math.round((hb + eb) / 2);
+    }
+    if (hasSeam) {
+      seamOf[block.id] = function () {
+        if (busy) return seamGo;
+        return open ? seamMid() : null;
+      };
+    }
+    // 把信直接摆成展开到头（toOpen）/ 收好的样子，量一下（fn），再原样摆回去——同一帧里改了又改回，不会画出来
+    function peek(toOpen, fn) {
+      var keep = [card.style.height, paper.style.clipPath, prof ? prof.style.marginBottom : '', block ? block.style.zIndex : ''];
+      var o = open, bz = busy;
+      open = toOpen;
+      busy = false;
+      setBox(toOpen ? null : foldH, !toOpen);
+      var r = fn();
+      open = o;
+      busy = bz;
+      card.style.height = keep[0];
+      paper.style.clipPath = keep[1];
+      if (prof) prof.style.marginBottom = keep[2];
+      if (block) block.style.zIndex = keep[3];
+      return r;
+    }
     // 走到头：先刷新 ScrollTrigger（它会把钉住的那一对块移出文档再放回去，放回去的元素不走过渡），
     // 再读一次三角现在的样子（定下转动的起点），然后才换方向，三角才是转过去的
     function arrive(isOpen) {
@@ -1152,6 +1229,7 @@
     }
     function toggle() {
       if (busy) return;
+      if (!open) measureRoom();
       if (!smooth) {
         open = !open;
         setBox(open ? null : foldH, !open);
@@ -1160,6 +1238,11 @@
         return;
       }
       busy = true;
+      // 接缝：点下去就换到要去的那个状态（展开 → 打卡本和第二块小标题的正中；收起 → 第一块下沿），不等动画走完；走到头时 arrive 再按最终版面刷新一次
+      if (hasSeam) {
+        seamGo = peek(!open, open ? function () { return block.offsetHeight; } : seamMid);
+        refresh();
+      }
       var out = paper.offsetHeight + ENV; // 信封口正好退到信纸下沿：信纸整张露出来
       if (!open) {
         tween(foldH, out, 640, inOut3, function (h) { setBox(h, true); }, function () {
@@ -3373,7 +3456,7 @@
     initHeroVoyage();
 
     // ===== 分割段（白线 = 相邻两块的接缝）=====
-    // 冻结时机：上一块底部（接缝）到达屏幕中央 —— 此刻上半屏是上一块尾部，
+    // 冻结时机：上一块底部（接缝；块可以自己改，见 seamOf）到达屏幕中央 —— 此刻上半屏是上一块尾部，
     // 下半屏是下一块头部。下一块被 lift 位移精确抵消 pin spacer 顶到接缝下方，
     // lift 随 pin 进度衰减到 0，unpin 时恰好落回自然文档流位置，全程无缝。
     // pin 内时间轴：0-0.1 白线在接缝（屏幕中央）展开 | 0.1-0.35 上下两块分离、
@@ -3453,6 +3536,12 @@
       // （若钉住中逐帧用 JS 改 transform 抵消滚动，会比滚轮慢一帧，分割线伸缩时下一块跟着抖）
       var nextFixed = false;
 
+      // 接缝离这一块顶多远：默认块的下沿，块登记了自己的（seamOf，比如第一块信展开着）就用它的
+      function seamAt() {
+        var s = seamOf[block.id] ? seamOf[block.id]() : null;
+        return s > 0 ? s : block.offsetHeight;
+      }
+
       function setLift(y) {
         if (nextEl && !liftLocked && !nextFixed) gsap.set(nextEl, { y: y });
       }
@@ -3462,8 +3551,8 @@
         nextFixed = on;
         if (on) {
           holder.style.height = holder.offsetHeight + 'px';
-          // 接缝在视口中的位置：与 start 的取整方式一致（恰为屏幕中央）
-          var seam = block.offsetHeight - Math.round(block.offsetHeight - window.innerHeight / 2);
+          // 下一块顶在视口中的位置：接缝恰在屏幕中央（与 start 的取整方式一致），下一块顶在接缝上方 seamAt − 块高 处
+          var seam = block.offsetHeight - Math.round(seamAt() - window.innerHeight / 2);
           gsap.set(nextEl, { y: 0 });
           nextEl.style.position = 'fixed';
           nextEl.style.top = seam + 'px';
@@ -3504,8 +3593,8 @@
         scrollTrigger: {
           trigger: pair,
           start: function () {
-            // 接缝（块底部）到达屏幕中央时冻结
-            return 'top+=' + Math.round(block.offsetHeight - window.innerHeight / 2) + ' top';
+            // 接缝（默认块底部，见 seamAt）到达屏幕中央时冻结
+            return 'top+=' + Math.round(seamAt() - window.innerHeight / 2) + ' top';
           },
           // 锁着：钉住时长 0（ScrollTrigger 会把它当成一个 0.001px 的区间，一滚就过，分割段不展开）
           end: function () { return '+=' + (locked ? 0 : Math.round(window.innerHeight * 2.3)); },
