@@ -5843,7 +5843,7 @@ html.ab-fallback .about-panel { display: none; }
    所以亮度只降到 0.82，再把对比度、饱和度拉回来：纸是暗一档的米色，字更黑、橙色和照片不发闷
    例外：有霓虹的两张卡（今日特调菜单卡里的小黑板、票夹里的「去留言板」）不整体加滤镜——纸底挪到 ::before 上单独加滤镜，霓虹以外的子元素各自加；
    3D 翻面的（流萤卡、手账、票根）不给外层加滤镜（会把翻面压平），只给翻的那一面；手账两边露出的纸页厚度也挪到 ::before 上。
-   图片不变暗（用户 2026-11-06：「图片，比如流萤那两张就不用变暗」）、第二块的命令台用白天原样（「也不要变暗」）：见下面「图片照原样」 --- */
+   图片不变暗（用户 2026-11-06：「图片，比如流萤那两张就不用变暗」）、第二块命令台那格里的终端框用白天原样：见下面「图片照原样」 --- */
 :root[data-theme='dark'] { --ab-night-filter: brightness(0.82) contrast(1.28) saturate(1.25); }
 
 [data-theme='dark'] :is(.about-profile-side, .ab-letter, .about-heatmap-panel, .about-bento, .about-ledger, .about-draft, .about-special-row, .about-posts,
@@ -5882,9 +5882,9 @@ html.ab-fallback .about-panel { display: none; }
 /* --- 图片照原样：带照片的卡片不整张加滤镜（加了里面的图就跟着暗，子元素没法单独「不暗」）。
    改成：纸底挪到 ::before 上加滤镜，照片以外的子元素各自加，照片那一支不加——
    ID 卡（横幅、头像）、照片格、精选文章的封面、流萤卡正面、手账有照片的那页（翻页时复制出来的那一面也一样）、票根背面的胶片（背面本来就是深色胶片，整面不加，只给正面的纸票加）。
-   命令台（.about-bento-code）整格不加，就是白天那一版 --- */
-[data-theme='dark'] :is(.about-idcard, .about-post-feature, .about-fandom-front, .mj-page:has(img)) { position: relative; background: none; isolation: isolate; }
-[data-theme='dark'] :is(.about-idcard, .about-post-feature, .about-fandom-front, .mj-page:has(img))::before {
+   命令台那格（.about-bento-code）同理：卡片和别的格子一样调暗，只有里面的终端框（.about-term）是白天原样（用户 2026-11-06） --- */
+[data-theme='dark'] :is(.about-idcard, .about-bento-code, .about-post-feature, .about-fandom-front, .mj-page:has(img)) { position: relative; background: none; isolation: isolate; }
+[data-theme='dark'] :is(.about-idcard, .about-bento-code, .about-post-feature, .about-fandom-front, .mj-page:has(img))::before {
   content: '';
   position: absolute;
   inset: 0;
@@ -5894,8 +5894,8 @@ html.ab-fallback .about-panel { display: none; }
   filter: var(--ab-night-filter);
   pointer-events: none;
 }
-/* ID 卡外层的投影不要跟着复制到 ::before 上（会叠成两层），只留白天那道顶上的高光 */
-[data-theme='dark'] .about-idcard::before {
+/* ID 卡、命令台那格：外层的投影不要跟着复制到 ::before 上（会叠成两层），只留白天那道顶上的高光 */
+[data-theme='dark'] :is(.about-idcard, .about-bento-code)::before {
   background: var(--ab-grain), linear-gradient(180deg, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0) 60%), var(--ab-card);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
 }
@@ -5906,6 +5906,7 @@ html.ab-fallback .about-panel { display: none; }
 [data-theme='dark'] .about-idcard > :not(.about-idcard-banner, .about-avatar),
 [data-theme='dark'] .about-idcard-banner > :not(img),
 [data-theme='dark'] .about-bento-img > :not(.about-bento-slides, .about-bento-scrim),
+[data-theme='dark'] .about-bento-code > :not(.about-term),
 [data-theme='dark'] .about-post-feature > :not(.about-post-photo),
 [data-theme='dark'] .about-post-photo > :not(img),
 [data-theme='dark'] .about-fandom-front > :not(.about-fandom-photo),
@@ -5953,7 +5954,7 @@ html.ab-fallback .about-panel { display: none; }
 /* --- 夜里的投影、暖光圈（用户 2026-11-06：先做投影，再试暖光圈；试过的「灯下的纸」——纸面顶上一道暖色——用户看了说关掉，已删）。
    投影：白天写死的棕色投影（rgba(90, 58, 26, …) 之类）在浅底上是影子，落到接近黑的夜景上反而比底色亮，成了一圈淡棕色的光晕、卡片像平贴着——
          直接落在页面上的卡片、纸，夜里统一换成更深更散的黑色投影 --ab-night-lift（不规则形状的用 drop-shadow 版 --ab-night-drop）。
-   暖光圈 --ab-night-halo：白天亮度的那几样（命令台、签箱、照片格、弹出来的签纸 / 签夹）外面一圈很淡的暖光，像被吊灯照着；
+   暖光圈 --ab-night-halo：白天亮度的那几样（签箱、照片格、弹出来的签纸 / 签夹）外面一圈很淡的暖光，像被吊灯照着；
          卡片里的照片（流萤、精选封面、手账）往纸上洇一点暖光 --ab-night-spill。
    暖光圈 / 洇光不想要了：把对应变量改成 0 0 transparent 就行，投影不受影响 --- */
 :root[data-theme='dark'] {
@@ -5974,10 +5975,9 @@ html.ab-fallback .about-panel { display: none; }
 [data-theme='dark'] .mj-cover { box-shadow: var(--ab-night-lift), inset 0 0 0 1px rgba(255, 230, 200, 0.08), inset 0 0 0 5px rgba(0, 0, 0, 0.12); }
 
 /* 纸面挪到 ::before 上的：投影留在卡片自己身上 */
-[data-theme='dark'] :is(.about-idcard, .about-post-feature, .about-fandom-front, .about-fandom-back, .about-special, .about-fandom-side) { box-shadow: var(--ab-night-lift); }
+[data-theme='dark'] :is(.about-idcard, .about-bento-code, .about-post-feature, .about-fandom-front, .about-fandom-back, .about-special, .about-fandom-side) { box-shadow: var(--ab-night-lift); }
 
 /* 白天亮度的那几样：暖光圈 + 投影 */
-[data-theme='dark'] .about-bento-code { box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8), var(--ab-night-halo), var(--ab-night-lift); }
 [data-theme='dark'] :is(.about-bento-img, .about-omikuji, .about-secrets-cover) { box-shadow: var(--ab-night-halo), var(--ab-night-lift); }
 [data-theme='dark'] .about-omikuji-slip { box-shadow: 0 2px 0 rgba(110, 80, 50, 0.1), var(--ab-night-halo), var(--ab-night-lift); }
 
