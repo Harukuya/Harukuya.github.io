@@ -3444,6 +3444,44 @@
     if (hint && !heroIntro) gsap.to(hint, { opacity: 1, duration: 0.9, delay: 1.6 });   // 下滑提示：打字机出字后浮现（入场时等入场播完）
   }
 
+  // ========== ScrollTrigger 刷新时，CSS 动画接着播 ==========
+  // 每次刷新（信展开 / 收起、开关锁、窗口变了、切回标签页…）ScrollTrigger 都会把钉住的块从文档里拿出来再放回去（换 pin-spacer），
+  // 浏览器把里面的 CSS 动画当成新的、从头重播：标题的霓虹灯管 / 星芒一下跳回呼吸的开头，信封三角、AFKfishing、热气、光标、胶片也跟着断一下（2026-11-06 用户发现）。
+  // 刷新前记下每个 CSS 动画播到哪（按 元素 + 伪元素 + 动画名），刷新后把重新生成的那些拨回去：在跑的按经过的时间接着走，暂停着的（屏幕外 / 分割段展开中）停在原处，
+  // 播放速度（胶片悬停时放慢）也照旧。刷新前不在列表里、刷新后冒出来的一次性动画 = 早就播完、被重建后又从头播（比如今日特调小黑板晃一下），直接结束
+  function keepCssAnimPhase() {
+    if (!document.getAnimations || !window.CSSAnimation) return;
+    var saved = null;
+    function cssAnims() {
+      return document.getAnimations().filter(function (a) { return a instanceof CSSAnimation && a.effect && a.effect.target; });
+    }
+    function keyOf(a) { return (a.effect.pseudoElement || '') + '|' + a.animationName; }
+    ScrollTrigger.addEventListener('refreshInit', function () {
+      saved = { t: performance.now(), byEl: new Map() };
+      cssAnims().forEach(function (a) {
+        var el = a.effect.target, list = saved.byEl.get(el);
+        if (!list) saved.byEl.set(el, list = []);
+        list.push({ a: a, key: keyOf(a), time: a.currentTime, run: a.playState === 'running', rate: a.playbackRate });
+      });
+    });
+    ScrollTrigger.addEventListener('refresh', function () {
+      if (!saved) return;
+      var dt = performance.now() - saved.t, byEl = saved.byEl;
+      saved = null;
+      cssAnims().forEach(function (a) {
+        var el = a.effect.target, key = keyOf(a), old = null;
+        (byEl.get(el) || []).some(function (o) { return o.key === key && (old = o); });
+        if (old) {
+          if (old.a === a || old.time == null) return;   // 没被重建（不在钉住的块里）
+          a.playbackRate = old.rate;
+          a.currentTime = old.time + (old.run ? dt * old.rate : 0);
+        } else if (el.closest && el.closest('.pin-spacer') && isFinite(a.effect.getComputedTiming().iterations)) {
+          a.finish();
+        }
+      });
+    });
+  }
+
   // ========== 桌面端滚动动画 ==========
 
   function initAnimations() {
@@ -3451,6 +3489,7 @@
     // 手机上滚动时地址栏伸缩只改高度：不为这个重新测量（否则钉住的起止点跟着跳）；电脑上不受影响。
     // 自动重新测量只留窗口尺寸变化和切回标签页：页面加载完 / DOMContentLoaded 那两次和 initScrollMemory 的统一测量重复，去掉（见 requestRefresh）
     ScrollTrigger.config({ ignoreMobileResize: true, autoRefreshEvents: 'visibilitychange,resize' });
+    keepCssAnimPhase();
 
     // Hero：动画模式下钉住 + 退场 / 返回那一套（见 initHeroVoyage）；必须在分割段之前建（钉住的顺序 = 页面顺序）
     initHeroVoyage();
