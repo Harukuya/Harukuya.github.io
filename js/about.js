@@ -2440,14 +2440,10 @@
   }
 
   // 今日特调：分类 → 饮品名；每天按日期固定抽一杯（同一天打开都一样），「换一杯」随机抽另一杯
+  // 2026-11-06 起分类名本身就是饮品名（代码冷萃 / 萤火气泡水 / 日常拿铁 / 旮旯抹茶），直接用；只有这两个另配一杯
   var DRINKS = {
-    '辉夜の编程之路': '代码冷萃',
-    '辉夜の软件工程之路': '架构美式',
-    '辉夜の集成电路之路': '硅晶浓缩',
-    '辉夜の生活碎片': '日常拿铁',
-    '摸点同人文': '萤火气泡水',
-    '国G杂谈': '旮旯抹茶',
-    'Minecraft服务器': '方块可可'
+    '具身智能': '机械臂手冲',
+    '其他': '什锦拼配'
   };
 
   function hash32(x) {
@@ -2470,7 +2466,7 @@
     function fill(i) {
       var p = list[i];
       $('special-no').textContent = 'No.' + pad2(i + 1) + ' / ' + n;
-      $('special-drink').textContent = DRINKS[p.c] || '店长特调';
+      $('special-drink').textContent = DRINKS[p.c] || p.c || '店长特调';
       $('special-cat').textContent = p.c || '未分类';
       $('special-link').textContent = p.t;
       $('special-link').href = p.u;
