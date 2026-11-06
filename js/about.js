@@ -477,6 +477,13 @@
     [0.5, [238, 226, 207]], // 午后奶茶
     [1, [229, 212, 187]]    // 傍晚焦糖奶茶
   ];
+  var BG_STOPS_DARK = [     // 夜间版（html[data-theme=dark]）：越往下越像一杯浓缩
+    [0, [22, 17, 13]],
+    [0.5, [26, 20, 15]],
+    [1, [31, 23, 17]]
+  ];
+  function isNight() { return document.documentElement.getAttribute('data-theme') === 'dark'; }
+  function splitBusy() { return document.documentElement.classList.contains('ab-busy'); }   // 分割段钉住中（见滚动导演 update）
   var CAFE_NEAR = 400;       // 离分割段还有这么远(px)就开始让背景咖啡厅往遮罩板里同步快照
 
   var pinTriggers = [];      // 动画模式下由 initAnimations 按页面顺序填充
@@ -493,14 +500,15 @@
   }
 
   function bgAt(p) {
-    for (var i = 1; i < BG_STOPS.length; i++) {
-      var a = BG_STOPS[i - 1], b = BG_STOPS[i];
+    var stops = isNight() ? BG_STOPS_DARK : BG_STOPS;
+    for (var i = 1; i < stops.length; i++) {
+      var a = stops[i - 1], b = stops[i];
       if (p <= b[0]) {
         var t = (p - a[0]) / (b[0] - a[0]);
         return a[1].map(function (v, k) { return Math.round(v + (b[1][k] - v) * t); });
       }
     }
-    return BG_STOPS[BG_STOPS.length - 1][1];
+    return stops[stops.length - 1][1];
   }
 
   // tops = 各块顶端的文档坐标（initDirector 记下来的），y = 当前滚动位置：不读布局
@@ -560,7 +568,7 @@
     var wash = document.querySelector('.about-hero-wash');
     var marks = [].slice.call(document.querySelectorAll('.ab-mark'));
     var blocks = [].slice.call(document.querySelectorAll('.about-block'));
-    var lastBg = '';
+    var lastBg = '', lastBusy = false;
     var lastY = window.scrollY;
     var ticking = false;
     // 各块顶端的位置、页面能滚多远：量一次记下来（文档坐标），滚动时直接用——以前每滚一帧都去读，
@@ -648,6 +656,11 @@
         cafeBg.mirror(cafePanels, pin !== '');
         cafeBg.setRunning(pin !== 'in' && (voyageOn ? heroState !== 'hero' && heroState !== 'intro' : y > hero.offsetHeight * 0.5));
       }
+      // 分割段钉住期间（解锁后，分割线伸出、幕布拉开 / 合上那一段）：页面上其它循环动画一律停下，把性能让给展开动画——
+      // CSS 循环动画由 about.css 的 html.ab-busy .ab-loop 停，票根轮播 / 流萤背面的句子 / 摄影轮播这几个 JS 定时的看 splitBusy()。
+      // 只在真钉住时停（快到时不停：停在分割段前看票根，轮播不该被冻住）；锁着没有分割段，不会停
+      var busy = pin === 'in';
+      if (busy !== lastBusy) { lastBusy = busy; document.documentElement.classList.toggle('ab-busy', busy); }
     }
 
     function request() {
@@ -702,7 +715,51 @@
     }
     director.request = request;
     director.stale = stale;
+    director.repaint = function () { lastBg = ''; request(); };   // 换了日 / 夜：底色按另一套重写一次
     update();
+  }
+
+  // ========== 日 / 夜（页眉右上角，锁的右边）==========
+  // 和主站同一个设置：localStorage 'theme' = {value: 'dark' | 'light', expiry}（主站 saveToLocal，点一次管 2 天），
+  // 进页面时 index.pug 头部那段脚本已经按它（或按时间：18 点到 6 点算夜里）设好 html[data-theme]。
+  // 点按钮：借跳章那层整屏过渡（.ab-flip）——淡成底色、换主题、淡回，不让几千个元素一起做颜色过渡；别的标签页（主站）切了，这边也跟着换
+  function initTheme() {
+    var btn = document.getElementById('ab-theme-btn'), flip = document.getElementById('ab-flip');
+    function label() {
+      if (btn) btn.setAttribute('aria-label', isNight() ? '切换到白天' : '切换到夜间');
+    }
+    // 返回背景换好的 Promise（不用换就是马上兑现的）
+    function apply(t) {
+      if (t !== 'dark' && t !== 'light') return Promise.resolve();
+      var changed = document.documentElement.getAttribute('data-theme') !== t;
+      document.documentElement.setAttribute('data-theme', t);
+      label();
+      if (director.repaint) director.repaint();
+      // 背景咖啡厅跟着换：入夜画夜晚；回到白天在清晨 / 白天 / 黄昏里随机一个（重画在空闲时分几步做，画好之前旧的先留着）
+      if (changed && cafeBg && cafeBg.setTime) return cafeBg.setTime(t === 'dark' ? 'night' : ['dawn', 'day', 'dusk'][Math.floor(Math.random() * 3)]);
+      return Promise.resolve();
+    }
+    function save(t) {
+      try { localStorage.setItem('theme', JSON.stringify({ value: t, expiry: Date.now() + 2 * 864e5 })); } catch (e) { /* 存不了就只管这一页 */ }
+    }
+    label();
+    if (btn) btn.addEventListener('click', function () {
+      var t = isNight() ? 'light' : 'dark';
+      save(t);
+      if (!flip || !animOn) { apply(t); return; }
+      flip.classList.add('is-on');
+      setTimeout(function () {
+        // 幕布等背景按新的时间画好、换上去再掀开（不然掀开后还是旧的背景，过一会儿才突然一换）；最多等 1.5 秒
+        var cap = new Promise(function (r) { setTimeout(r, 1500); });
+        Promise.race([apply(t), cap]).then(function () {
+          requestAnimationFrame(function () { requestAnimationFrame(function () { flip.classList.remove('is-on'); }); });
+        });
+      }, 190);
+    });
+    window.addEventListener('storage', function (e) {
+      if (e.key !== 'theme') return;
+      try { apply(JSON.parse(e.newValue || 'null').value); } catch (err) { /* 别处删了设置：保持现状 */ }
+    });
   }
 
   // ========== 右上角的锁：分割段嵌入图开 / 关 ==========
@@ -1891,7 +1948,7 @@
     }
     function tick() {
       if (!flipped) return;
-      if (!box.classList.contains('ab-off') && !document.hidden && live.length < FANDOM_MAX) show();
+      if (!box.classList.contains('ab-off') && !document.hidden && !splitBusy() && live.length < FANDOM_MAX) show();
       timer = setTimeout(tick, 1600 + Math.random() * 1200);
     }
     function clear() {
@@ -1968,7 +2025,7 @@
     function held() {
       // 键盘焦点才算（鼠标点过的票也会留着焦点，那个不该一直拦着轮播）
       return !!(list.querySelector('.about-ticket-wrap:hover, .about-ticket-wrap:focus-visible, .is-flipped') ||
-        list.classList.contains('ab-off') || document.hidden);
+        list.classList.contains('ab-off') || document.hidden || splitBusy());
     }
     function schedule() { clearTimeout(timer); timer = setTimeout(tick, TICKETS_EVERY); }
     function tick() {
@@ -2306,7 +2363,7 @@
         new IntersectionObserver(function (entries) { seen = entries[0].isIntersecting; }).observe(cell);
       }
       setInterval(function () {
-        if (hover || !seen || document.hidden) return;
+        if (hover || !seen || document.hidden || splitBusy()) return;
         show((k + 1) % slides.length);
       }, 4500);
     });
@@ -3599,6 +3656,7 @@
           beat: function () { return player.beat ? player.beat() : 0; }
         },
         onSoloExit: function () { solo.exit(); },
+        time: isNight() ? 'night' : null,   // 夜间主题固定画夜晚（用户 2026-11-06）；白天照旧每次随机
         manualStart: true
       });
       // 页面加载完、入场也播完再开始画（这之前它藏在 hero 后面，或者页面正忙着加载，画它会和加载、入场抢主线程）。
@@ -3690,9 +3748,12 @@
   // 流萤相片背面一句句浮现的句子、票根轮播和背面的胶片——句子和轮播是脚本在放，看到 .ab-off 就先不放新的 / 不轮）：
   // 滚出屏幕就暂停（加 .ab-off，见 about.css），离屏幕还有一屏远时就恢复——滚到眼前之前早已在动，看不出停过；
   // 暂停停在原来那一帧，恢复后接着走，错开的相位不乱。屏幕外它们照样让浏览器每帧重算样式、重绘整页，很占主线程（2026-10-03 排查）
-  var LOOPS = '.ab-letter-toggle, .ab-afk, .about-term-cursor, .about-special-cup, .about-muse-progress, .about-points, .about-napcat, .about-fandom-feature, .about-tickets';
+  var LOOPS = '.ab-letter-toggle, .ab-afk, .about-term-cursor, .about-special-cup, .about-muse-progress, .about-points, .about-napcat, .about-fandom-feature, .about-tickets' +
+    ', .about-head, .about-special-board, .about-cta, .about-footer-mark';   // 后四个：夜间版的霓虹呼吸灯
 
   function initOffscreenPause() {
+    // 都打上 .ab-loop：分割段钉住期间（html.ab-busy，滚动导演管）about.css 把它们一起停掉，不管在不在屏幕上
+    [].forEach.call(document.querySelectorAll(LOOPS), function (el) { el.classList.add('ab-loop'); });
     if (!('IntersectionObserver' in window)) return;
     var io = new IntersectionObserver(function (entries) {
       entries.forEach(function (e) { e.target.classList.toggle('ab-off', !e.isIntersecting); });
@@ -3713,6 +3774,7 @@
     initCafe();
     initSolo();
     initDirector();
+    initTheme();
     initLock();
     initCopyLinks();
     initRuntime();

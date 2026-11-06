@@ -1,5 +1,6 @@
 // 09-cafe-mount：把咖啡厅挂到 #ab-cafe 上
-// 时间每次打开随机一个（调试：/about/?cafe=dawn|day|dusk|night 固定），整幅都用它。
+// 时间每次打开随机一个（调试：/about/?cafe=dawn|day|dusk|night 固定），整幅都用它；opts.time 指定就用它（about.js：夜间主题固定夜晚），
+// setTime(id) 换一个时间重画（昼夜切换时），画好之前旧的先留着。
 // 像素是 Hero 的一半（Hero 画布高约 300 像素，这里约 540）；分几块画布叠起来：
 //   窗外的天 → 云（另外慢慢往右飘）→ 窗外的小动画 → 房间 + 家具 → 霓虹招牌的亮光（咖啡杯、字各一层，各闪各的，能关）→ 屋里的小动画 → 最前面的盆栽和高脚凳。
 // 鼠标视差：窗外挪得多（隔着窗框看外面在动）；屋里只挪一点——地面和家具在同一块画布上一起挪，前景的盆栽 / 高脚凳只比地面多挪一点点。
@@ -24,9 +25,10 @@
   var NARROW = 768, WIDE = 1.6;   // 窄屏（手机）：整幅按 16:10 的宽度排，右边对齐屏幕
   var SAY = { cat: ['喵', '喵~', '喵？', '呼噜呼噜…'], pompom: ['帕！', '帕~', '帕姆在此！'] };
 
-  function pickTime() {
+  function pickTime(want) {
     var q = /[?&]cafe=([a-z]+)/.exec(location.search);
     if (q && TIMES[q[1]]) return q[1];
+    if (want && TIMES[want]) return want;
     return IDS[Math.floor(Math.random() * IDS.length)];
   }
   function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
@@ -53,12 +55,13 @@
 
   function mount(box, opts) {
     opts = opts || {};
-    var reduce = !!opts.reduceMotion, T = TIMES[pickTime()], music = opts.music || null;
+    var reduce = !!opts.reduceMotion, T = TIMES[pickTime(opts.time)], music = opts.music || null;
     box.dataset.time = T.id;
     var built = null, job = 0, running = false, solo = false, visible = !document.hidden, raf = 0, started = !opts.manualStart;
     var clock = 0, lastNow = 0, lastTick = -1e9, mouse = { x: 0.5, y: 0.5 }, cur = { x: 0, y: 0 };
     var ev = { tail: -1e9, jar: -1e9, scope: -1e9, burst: -1e9, neonOff: false, neonT: -1e9 };   // 纯享时点东西的时刻
     var idle = window.requestIdleCallback || function (fn) { return setTimeout(fn, 60); };
+    var swapped = [];   // 等着「这一幅画好、换上去了」的（setTime 返回的 Promise）
     // 画布都插在这个占位前面（后面是点东西时弹出来的字 / 音符）
     var anchor = document.createComment('cafe-layers');
     box.appendChild(anchor);
@@ -159,6 +162,7 @@
       place();
       if (mirrors.length) refreshMirrors();
       wake();
+      swapped.splice(0).forEach(function (res) { res(); });
     }
 
     function drawFx(t) {
@@ -319,7 +323,21 @@
       idle(build, { timeout: 1500 });
     }
 
-    return { mirror: mirror, setRunning: setRunning, setSolo: setSolo, start: start, time: T.id };
+    // 换时间：按新的时间整幅重画（还没开画就只记下，开画时按它画）；调试参数 ?cafe= 指定了就不换。
+    // 返回一个 Promise：新画布换上去了才兑现（about.js 等它再掀开切换昼夜的幕布）；不用重画的直接兑现
+    function setTime(id) {
+      id = pickTime(id);
+      if (id === T.id) return Promise.resolve();
+      T = TIMES[id];
+      box.dataset.time = T.id;
+      api.time = T.id;
+      if (!started) return Promise.resolve();
+      build();
+      return new Promise(function (res) { swapped.push(res); });
+    }
+
+    var api = { mirror: mirror, setRunning: setRunning, setSolo: setSolo, start: start, setTime: setTime, time: T.id };
+    return api;
   }
 
   window.AboutCafe = { mount: mount };

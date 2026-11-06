@@ -822,7 +822,8 @@ body.ab-bar-on .about-nav-home:focus-visible { color: var(--ab-accent-deep); bac
 /* 纯享背景按钮（咖啡杯右边）：一个小画框（山 + 太阳），样式和主页按钮一样；
    锁（纯享右边）：锁着 / 解开两种锁梁，样式一样。两者在 Hero 上都不显示（和咖啡杯一样，页眉出现后才浮现） */
 .about-nav-solo,
-.about-nav-lock {
+.about-nav-lock,
+.about-nav-theme {
   display: grid;
   place-items: center;
   width: 30px;
@@ -841,29 +842,43 @@ body.ab-bar-on .about-nav-home:focus-visible { color: var(--ab-accent-deep); bac
 .about-nav-solo:hover,
 .about-nav-solo:focus-visible,
 .about-nav-lock:hover,
-.about-nav-lock:focus-visible { color: #ffc27a; transform: translateY(-1px); outline: none; }
+.about-nav-lock:focus-visible,
+.about-nav-theme:hover,
+.about-nav-theme:focus-visible { color: #ffc27a; transform: translateY(-1px); outline: none; }
 
 .about-nav-solo:active,
-.about-nav-lock:active { transform: scale(0.94); }
+.about-nav-lock:active,
+.about-nav-theme:active { transform: scale(0.94); }
 
 body.ab-bar-on .about-nav-solo,
-body.ab-bar-on .about-nav-lock { color: var(--ab-text-dim); filter: none; }
+body.ab-bar-on .about-nav-lock,
+body.ab-bar-on .about-nav-theme { color: var(--ab-text-dim); filter: none; }
 
 body.ab-bar-on .about-nav-solo:hover,
 body.ab-bar-on .about-nav-solo:focus-visible,
 body.ab-bar-on .about-nav-lock:hover,
-body.ab-bar-on .about-nav-lock:focus-visible { color: var(--ab-accent-deep); background: rgba(240, 161, 78, 0.12); }
+body.ab-bar-on .about-nav-lock:focus-visible,
+body.ab-bar-on .about-nav-theme:hover,
+body.ab-bar-on .about-nav-theme:focus-visible { color: var(--ab-accent-deep); background: rgba(240, 161, 78, 0.12); }
 
 .about-nav-solo[hidden] { display: none; }
 
 body:not(.ab-bar-on) .about-nav-solo,
-body:not(.ab-bar-on) .about-nav-lock { opacity: 0; visibility: hidden; }
+body:not(.ab-bar-on) .about-nav-lock,
+body:not(.ab-bar-on) .about-nav-theme { opacity: 0; visibility: hidden; }
 
 /* 锁梁：锁着是闭合的弧，解开时换成右脚抬起来的那条 */
 .about-nav-lock .ab-lock-open,
 .about-nav-lock.is-unlocked .ab-lock-shut { opacity: 0; }
 .about-nav-lock.is-unlocked .ab-lock-open { opacity: 1; }
 .about-nav-lock path { transition: opacity 0.2s ease; }
+
+/* 日 / 月（锁右边，about.js initTheme）：白天显示月亮 = 点了入夜，夜间显示太阳 = 点了天亮 */
+.about-nav-theme .ab-theme-sun,
+[data-theme='dark'] .about-nav-theme .ab-theme-moon { opacity: 0; }
+[data-theme='dark'] .about-nav-theme .ab-theme-sun { opacity: 1; }
+.about-nav-theme .ab-theme-moon,
+.about-nav-theme .ab-theme-sun { transition: opacity 0.25s ease; }
 
 .about-nav-home-icon {
   width: 26px;
@@ -5648,6 +5663,15 @@ html.ab-anim .about-split-media.is-band img {
 .ab-off,
 .ab-off * { animation-play-state: paused !important; }
 
+/* 分割段钉住期间（解锁后分割线伸出、幕布拉开 / 合上那一段，about.js 滚动导演给 html 加 .ab-busy）：
+   页面上所有登记过的循环动画（about.js LOOPS，都带 .ab-loop）一起停下，伪元素上的也停，把性能让给展开动画 */
+html.ab-busy .ab-loop,
+html.ab-busy .ab-loop *,
+html.ab-busy .ab-loop::before,
+html.ab-busy .ab-loop::after,
+html.ab-busy .ab-loop *::before,
+html.ab-busy .ab-loop *::after { animation-play-state: paused !important; }
+
 /* ========== 动画初始态（仅在 JS 动画可用时生效） ========== */
 /* 浮现作用于内层（外层的位移/透明度归分割段时间轴），由 JS 按滚动触发 */
 html.ab-anim .about-block-inner {
@@ -5784,3 +5808,259 @@ html.ab-fallback .about-panel { display: none; }
   body.ab-bar-on:not(.ab-chrome-away) .ab-mark { transition: transform 0.25s ease, background 0.25s ease, color 0.25s ease; }
 }
 */
+
+
+/* ========== 夜间版（html[data-theme='dark']：index.pug 头部脚本按主站规则设好，about.js initTheme 管页眉的日 / 月按钮）==========
+   全暗：底色是一杯浓缩，纸质道具也换成深色的纸（纸纹照旧），字是暖奶油色，强调色提亮一档；
+   背景咖啡厅不动，只是上面那层纱换成夜色（--ab-bg 由 about.js 的 BG_STOPS_DARK 按滚动写）。
+   下面先换变量，再逐个改写死了浅色的组件；霓虹呼吸灯只在夜里亮，在本段最后 */
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --ab-bg: #16110d;
+  --ab-bg-rgb: 22, 17, 13;
+  --ab-text: #ecdfcc;
+  --ab-text-dim: #c2b3a0;
+  --ab-accent: #ffae57;
+  --ab-accent-deep: #f7a24d;
+  --ab-accent-text: #ffbe73;
+  --ab-accent-ink: #2a1703;
+  --ab-card: #302620;
+  --ab-card-border: rgba(255, 220, 180, 0.1);
+  --ab-line: rgba(255, 220, 180, 0.14);
+  --ab-shadow: 0 20px 40px -24px rgba(0, 0, 0, 0.75);
+  --ab-paper: #3a2f26;
+  --ab-ink: #ecdfcc;
+  --ab-ink-dim: #a3937f;
+  --ab-glow-a: rgba(255, 196, 130, 0.07);
+  --ab-glow-b: rgba(255, 140, 70, 0.08);
+  --ab-cafe-veil: 0.6;   /* 0.72 太厚，背景发闷（「灰蒙蒙」），薄一点让夜里的咖啡厅透出来 */
+}
+
+/* --- 卡片和纸质道具：夜里就是白天那一版、套一层夜间滤镜（用户 2026-11-06：「把白天版本的改暗一些」）。
+   做法：这些卡片所在的容器里把配色变量换回白天的，再给卡片整体套 --ab-night-filter——纸、字、照片、贴纸、签箱的木头……一起变，层次和白天一样；
+   不用整块盖遮罩，也不一个个改颜色。怎么暗只看 --ab-night-filter 这一个变量。
+   只降亮度会整体发灰（纸被压成中灰、字和纸的反差跟着缩小，强调色发闷——用户 2026-11-06：「灰蒙蒙的」），
+   所以亮度只降到 0.82，再把对比度、饱和度拉回来：纸是暗一档的米色，字更黑、橙色和照片不发闷
+   例外：有霓虹的两张卡（今日特调菜单卡里的小黑板、票夹里的「去留言板」）不整体加滤镜——纸底挪到 ::before 上单独加滤镜，霓虹以外的子元素各自加；
+   3D 翻面的（流萤卡、手账、票根）不给外层加滤镜（会把翻面压平），只给翻的那一面；手账两边露出的纸页厚度也挪到 ::before 上。
+   图片不变暗（用户 2026-11-06：「图片，比如流萤那两张就不用变暗」）、第二块的命令台用白天原样（「也不要变暗」）：见下面「图片照原样」 --- */
+:root[data-theme='dark'] { --ab-night-filter: brightness(0.82) contrast(1.28) saturate(1.25); }
+
+[data-theme='dark'] :is(.about-profile-side, .ab-letter, .about-heatmap-panel, .about-bento, .about-ledger, .about-draft, .about-special-row, .about-posts,
+  .about-desk, .about-fandom-feature, .about-fandom-side, .mj-pages, .mj-closed) {
+  --ab-text: #2f2620;
+  --ab-text-dim: #7a6a5a;
+  --ab-accent: #f0a14e;
+  --ab-accent-deep: #b86814;
+  --ab-accent-text: #9a520c;
+  --ab-accent-ink: #2a1703;
+  --ab-card: #fcf8f1;
+  --ab-card-border: rgba(110, 80, 50, 0.15);
+  --ab-line: rgba(110, 80, 50, 0.2);
+  --ab-shadow: 0 20px 40px -24px rgba(0, 0, 0, 0.7);
+  --ab-paper: #fffbf3;
+  --ab-ink: #2b2521;
+  --ab-ink-dim: #756a60;
+}
+
+/* 字色是按算好的颜色继承的（页面根上已经是夜间的浅色），换了变量也不会跟着变：在这些容器上重新起一次头，里面没写字色的都用白天的深色字。
+   零优先级（:where），自己写了字色的元素照旧 */
+:where([data-theme='dark']) :where(.about-profile-side, .ab-letter, .about-heatmap-panel, .about-bento, .about-ledger, .about-draft, .about-special-row, .about-posts,
+  .about-desk, .about-fandom-feature, .about-fandom-side, .mj-pages, .mj-closed) { color: var(--ab-text); }
+
+[data-theme='dark'] :is(.ab-letter, .about-heatmap-panel, .about-bento-cell:not(.about-bento-img, .about-bento-code), .about-post:not(.about-post-feature),
+  .mj-page:not(:has(img)), .mj-closed) { filter: var(--ab-night-filter); }
+[data-theme='dark'] .about-fandom-feature > .ab-tape { filter: var(--ab-night-filter); }
+
+/* 签箱（整张，连签纸）和集点卡兑换出来的签夹：白天原样，不加滤镜（用户 2026-11-06：「直接用白天版」）。
+   右边那一栏不整栏加，头脑风暴、集点卡、店猫各自加——签夹在这一栏里面，整栏加了它也跟着暗；
+   集点卡本来就有投影滤镜，写在一起。（注意：加了滤镜的元素自成一层，签箱的签纸要压在头脑风暴上面，所以签箱这边不能加） */
+[data-theme='dark'] .about-desk-side > :not(.about-desk-extra),
+[data-theme='dark'] .about-desk-extra > :not(.about-points, .about-secrets) { filter: var(--ab-night-filter); }
+[data-theme='dark'] .about-points { filter: var(--ab-night-filter) var(--ab-night-drop); }
+
+/* --- 图片照原样：带照片的卡片不整张加滤镜（加了里面的图就跟着暗，子元素没法单独「不暗」）。
+   改成：纸底挪到 ::before 上加滤镜，照片以外的子元素各自加，照片那一支不加——
+   ID 卡（横幅、头像）、照片格、精选文章的封面、流萤卡正面、手账有照片的那页（翻页时复制出来的那一面也一样）、票根背面的胶片（背面本来就是深色胶片，整面不加，只给正面的纸票加）。
+   命令台（.about-bento-code）整格不加，就是白天那一版 --- */
+[data-theme='dark'] :is(.about-idcard, .about-post-feature, .about-fandom-front, .mj-page:has(img)) { position: relative; background: none; isolation: isolate; }
+[data-theme='dark'] :is(.about-idcard, .about-post-feature, .about-fandom-front, .mj-page:has(img))::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  box-shadow: inherit;
+  filter: var(--ab-night-filter);
+  pointer-events: none;
+}
+/* ID 卡外层的投影不要跟着复制到 ::before 上（会叠成两层），只留白天那道顶上的高光 */
+[data-theme='dark'] .about-idcard::before {
+  background: var(--ab-grain), linear-gradient(180deg, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0) 60%), var(--ab-card);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+[data-theme='dark'] :is(.about-post-feature, .about-fandom-front)::before { background: var(--ab-grain-paper), var(--ab-paper); box-shadow: none; }
+[data-theme='dark'] .mj-left:has(img)::before { background: radial-gradient(circle, rgba(110, 90, 70, 0.28) 0 0.8px, transparent 1.2px) 0 0 / 18px 18px, var(--ab-grain-paper), #fbf6ea; }
+
+[data-theme='dark'] .about-profile-side > :not(.about-idcard),
+[data-theme='dark'] .about-idcard > :not(.about-idcard-banner, .about-avatar),
+[data-theme='dark'] .about-idcard-banner > :not(img),
+[data-theme='dark'] .about-bento-img > :not(.about-bento-slides, .about-bento-scrim),
+[data-theme='dark'] .about-post-feature > :not(.about-post-photo),
+[data-theme='dark'] .about-post-photo > :not(img),
+[data-theme='dark'] .about-fandom-front > :not(.about-fandom-photo),
+[data-theme='dark'] .mj-page:has(img) > :not(.mj-photo),
+[data-theme='dark'] .mj-photo > :not(img),
+[data-theme='dark'] .about-tickets .about-ticket { filter: var(--ab-night-filter); }
+
+/* 本来就有投影滤镜的三张（锯齿边 / 折角，形状不规则，投影只能用 drop-shadow）：夜间滤镜和夜里的投影写在一起 */
+[data-theme='dark'] :is(.about-ledger, .about-draft, .about-fresh) { filter: var(--ab-night-filter) var(--ab-night-drop); }
+
+/* 今日特调菜单卡 / 票夹：纸底挪到 ::before 上加滤镜（isolation 保证 z-index:-1 落在卡片自己里面），霓虹以外的子元素各自加 */
+[data-theme='dark'] :is(.about-special, .about-fandom-side) { background: none; isolation: isolate; }
+[data-theme='dark'] :is(.about-special, .about-fandom-side)::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  filter: var(--ab-night-filter);
+  pointer-events: none;
+}
+[data-theme='dark'] .about-special::before { background: var(--ab-grain-paper), #fbf4e6; }
+[data-theme='dark'] .about-fandom-side::before {
+  background:
+    var(--ab-grain-paper),
+    radial-gradient(120% 80% at 18% 8%, rgba(255, 242, 214, 0.4), transparent 60%),
+    linear-gradient(172deg, #ddc59d 0%, #d2b687 100%);
+}
+[data-theme='dark'] .about-special > :not(.about-special-board),
+[data-theme='dark'] .about-fandom-side > :not(.about-cta, .about-tickets) { filter: var(--ab-night-filter); }
+
+/* 手账：两边露出来的纸页厚度（.mj-pages 管翻页的透视，不能给它加滤镜）——挪到 ::before 上加滤镜 */
+[data-theme='dark'] .mj-pages { box-shadow: none; }
+[data-theme='dark'] .mj-pages::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  box-shadow: 3px 1px 0 #efe5d2, 6px 2px 0 #e0d3bb, -3px 1px 0 #efe5d2, -6px 2px 0 #e0d3bb;
+  filter: var(--ab-night-filter);
+  pointer-events: none;
+}
+
+/* --- 夜里的投影、暖光圈（用户 2026-11-06：先做投影，再试暖光圈；试过的「灯下的纸」——纸面顶上一道暖色——用户看了说关掉，已删）。
+   投影：白天写死的棕色投影（rgba(90, 58, 26, …) 之类）在浅底上是影子，落到接近黑的夜景上反而比底色亮，成了一圈淡棕色的光晕、卡片像平贴着——
+         直接落在页面上的卡片、纸，夜里统一换成更深更散的黑色投影 --ab-night-lift（不规则形状的用 drop-shadow 版 --ab-night-drop）。
+   暖光圈 --ab-night-halo：白天亮度的那几样（命令台、签箱、照片格、弹出来的签纸 / 签夹）外面一圈很淡的暖光，像被吊灯照着；
+         卡片里的照片（流萤、精选封面、手账）往纸上洇一点暖光 --ab-night-spill。
+   暖光圈 / 洇光不想要了：把对应变量改成 0 0 transparent 就行，投影不受影响 --- */
+:root[data-theme='dark'] {
+  --ab-night-lift: 0 2px 4px rgba(0, 0, 0, 0.4), 0 26px 46px -16px rgba(0, 0, 0, 0.78);
+  --ab-night-drop: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.45)) drop-shadow(0 18px 18px rgba(0, 0, 0, 0.6));
+  --ab-night-halo: 0 0 0 1px rgba(255, 214, 160, 0.2), 0 0 34px 4px rgba(255, 176, 96, 0.3), 0 0 90px 12px rgba(255, 150, 70, 0.16);
+  --ab-night-spill: 0 0 26px 2px rgba(255, 196, 128, 0.32);
+}
+
+/* 纸面就在自己身上的（原来顶上那道白色高光留着） */
+[data-theme='dark'] :is(.ab-letter-paper, .about-heatmap-panel, .about-bento-cell:not(.about-bento-img, .about-bento-code)) {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8), var(--ab-night-lift);
+}
+[data-theme='dark'] :is(.about-post:not(.about-post-feature), .about-muse-sheet) { box-shadow: var(--ab-night-lift); }
+/* 文章卡悬停时抬起来：投影跟着变大变远（白天那条是棕色的） */
+[data-theme='dark'] .about-post:is(:hover, :focus-visible) { box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4), 0 38px 58px -18px rgba(0, 0, 0, 0.85); }
+[data-theme='dark'] .ab-letter-env { box-shadow: var(--ab-night-lift); }
+[data-theme='dark'] .mj-cover { box-shadow: var(--ab-night-lift), inset 0 0 0 1px rgba(255, 230, 200, 0.08), inset 0 0 0 5px rgba(0, 0, 0, 0.12); }
+
+/* 纸面挪到 ::before 上的：投影留在卡片自己身上 */
+[data-theme='dark'] :is(.about-idcard, .about-post-feature, .about-fandom-front, .about-fandom-back, .about-special, .about-fandom-side) { box-shadow: var(--ab-night-lift); }
+
+/* 白天亮度的那几样：暖光圈 + 投影 */
+[data-theme='dark'] .about-bento-code { box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8), var(--ab-night-halo), var(--ab-night-lift); }
+[data-theme='dark'] :is(.about-bento-img, .about-omikuji, .about-secrets-cover) { box-shadow: var(--ab-night-halo), var(--ab-night-lift); }
+[data-theme='dark'] .about-omikuji-slip { box-shadow: 0 2px 0 rgba(110, 80, 50, 0.1), var(--ab-night-halo), var(--ab-night-lift); }
+
+/* 卡片里的照片：往纸上洇一点暖光（原来的小投影留着） */
+[data-theme='dark'] .about-fandom-photo { box-shadow: var(--ab-night-spill); }
+[data-theme='dark'] .about-post-photo { box-shadow: 0 3px 8px rgba(60, 38, 18, 0.25), var(--ab-night-spill); }
+[data-theme='dark'] .mj-photo { box-shadow: 0 2px 3px rgba(40, 24, 10, 0.2), 0 10px 16px -8px rgba(40, 24, 10, 0.4), var(--ab-night-spill); }
+
+/* --- 顶上「继续上滑 · 返回舰桥」 --- */
+[data-theme='dark'] .ab-pull { background: rgba(36, 28, 22, 0.94); box-shadow: 0 8px 20px -10px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 220, 180, 0.1); }
+
+/* --- 背景咖啡厅里点道具冒出来的小气泡（不在卡片里）：深色 --- */
+[data-theme='dark'] .ab-cafe-pop { background: #3a2f26; color: #ecdcc4; box-shadow: 0 3px 10px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 220, 180, 0.12); }
+
+/* --- 页眉：当前章节的书签和阅读进度线带一点不动的微光 --- */
+[data-theme='dark'] .ab-mark { box-shadow: 0 6px 10px -6px rgba(0, 0, 0, 0.6); }
+[data-theme='dark'] .ab-mark.is-on { box-shadow: 0 0 10px rgba(255, 174, 87, 0.5), 0 0 22px rgba(255, 140, 50, 0.25); }
+[data-theme='dark'] .ab-bar-progress { box-shadow: 0 0 6px rgba(255, 174, 87, 0.8), 0 0 14px rgba(255, 140, 50, 0.4); }
+
+/* ========== 霓虹呼吸灯（只在夜里亮）==========
+   琥珀：每章大标题底下一根灯管（替掉白天的荧光笔划线）、「去留言板」按钮的光晕；青：标题上方小字前的星芒（和背景招牌的 TECH 同色）；
+   粉：「今日特调」小黑板上的字、页脚的 TechCafe 店名（白天是淡水印，入夜成了霓虹招牌）。
+   光晕都是画好不动的，呼吸只动透明度（合成层上做，不重绘）；这几处也在 about.js 的 LOOPS 里，滚出屏幕就暂停 */
+@keyframes ab-neon-breathe {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 1; }
+}
+
+[data-theme='dark'] .about-heading-mark {
+  position: relative;
+  background: none;
+  text-shadow: 0 0 18px rgba(255, 170, 90, 0.16);
+}
+
+[data-theme='dark'] .about-heading-mark::after {
+  content: '';
+  position: absolute;
+  left: 0.12em;
+  right: 0.12em;
+  bottom: 0.06em;
+  height: 3px;
+  border-radius: 3px;
+  background: #ffe0b8;
+  box-shadow: 0 0 4px #ffb35c, 0 0 10px #ff9a3c, 0 0 22px rgba(255, 140, 50, 0.65), 0 0 40px rgba(255, 120, 40, 0.3);
+  animation: ab-neon-breathe 3.6s ease-in-out infinite;
+  will-change: opacity;
+  pointer-events: none;
+}
+
+[data-theme='dark'] .about-eyebrow .ab-icon {
+  color: #7ff3ff;
+  filter: drop-shadow(0 0 3px #3fe6ff) drop-shadow(0 0 8px rgba(40, 210, 255, 0.6));
+  animation: ab-neon-breathe 3.6s ease-in-out infinite;
+  will-change: opacity;
+}
+
+[data-theme='dark'] .about-special-board-zh {
+  color: #ffe1ef;
+  text-shadow: 0 0 2px #fff, 0 0 6px #ff6fae, 0 0 14px #ff2e8a, 0 0 28px rgba(255, 46, 138, 0.55);
+  animation: ab-neon-breathe 4.2s ease-in-out infinite;
+  will-change: opacity;
+}
+
+[data-theme='dark'] .about-cta { position: relative; box-shadow: 4px 4px 0 -1px var(--ab-bg), 4px 4px 0 0 #b8650f; }
+[data-theme='dark'] .about-cta::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: 0 0 12px rgba(255, 174, 87, 0.75), 0 0 30px rgba(255, 140, 50, 0.45);
+  animation: ab-neon-breathe 3s ease-in-out infinite;
+  will-change: opacity;
+  pointer-events: none;
+}
+
+[data-theme='dark'] .about-footer-mark {
+  color: rgba(255, 122, 184, 0.06);
+  -webkit-text-stroke: 1.5px rgba(255, 196, 224, 0.92);
+  text-shadow: 0 0 6px rgba(255, 95, 162, 0.85), 0 0 18px rgba(255, 46, 138, 0.5), 0 0 42px rgba(255, 46, 138, 0.3);
+  animation: ab-neon-breathe 4.8s ease-in-out infinite;
+  will-change: opacity;
+}
+
+/* 屏幕外暂停（.ab-off）也管到伪元素上的灯管 / 光晕 */
+[data-theme='dark'] .ab-off::after,
+[data-theme='dark'] .ab-off *::after { animation-play-state: paused !important; }
