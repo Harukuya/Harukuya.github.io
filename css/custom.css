@@ -1006,3 +1006,13 @@ a.article-sort-item-img {
   0% { background-position: 100% 0; }
   32%, 100% { background-position: 0 0; }
 }
+
+/* 侧栏「标签」卡片压矮一点：标签行高从全局的 2 倍收到 1.5 倍（字号、标签数都不变） */
+#aside-content .card-tag-cloud a { line-height: 1.5; }
+
+/* 侧栏「网站资讯」卡片底部的近 30 天访问量曲线（/js/visits-chart.js 画）：和上面几行一样左右缩进 10px，先占好高度，数据到了不跳 */
+#aside-content .tc-visits { margin: 8px 10px 0; padding-top: 8px; border-top: 1px dashed rgba(127, 127, 127, 0.3); }
+#aside-content .tc-visits-head { display: flex; justify-content: space-between; font-size: 0.85em; line-height: 1.6; opacity: 0.75; }
+#aside-content .tc-visits-plot { height: 64px; margin-top: 2px; }
+#aside-content .tc-visits-plot svg { display: block; overflow: visible; }
+#aside-content .tc-visits.is-empty .tc-visits-plot { height: auto; padding: 4px 0 2px; font-size: 0.8em; text-align: center; opacity: 0.6; }
