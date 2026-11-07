@@ -1,0 +1,556 @@
+/* About 页 · 手机版（html.ab-m）
+   2026-11-07 起，设计见 docs/个人页设计/13-手机版方案（草案）.md。
+   只在手机版加载（index.pug 头部判定后写进来，排在 about.css 后面）；规则一律挂在 html.ab-m 下，电脑版不受影响。
+   单栏的基础排法沿用 about.css 里窄屏那段媒体查询（竖屏、横着拿的手机都会命中）；这里放手机版自己的东西。
+   手机版不走分割段钉住那一套（about.js 里 animOn 为假、走降级模式），分割段的静态图带在这里排成「章节扉页」 */
+
+/* ---------- 顶栏：去掉挂在下面的书签、咖啡杯、锁、纯享、迷你时钟；点章节名展开章节目录卡（about-m.js） ---------- */
+html.ab-m .ab-marks,
+html.ab-m .ab-cup,
+html.ab-m .about-nav-lock,
+html.ab-m .about-nav-solo,
+html.ab-m .about-nav-miniclock { display: none !important; }
+
+html.ab-m .ab-bar-inner { padding-right: 84px; }
+
+/* 章节名后面一个小三角：提示点开有目录 */
+html.ab-m .ab-bar-chapter { overflow: visible; }
+html.ab-m .ab-bar-chapter-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+html.ab-m .ab-bar-chapter::after {
+  content: '';
+  flex: none;
+  align-self: center;
+  width: 0;
+  height: 0;
+  margin-left: 2px;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 5px solid currentColor;
+  opacity: 0.7;
+  transition: rotate 0.25s ease;
+}
+html.ab-m.abm-sheet-open .ab-bar-chapter::after { rotate: 180deg; }
+
+/* ---------- 章节目录卡（about-m.js 生成）：从页眉下面滑下来的一张横线纸，列出五章，点哪章跳哪章 ---------- */
+.abm-sheet {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  visibility: hidden;
+  pointer-events: none;
+}
+.abm-sheet.is-open { visibility: visible; pointer-events: auto; }
+
+/* 卡片外面：不压暗（用户不喜欢暗色遮罩），只接住点击 */
+.abm-sheet-catch { position: absolute; inset: 0; }
+
+.abm-sheet-card {
+  position: absolute;
+  top: calc(var(--ab-bar-h, 54px) + 6px);
+  left: 14px;
+  right: 14px;
+  padding: 18px 18px 10px 44px;
+  color: #2b2521;
+  background:
+    linear-gradient(90deg, transparent 30px, rgba(214, 104, 84, 0.4) 30px, rgba(214, 104, 84, 0.4) 31px, transparent 31px),
+    var(--ab-grain-paper),
+    #fffbf3;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.18), 0 24px 40px -18px rgba(0, 0, 0, 0.55);
+  opacity: 0;
+  transform: translateY(-12px) rotate(-0.6deg);
+  transform-origin: 50% 0;
+  transition: opacity 0.2s ease, transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.abm-sheet.is-open .abm-sheet-card { opacity: 1; transform: translateY(0) rotate(-0.6deg); }
+
+/* 顶上一截纸胶带 */
+.abm-sheet-card::before {
+  content: '';
+  position: absolute;
+  top: -11px;
+  left: 50%;
+  width: 92px;
+  height: 22px;
+  translate: -50% 0;
+  rotate: -2deg;
+  background: rgba(240, 196, 120, 0.72);
+  box-shadow: 0 1px 2px rgba(90, 58, 26, 0.18);
+}
+
+.abm-sheet-kicker {
+  margin: 0 0 6px;
+  font-family: var(--ab-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.18em;
+  color: #9a520c;
+}
+
+.abm-sheet-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.abm-sheet-item {
+  display: grid;
+  grid-template-columns: 2.2em minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 8px;
+  width: 100%;
+  padding: 11px 2px;
+  border: 0;
+  border-bottom: 1px solid rgba(96, 136, 176, 0.22);
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  -webkit-appearance: none;
+  appearance: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.abm-sheet-list li:last-child .abm-sheet-item { border-bottom: 0; }
+
+.abm-sheet-no {
+  font-family: var(--ab-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  color: #9a520c;
+}
+.abm-sheet-name {
+  font-family: var(--ab-hand);
+  font-size: 1.12rem;
+  font-weight: 700;
+}
+.abm-sheet-en {
+  font-family: var(--ab-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  color: #8a7a6a;
+}
+/* 当前在读的那一章：名字下面一道荧光笔 */
+.abm-sheet-item.is-on .abm-sheet-name {
+  background: linear-gradient(transparent 58%, rgba(240, 161, 78, 0.42) 58%, rgba(240, 161, 78, 0.42) 92%, transparent 92%);
+}
+
+/* ---------- 章节扉页：分割段在手机上不钉住，是一张贴在手帐里的竖幅相片，那句话写在相纸下沿（进入视野时打出来，about.js initStaticSplits） ---------- */
+html.ab-m .about-split { padding: 3vh 26px; }
+
+html.ab-m .about-split-media {
+  height: auto;
+  padding: 10px 10px 0;
+  background: var(--ab-grain-paper), #fffbf3;
+  border-radius: 3px;
+  box-shadow: 0 2px 4px rgba(60, 38, 18, 0.16), 0 18px 30px -16px rgba(60, 38, 18, 0.5);
+  transform: rotate(-0.8deg);
+}
+html.ab-m #split-2 .about-split-media,
+html.ab-m #split-4 .about-split-media { transform: rotate(0.7deg); }
+
+/* 顶上一截纸胶带 */
+html.ab-m .about-split-media::before {
+  content: '';
+  position: absolute;
+  z-index: 2;
+  top: -11px;
+  left: 50%;
+  width: 96px;
+  height: 24px;
+  translate: -50% 0;
+  rotate: -3deg;
+  background: rgba(240, 196, 120, 0.7);
+  box-shadow: 0 1px 2px rgba(90, 58, 26, 0.2);
+}
+
+/* 竖幅 4:5，取景各自挑（图本身不裁切，只是 object-fit 露出哪一段）：第一张拥抱的两人、第二张窗前的两个小人、第三张流萤的脸 */
+html.ab-m .about-split-media img {
+  height: auto;
+  aspect-ratio: 4 / 5;
+  object-position: 50% 50% !important;
+}
+html.ab-m #split-1 .about-split-media img { object-position: 21% 50% !important; }
+html.ab-m #split-2 .about-split-media img { object-position: 43% 50% !important; }
+html.ab-m #split-3 .about-split-media img { object-position: 59% 50% !important; }
+
+/* 照片上不压暗（相纸留白写字，不用遮罩） */
+html.ab-m .about-split-media-shade { display: none; }
+
+/* 字写在相纸下沿：深色手写字，不要压在图上的那层阴影 */
+html.ab-m .about-split-text,
+html.ab-m .about-split-text.is-left {
+  position: static;
+  left: auto;
+  top: auto;
+  width: auto;
+  transform: none;
+  padding: 14px 6px 18px;
+  text-align: center;
+  color: #2b2521;
+}
+html.ab-m .about-split-text .about-typewriter-lines,
+html.ab-m .about-split-text.is-left .about-typewriter-lines {
+  font-size: 1.12rem;
+  line-height: 1.75;
+  text-shadow: none;
+}
+html.ab-m .about-split-text .about-typewriter-source {
+  margin-top: 6px;
+  font-size: 0.78rem;
+  color: #9a520c;
+  text-shadow: none;
+}
+html.ab-m .about-split-text .ti-cursor { color: #9a520c; }
+
+/* ---------- 自我介绍信：第一次进入视野时信纸从信封口升起来（about.js），升起来之前先藏在信封里 ----------
+   电脑版这两条写在 html.ab-anim 下；手机版不走动画模式，照样要 */
+html.ab-m .ab-letter:not(.is-out) .ab-letter-paper { clip-path: inset(0 0 100% 0) !important; }
+html.ab-m .ab-letter:not(.is-signed) .ab-letter-motto span { clip-path: inset(-0.5em 100% -0.5em -0.5em); }
+
+/* ---------- 进入视野时浮现（about-m.js 给块里的各件东西加 abm-rv，看到了加 is-in）：只动透明度和位移，在合成层上做 ---------- */
+html.ab-m .abm-rv {
+  opacity: 0;
+  translate: 0 22px;
+  transition: opacity 0.6s ease, translate 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+/* 浮现完是 none 而不是 0 0：translate 不是 none 就会自成一层，签纸、签夹这类弹出物可能被别的块盖住 */
+html.ab-m .abm-rv.is-in { opacity: 1; translate: none; }
+
+/* ---------- 背景咖啡厅：随章节横着挪到店里的另一段（about-m.js initCafePan 写 --abm-pan）----------
+   用 translate 属性（不碰 transform：电脑版的鼠标视差写在 transform 上）；新画好换上的画布直接落在当前位置，不会从 0 滑过来 */
+html.ab-m .ab-cafe-layer {
+  translate: var(--abm-pan, 0px) 0;
+  transition: translate 1.4s cubic-bezier(0.45, 0.05, 0.3, 1);
+}
+
+/* ---------- 第一部分 · 工牌：正反两面（about-m.js initIdFlip 把内容分进 .abm-id-front / .abm-id-back），点一下翻面 ----------
+   纸面、虚线内框从 #idcard 挪到两面上；#idcard 只剩外层（歪着、挂绳、长按挂式都还在它身上）。
+   透视写进 transform（和票根一样）：外层有 transform，3D 会被压平到外层那一面里，翻面本身照样是 3D */
+html.ab-m .about-idcard {
+  padding: 0;
+  background: none;
+  border: 0;
+  box-shadow: var(--ab-shadow);
+}
+html.ab-m .about-idcard::after { display: none; }
+
+html.ab-m .abm-id-flip {
+  display: grid;
+  transform: perspective(1400px) rotateY(0deg);
+  transform-style: preserve-3d;
+  transition: transform 0.6s cubic-bezier(0.45, 0.05, 0.3, 1);
+}
+html.ab-m .about-idcard.abm-flipped .abm-id-flip { transform: perspective(1400px) rotateY(180deg); }
+
+html.ab-m .abm-id-face {
+  grid-area: 1 / 1;
+  position: relative;
+  padding: 0 24px 16px;
+  background: var(--ab-grain), linear-gradient(180deg, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0) 60%), var(--ab-card);
+  border: 1px solid var(--ab-card-border);
+  border-radius: var(--ab-radius);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+html.ab-m .abm-id-face::after {
+  content: '';
+  position: absolute;
+  inset: 7px;
+  border: 1px dashed var(--ab-line);
+  border-radius: calc(var(--ab-radius) - 6px);
+  pointer-events: none;
+}
+html.ab-m .abm-id-back {
+  display: flex;
+  flex-direction: column;
+  padding-top: 26px;
+  transform: rotateY(180deg);
+}
+html.ab-m .abm-id-back .abm-id-hint { margin-top: auto; }
+html.ab-m .abm-id-front .about-idcard-barcode { margin-top: 14px; }
+
+/* 背面的抬头：STAFF FILE + 名字 */
+html.ab-m .abm-id-backhead {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px dashed var(--ab-line);
+}
+html.ab-m .abm-id-backkicker {
+  font-family: var(--ab-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.2em;
+  color: var(--ab-accent-text);
+}
+html.ab-m .abm-id-backname {
+  font-family: var(--ab-hand);
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--ab-text);
+}
+
+/* 印在卡角的一行小字：提示能翻面（不是悬停提示框） */
+html.ab-m .abm-id-hint {
+  display: block;
+  margin-top: 10px;
+  text-align: right;
+  font-family: var(--ab-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  color: var(--ab-text-dim);
+}
+
+/* ---------- 第一部分 · 信：阅读抽屉（about-m.js initLetterReader）——信纸从底部滑上来铺满屏幕，能在里面滚 ---------- */
+.abm-reader {
+  position: fixed;
+  inset: 0;
+  z-index: 45;
+  visibility: hidden;
+  pointer-events: none;
+  transition: visibility 0s linear 0.42s;
+}
+.abm-reader.is-open { visibility: visible; pointer-events: auto; transition: none; }
+
+/* 信纸外面一层和底色同色的薄纱（不是暗色遮罩），点它收回 */
+.abm-reader-catch {
+  position: absolute;
+  inset: 0;
+  background: rgba(var(--ab-bg-rgb), 0.6);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.abm-reader.is-open .abm-reader-catch { opacity: 1; }
+
+.abm-reader-sheet {
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  top: 6vh;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  transform: translateY(105%);
+  transition: transform 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.abm-reader.is-open .abm-reader-sheet { transform: translateY(0); }
+
+/* 顶上的小横条：往下拖收回 */
+.abm-reader-grip {
+  flex: none;
+  display: flex;
+  justify-content: center;
+  padding: 10px 0 8px;
+  touch-action: none;
+  cursor: grab;
+}
+.abm-reader-grip span {
+  width: 46px;
+  height: 5px;
+  border-radius: 3px;
+  background: rgba(110, 80, 50, 0.45);
+}
+html[data-theme='dark'] .abm-reader-grip span { background: rgba(255, 220, 180, 0.45); }
+
+.abm-reader-close {
+  position: absolute;
+  z-index: 5;   /* 信纸自带 position: relative + z-index: 2，排在按钮后面，同层级会把按钮盖住 */
+  top: 22px;
+  right: 10px;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 1px solid rgba(110, 80, 50, 0.25);
+  border-radius: 50%;
+  color: #2b2521;
+  background: var(--ab-grain-paper), #fffbf3;
+  box-shadow: 0 3px 8px rgba(60, 38, 18, 0.25);
+  font: 700 1.2rem/1 var(--ab-mono);
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.abm-reader-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* 抽屉里那张信纸：页面上的信纸复制过来，用白天的配色（它不在 .ab-letter 里，拿不到那里换回白天的变量） */
+.abm-reader-paper {
+  --ab-text: #2f2620;
+  --ab-text-dim: #7a6a5a;
+  --ab-accent: #f0a14e;
+  --ab-accent-deep: #b86814;
+  --ab-accent-text: #9a520c;
+  --ab-card: #fcf8f1;
+  --ab-line: rgba(110, 80, 50, 0.2);
+  --ab-paper: #fffbf3;
+  --ab-ink: #2b2521;
+  --ab-ink-dim: #756a60;
+  min-height: 100%;
+  margin: 0 !important;
+  padding: 22px 20px 40px !important;
+  color: var(--ab-ink);
+  border-radius: 4px 4px 0 0;
+  box-sizing: border-box;
+}
+html.ab-m.abm-reader-open,
+html.ab-m.abm-reader-open body { overflow: hidden; }
+
+/* ---------- 第一部分 · 打卡本：格子放大、横着滑（about-m.js 画好后滚到最新），星期那一列钉在左边；统计 2 × 2 ---------- */
+html.ab-m .about-heatmap-grid {
+  grid-template-columns: 18px repeat(var(--cols, 53), 13px);
+  width: max-content;
+  min-width: 0;
+}
+html.ab-m .about-heatmap-wd {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  background: var(--ab-card);
+}
+html.ab-m .about-heatmap { scrollbar-width: none; }
+html.ab-m .about-heatmap::-webkit-scrollbar { display: none; }
+html.ab-m .about-heatmap-stats {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 6px 14px;
+}
+
+/* ---------- 横滑（about-m.js makeSwipe）：四张技能卡、精选文章里主卡以外的几篇 ---------- */
+html.ab-m .abm-swipe {
+  display: flex;
+  gap: 14px;
+  margin: 0 -20px;
+  padding: 18px 20px 24px;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scroll-padding: 0 20px;
+  scrollbar-width: none;
+}
+html.ab-m .abm-swipe::-webkit-scrollbar { display: none; }
+html.ab-m .abm-swipe > * {
+  flex: 0 0 84%;
+  min-width: 0;
+  scroll-snap-align: center;
+}
+html.ab-m .abm-dots {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-top: -10px;
+}
+html.ab-m .abm-dots span {
+  width: 6px;
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(110, 80, 50, 0.28);
+  transition: width 0.25s ease, background 0.25s ease;
+}
+html.ab-m .abm-dots span.is-on { width: 16px; background: var(--ab-accent); }
+html.ab-m[data-theme='dark'] .abm-dots span { background: rgba(255, 220, 180, 0.28); }
+html.ab-m[data-theme='dark'] .abm-dots span.is-on { background: var(--ab-accent); }
+
+/* 第二部分：命令台的终端字号缩一档 */
+html.ab-m .about-term { font-size: 0.74rem; }
+
+/* ---------- 第三部分：草稿箱便利贴缩小、斜贴在账本右下角；刚出炉的小票上沿压在菜单卡下面 ---------- */
+html.ab-m .about-draft {
+  width: 64%;
+  margin: -26px 4px 0 auto;
+  z-index: 2;
+}
+html.ab-m .about-special { z-index: 2; }
+html.ab-m .about-fresh {
+  position: relative;
+  z-index: 1;
+  margin-top: -48px;
+}
+
+/* ---------- 第四部分：签箱卡改横版（签箱在左、字在右），整宽一行；签纸点开落在卡片下面 ---------- */
+html.ab-m .about-omikuji {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  column-gap: 14px;
+  align-items: center;
+  width: auto;
+  margin: 0;
+  padding: 34px 20px 24px 12px;
+  text-align: left;
+}
+/* 签箱本身缩到六成（SVG 和摇签动画都按原尺寸写的，整体缩放，不改里面） */
+html.ab-m .about-omikuji-box {
+  grid-row: 1 / span 2;
+  justify-self: center;
+  scale: 0.6;
+  margin: -44px -26px;
+}
+html.ab-m .about-omikuji-name {
+  align-self: end;
+  margin: 0;
+  font-size: 1.32rem;
+}
+html.ab-m .about-omikuji-left { align-self: start; }
+html.ab-m .about-omikuji-slip { top: calc(100% - 10px); }
+
+/* 店猫趴在集点卡的上沿睡觉（不再单独占一行）；头脑风暴和集点卡之间留出它的位置 */
+html.ab-m .about-desk-side { gap: 46px; }
+html.ab-m .about-napcat {
+  position: absolute;
+  z-index: 2;
+  top: -46px;
+  right: 10px;
+  margin: 0;
+}
+
+/* ---------- 第五部分：回忆录一页里照片缩小、留白收紧 ---------- */
+html.ab-m .mj-page { padding: 6% 7% 9%; }
+html.ab-m .mj-photo { width: 46%; margin-top: 2%; }
+html.ab-m .mj-right { min-height: 0; padding-left: 15%; }
+
+/* ---------- 夜间：目录卡、扉页的相纸按夜间版卡片的明暗直接给颜色（照片照旧不变暗） ---------- */
+html.ab-m[data-theme='dark'] .abm-sheet-card {
+  color: #1c1612;
+  background:
+    linear-gradient(90deg, transparent 30px, rgba(196, 84, 64, 0.42) 30px, rgba(196, 84, 64, 0.42) 31px, transparent 31px),
+    var(--ab-grain-paper),
+    #e9e3d8;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4), 0 26px 46px -16px rgba(0, 0, 0, 0.78);
+}
+html.ab-m[data-theme='dark'] .abm-sheet-item { border-bottom-color: rgba(80, 116, 156, 0.26); }
+html.ab-m[data-theme='dark'] .abm-sheet-en { color: #6e5f50; }
+html.ab-m[data-theme='dark'] .abm-sheet-kicker,
+html.ab-m[data-theme='dark'] .abm-sheet-no { color: #8a4609; }
+
+html.ab-m[data-theme='dark'] .about-split-media {
+  background: var(--ab-grain-paper), #e9e3d8;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4), 0 26px 46px -16px rgba(0, 0, 0, 0.78);
+}
+html.ab-m[data-theme='dark'] .about-split-text,
+html.ab-m[data-theme='dark'] .about-split-text.is-left { color: #1c1612; }
+html.ab-m[data-theme='dark'] .about-split-text .about-typewriter-source,
+html.ab-m[data-theme='dark'] .about-split-text .ti-cursor { color: #8a4609; }
+
+/* 夜间的工牌：电脑版夜间把纸面挪到 #idcard::before、给 #idcard 的子元素加滤镜——手机版两面各自带纸，那套不适用：
+   ::before 藏掉（不然翻到一半时后面露出一张不动的纸）；翻面那层不能加滤镜（会把 3D 压平，也会把照片一起压暗）；
+   两面的纸直接给夜间纸色，两面里照片以外的东西各自加夜间滤镜 */
+html.ab-m[data-theme='dark'] .about-idcard { box-shadow: var(--ab-night-lift); }
+html.ab-m[data-theme='dark'] .about-idcard::before { display: none; }
+html.ab-m[data-theme='dark'] .about-idcard > .abm-id-flip { filter: none; }
+html.ab-m[data-theme='dark'] .abm-id-face {
+  background: var(--ab-grain), linear-gradient(180deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0) 60%), #e6e0d7;
+  box-shadow: none;
+}
+html.ab-m[data-theme='dark'] .abm-id-face > :not(.about-idcard-banner, .about-avatar) { filter: var(--ab-night-filter); }
+
+/* 夜间的阅读抽屉：信纸整张加夜间滤镜（信纸上没有照片） */
+html.ab-m[data-theme='dark'] .abm-reader-paper { filter: var(--ab-night-filter); }
+html.ab-m[data-theme='dark'] .abm-reader-close { color: #1c1612; background: var(--ab-grain-paper), #e9e3d8; box-shadow: 0 3px 8px rgba(0, 0, 0, 0.5); }

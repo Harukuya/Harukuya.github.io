@@ -176,7 +176,7 @@
 
   function cafeFxIn(g, env, t) {
     g.clearRect(0, 0, g.canvas.width, g.canvas.height);
-    dust(g, env, t);
+    if (!env.lite) dust(g, env, t);   // 手机版（env.lite）不画浮尘
     env.fx.forEach(function (f, i) { if (DRAW[f.kind]) DRAW[f.kind](g, f, t, i, env); });
   }
 

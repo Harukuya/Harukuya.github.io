@@ -50,6 +50,9 @@
     var cfg = opts.config || chooseConfig();
     if (opts.seed !== undefined && isFinite(opts.seed)) cfg.seed = opts.seed | 0;
     var reduce = !!opts.reduceMotion;
+    // opts.lite（手机版，2026-11-07）：降配——会动的图层重画得慢一些（普通层 83 → 125 毫秒一拍，灯光 / 火花这些快层 32 → 66 毫秒）。
+    // 两倍采样不降：试过改回一倍，地标细节明显变糊（匹诺康尼钟面、空间站辐条），省下的又不多。构图不变（竖屏本来就有自己的排法，见 g.portrait）
+    var lite = !!opts.lite, TICK_MS = lite ? 125 : 83, FAST_MS = lite ? 66 : 32;
     // 窗外主体（2026-09-27 定稿）：空间站 = 素材版 + cel 上色（04b-cabin-paint）；匹诺康尼 / 罗浮 = 素材版；
     // 翁法罗斯 = 素材版 + px 画法的中间光芒（08c-amphoreus-light-px）。对比过的其他版本（px / pxold / 3d / 3d-codex、其余景色的 cel）
     // 挪到了 E:\fblog\窗外地标-备用版本\，怎么接回来见那里的 README.md
@@ -92,8 +95,8 @@
       composition(g);
       layers.forEach(function (L) {
         // 翁法罗斯球体、辐条和横向蓝光按两倍采样；亮星保留原像素尺寸。
-        var density = ((cfg.view === 'penacony' || cfg.view === 'amphoreus' || stationHD || xianzhouHD) && L.name === 'view') || L.name === 'view-detail' || L.name === 'view-sparks' ||
-          (cfg.view === 'amphoreus' && L.name === 'view-fx') ? 2 : 1;
+        var density = (((cfg.view === 'penacony' || cfg.view === 'amphoreus' || stationHD || xianzhouHD) && L.name === 'view') || L.name === 'view-detail' || L.name === 'view-sparks' ||
+          (cfg.view === 'amphoreus' && L.name === 'view-fx')) ? 2 : 1;
         L.el.width = (W + 2 * m) * density;
         L.el.height = (H + 2 * m) * density;
         L.el.style.width = (W + 2 * m) * P + 'px';
@@ -405,7 +408,7 @@
           L.el.style.transform = 'translate3d(' + ox + 'px,' + oy + 'px,0)';
         }
       });
-      if (!reduce && now - lastTick > 83) {
+      if (!reduce && now - lastTick > TICK_MS) {
         lastTick = now;
         layers.forEach(function (L) {
           if (L.fast || L.off) return;
@@ -413,7 +416,7 @@
           else if (L.base) paint(L, t, true);
         });
       }
-      if (!reduce && now - lastFast > 32) {
+      if (!reduce && now - lastFast > FAST_MS) {
         lastFast = now;
         layers.forEach(function (L) { if (L.fast && !L.off) paint(L, t); });
       }

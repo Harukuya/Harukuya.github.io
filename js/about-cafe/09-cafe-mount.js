@@ -1,6 +1,8 @@
 // 09-cafe-mount：把咖啡厅挂到 #ab-cafe 上
 // 时间每次打开随机一个（调试：/about/?cafe=dawn|day|dusk|night 固定），整幅都用它；opts.time 指定就用它（about.js：夜间主题固定夜晚），
 // setTime(id) 换一个时间重画（昼夜切换时），画好之前旧的先留着。
+// opts.lite（手机版，2026-11-07）：小动画精简——窗外那层（星光闪烁、流星、星穹列车、飞鸟）和屋里的浮尘不画，每 140 毫秒一帧（猫甩尾巴也不另外加快）。
+// 手机版的背景随章节横向平移（about-m.js）：每画好一幅，把能平移的最大距离（整幅比屏幕宽出来的那截 ox）和画布像素大小写在 box 的 data-pan-max / data-px 上
 // 像素是 Hero 的一半（Hero 画布高约 300 像素，这里约 540）；分几块画布叠起来：
 //   窗外的天 → 云（另外慢慢往右飘）→ 窗外的小动画 → 房间 + 家具 → 霓虹招牌的亮光（咖啡杯、字各一层，各闪各的，能关）→ 屋里的小动画 → 最前面的盆栽和高脚凳。
 // 鼠标视差：窗外挪得多（隔着窗框看外面在动）；屋里只挪一点——地面和家具在同一块画布上一起挪，前景的盆栽 / 高脚凳只比地面多挪一点点。
@@ -55,7 +57,8 @@
 
   function mount(box, opts) {
     opts = opts || {};
-    var reduce = !!opts.reduceMotion, T = TIMES[pickTime(opts.time)], music = opts.music || null;
+    var reduce = !!opts.reduceMotion, T = TIMES[pickTime(opts.time)], music = opts.music || null, lite = !!opts.lite;
+    var tickMs = lite ? 140 : TICK, tickFastMs = lite ? 140 : TICK_FAST;
     box.dataset.time = T.id;
     var built = null, job = 0, running = false, solo = false, visible = !document.hidden, raf = 0, started = !opts.manualStart;
     var clock = 0, lastNow = 0, lastTick = -1e9, mouse = { x: 0.5, y: 0.5 }, cur = { x: 0, y: 0 };
@@ -156,8 +159,10 @@
       built = {
         layers: layers, room: room, neon: neon, neonA: 1, neon2: neon2, neonA2: 1, hot: ctx.hot, P2: P2, m: m, ox: ox, w: L.w, h: L.h, maxShift: maxShift, vw: vw, vh: vh,
         cloudW: R.cloud ? R.cloud.w : 0, gIn: fi.getContext('2d'), gOut: fo.getContext('2d'),
-        env: { L: L, T: T, fx: ctx.fx, shafts: ctx.shafts, music: music, ev: ev }
+        env: { L: L, T: T, fx: ctx.fx, shafts: ctx.shafts, music: music, ev: ev, lite: lite }
       };
+      box.dataset.px = String(P2);
+      box.dataset.panMax = String(ox);
       drawFx(reduce ? 3 : clock);
       place();
       if (mirrors.length) refreshMirrors();
@@ -167,7 +172,7 @@
 
     function drawFx(t) {
       PX.cafeFxIn(built.gIn, built.env, t);
-      PX.cafeFxOut(built.gOut, built.env, t);
+      if (!lite) PX.cafeFxOut(built.gOut, built.env, t);
     }
     function place() {
       var drift = built.cloudW ? Math.floor(clock * CLOUD_SPEED) % built.cloudW : 0;
@@ -200,7 +205,7 @@
       lastNow = now;
       var tx = -(mouse.x - 0.5) * 2 * built.maxShift, ty = -(mouse.y - 0.5) * built.maxShift;
       cur.x += (tx - cur.x) * 0.07; cur.y += (ty - cur.y) * 0.07;
-      var tick = now - lastTick >= (PX.cafeFxFast(built.env, clock) ? TICK_FAST : TICK);
+      var tick = now - lastTick >= (PX.cafeFxFast(built.env, clock) ? tickFastMs : tickMs);
       if (tick) { lastTick = now; drawFx(clock); }
       place();
       if (tick && mirrorLive) refreshMirrors();

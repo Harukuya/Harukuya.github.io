@@ -2196,11 +2196,15 @@ html.ab-anim .ab-letter:not(.is-signed) .ab-letter-motto span { clip-path: inset
 
 /* 第四项「下次提交 AFKfishing...」：每个字母一个 span（--i = 第几个字），
    颜色在一圈彩色里慢慢轮换、字母之间错开一点（颜色像一道彩虹往右流）；同时像水面上的浮漂一样一上一下，相位也错开，连成一道小波浪。
-   后面三个点（--j）依次亮起、熄灭，像在等鱼上钩。颜色都挑在纸色底上看得清的深一点的色 */
+   后面三个点（--j）依次亮起、熄灭，像在等鱼上钩。颜色都挑在纸色底上看得清的深一点的色。
+   颜色怎么轮（2026-11-07 改）：字本身一直是第一种红（#e0484f），换色靠每个字自己的滤镜（hue-rotate + saturate + brightness）——
+   滤镜动画是合成线程做的；原来直接动 color，每帧都要主线程重算样式、重绘这一块，空闲时也一直占着（手机 4× 降速下每 5 秒多 1.4–2 秒）。
+   ab-afk-hue 的参数是按原来那六种颜色解出来的：六个原关键帧上颜色分毫不差，每段再细分四格，过渡和原来的线性渐变最多差 7/255 */
 .ab-afk { white-space: nowrap; }
 
 .ab-afk span {
   display: inline-block;
+  color: #e0484f;
   animation:
     ab-afk-hue 3.6s linear infinite,
     ab-afk-float 1.8s ease-in-out infinite;
@@ -2215,13 +2219,33 @@ html.ab-anim .ab-letter:not(.is-signed) .ab-letter-motto span { clip-path: inset
   animation-delay: calc(var(--i) * -0.22s), calc(var(--i) * -0.16s), calc(var(--j) * 0.25s);
 }
 
+/* 原来是 color：0% #e0484f → 16% #ec7d1f → 33% #c59a0c → 50% #2f9e63 → 66% #2a86d1 → 83% #8655d4 → 100% 回到 #e0484f */
 @keyframes ab-afk-hue {
-  0%, 100% { color: #e0484f; }
-  16% { color: #ec7d1f; }
-  33% { color: #c59a0c; }
-  50% { color: #2f9e63; }
-  66% { color: #2a86d1; }
-  83% { color: #8655d4; }
+  0% { filter: hue-rotate(0.0deg) saturate(1.000) brightness(1.000); }
+  4% { filter: hue-rotate(10.4deg) saturate(0.922) brightness(1.088); }
+  8% { filter: hue-rotate(20.4deg) saturate(0.883) brightness(1.176); }
+  12% { filter: hue-rotate(29.5deg) saturate(0.873) brightness(1.264); }
+  16% { filter: hue-rotate(37.4deg) saturate(0.882) brightness(1.352); }
+  20.25% { filter: hue-rotate(43.1deg) saturate(0.856) brightness(1.379); }
+  24.5% { filter: hue-rotate(49.4deg) saturate(0.854) brightness(1.403); }
+  28.75% { filter: hue-rotate(55.9deg) saturate(0.888) brightness(1.423); }
+  33% { filter: hue-rotate(61.6deg) saturate(0.922) brightness(1.446); }
+  37.25% { filter: hue-rotate(71.8deg) saturate(0.771) brightness(1.388); }
+  41.5% { filter: hue-rotate(88.6deg) saturate(0.608) brightness(1.335); }
+  45.75% { filter: hue-rotate(119.0deg) saturate(0.493) brightness(1.295); }
+  50% { filter: hue-rotate(149.7deg) saturate(0.639) brightness(1.213); }
+  54% { filter: hue-rotate(168.8deg) saturate(0.641) brightness(1.175); }
+  58% { filter: hue-rotate(187.3deg) saturate(0.644) brightness(1.168); }
+  62% { filter: hue-rotate(204.5deg) saturate(0.694) brightness(1.167); }
+  66% { filter: hue-rotate(216.6deg) saturate(0.850) brightness(1.143); }
+  70.25% { filter: hue-rotate(229.2deg) saturate(0.791) brightness(1.106); }
+  74.5% { filter: hue-rotate(243.9deg) saturate(0.776) brightness(1.070); }
+  78.75% { filter: hue-rotate(259.2deg) saturate(0.816) brightness(1.034); }
+  83% { filter: hue-rotate(273.0deg) saturate(0.916) brightness(0.997); }
+  87.25% { filter: hue-rotate(292.7deg) saturate(0.743) brightness(0.998); }
+  91.5% { filter: hue-rotate(319.0deg) saturate(0.696) brightness(0.999); }
+  95.75% { filter: hue-rotate(343.3deg) saturate(0.796) brightness(0.999); }
+  100% { filter: hue-rotate(360.0deg) saturate(1.000) brightness(1.000); }
 }
 
 @keyframes ab-afk-float {
@@ -3325,9 +3349,18 @@ html.ab-anim .ab-letter:not(.is-signed) .ab-letter-motto span { clip-path: inset
 }
 
 .about-special-cup {
+  position: relative;
+  display: block;
+  flex: none;
   width: 66px;
-  height: auto;
+  aspect-ratio: 64 / 52;
   margin-top: 4px;
+}
+
+.about-special-cup-svg {
+  display: block;
+  width: 100%;
+  height: auto;
   fill: none;
   stroke: currentColor;
   stroke-width: 2;
@@ -3336,9 +3369,22 @@ html.ab-anim .ab-letter:not(.is-signed) .ab-letter-motto span { clip-path: inset
   overflow: visible;
 }
 
-.about-special-cup .cup-steam { animation: ab-steam 2.8s ease-in-out infinite; }
-.about-special-cup .cup-steam:nth-child(2) { animation-delay: -0.9s; }
-.about-special-cup .cup-steam:nth-child(3) { animation-delay: -1.9s; }
+/* 三缕热气：原来是 SVG 里的三条线，SVG 里面的东西动起来合成线程接不了、每帧都要主线程重绘；
+   现在是三个普通小块（currentColor 涂色、用同一条线的形状做遮罩），位置大小和原来 SVG 里一模一样（杯子 66px 宽 = viewBox 64 的 1.03125 倍），只动透明度和位移 */
+.about-special-steam {
+  position: absolute;
+  top: 5.16px;
+  left: 19.59px;
+  width: 10.31px;
+  height: 11.34px;
+  background: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='19 5 10 11'%3E%3Cpath d='M24 15c-3-3 3-5 0-9' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E") 0 0 / 100% 100% no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='19 5 10 11'%3E%3Cpath d='M24 15c-3-3 3-5 0-9' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E") 0 0 / 100% 100% no-repeat;
+  animation: ab-steam 2.8s ease-in-out infinite;
+}
+
+.about-special-steam:nth-child(2) { left: 27.84px; animation-delay: -0.9s; }
+.about-special-steam:nth-child(3) { left: 36.09px; animation-delay: -1.9s; }
 
 .about-special-board-chalk {
   position: absolute;
@@ -4352,14 +4398,25 @@ html.ab-anim .ab-letter:not(.is-signed) .ab-letter-motto span { clip-path: inset
   border-color: var(--ab-accent-deep);
   color: var(--ab-accent-deep);
   cursor: var(--ab-cursor-hand);
+}
+
+/* 一明一暗的光圈：画在 ::after 上、一直是满的 5px，只动透明度和大小（合成线程）；原来直接动 box-shadow，每帧都要主线程重绘 */
+.about-points-slot.is-today::after {
+  content: '';
+  position: absolute;
+  inset: -1px;   /* 比边框外沿往里收半像素、光圈宽 5.5px：外沿和原来一样，内沿压住边框半像素，免得两条抗锯齿边之间透出一道细缝 */
+  border-radius: 50%;
+  box-shadow: 0 0 0 5.5px rgba(240, 161, 78, 0.38);
+  opacity: 0;
+  pointer-events: none;
   animation: ab-points-glow 1.8s ease-in-out infinite;
 }
 
 .about-points-slot:focus-visible { outline: 2px dashed var(--ab-accent); outline-offset: 3px; }
 
 @keyframes ab-points-glow {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(240, 161, 78, 0); }
-  50% { box-shadow: 0 0 0 5px rgba(240, 161, 78, 0.38); }
+  0%, 100% { opacity: 0; scale: 0.8; }
+  50% { opacity: 1; scale: 1; }
 }
 
 /* 盖上的章：朱红双圈、做旧，中间一只实心杯子 + 盖章那天的日期；每枚歪的角度不一样（--rot） */
@@ -4938,14 +4995,25 @@ html.ab-anim .ab-letter:not(.is-signed) .ab-letter-motto span { clip-path: inset
   bottom: 0;
   left: 0;
   width: calc(var(--p, 0) * 100%);
+  overflow: hidden;
   border-radius: 2px;
-  background: linear-gradient(90deg, #e0484f, #ec7d1f, #e7b416, #2f9e63, #2a86d1, #8655d4, #e0484f, #ec7d1f, #e7b416, #2f9e63, #2a86d1, #8655d4, #e0484f) 0 0 / 200% 100%;
   transition: width 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* 彩虹往右流：彩虹画在 ::before 上——它是填满那截的三倍宽（左边多出两截藏着），每张图是填满那截的两倍宽、里面两道彩虹（露出来的正好一道）；
+   整条往右挪一张图那么远正好接回开头。只动 transform（合成线程）；原来动 background-position，每帧都要主线程重绘 */
+.about-muse-progress i::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -200%;
+  width: 300%;
+  background: linear-gradient(90deg, #e0484f, #ec7d1f, #e7b416, #2f9e63, #2a86d1, #8655d4, #e0484f, #ec7d1f, #e7b416, #2f9e63, #2a86d1, #8655d4, #e0484f) 0 0 / 66.6667% 100% repeat-x;
   animation: ab-muse-rainbow 3s linear infinite;
 }
 
-/* 彩虹往右流：图是填满那截的两倍宽、里面两道彩虹（露出来的正好一道），挪满一整张图正好接回开头 */
-@keyframes ab-muse-rainbow { to { background-position: -200% 0; } }
+@keyframes ab-muse-rainbow { to { transform: translateX(66.6667%); } }
 
 .about-muse-next {
   flex: none;
@@ -5476,6 +5544,9 @@ html.ab-anim .about-split-media {
   pointer-events: none;
 }
 
+/* picture 只用来给手机挑小尺寸的图（index.pug splitSection 的 imgM），不参与排版 */
+.about-split-media picture { display: contents; }
+
 .about-split-media img {
   width: 100%;
   height: 100%;
@@ -5661,7 +5732,9 @@ html.ab-anim .about-split-media.is-band img {
 
 /* 屏幕外暂停的循环动画（about.js initOffscreenPause 给元素加 .ab-off；离屏幕还有一屏远时就去掉，滚到眼前前早已恢复） */
 .ab-off,
-.ab-off * { animation-play-state: paused !important; }
+.ab-off *,
+.ab-off *::before,
+.ab-off *::after { animation-play-state: paused !important; }
 
 /* 分割段钉住期间（解锁后分割线伸出、幕布拉开 / 合上那一段，about.js 滚动导演给 html 加 .ab-busy）：
    页面上所有登记过的循环动画（about.js LOOPS，都带 .ab-loop）一起停下，伪元素上的也停，把性能让给展开动画 */
@@ -5685,7 +5758,9 @@ html.ab-anim .about-scrollhint { opacity: 0; }
 html.ab-fallback .about-panel { display: none; }
 
 /* ========== 移动端 / 减少动态 ========== */
-@media (max-width: 768px) {
+/* 窄屏的单栏排法：竖屏（≤ 768px），以及横着拿的手机（高 ≤ 500 且是触屏）——这两种都是手机版（html.ab-m，index.pug 头部判定），
+   手机版自己的东西在 about-m.css；电脑上把窗口拉窄时也用这一段 */
+@media (max-width: 768px), (max-height: 500px) and (pointer: coarse) {
   :root { --ab-bar-h: 54px; --ab-bar-pad: 14px; }
 
   .about-nav { top: 9px; right: 12px; gap: 10px; }
@@ -5796,7 +5871,7 @@ html.ab-fallback .about-panel { display: none; }
   .ab-player-cover img { animation: none !important; }
   .ab-player { --beat: 0 !important; --lo: 0 !important; --mid: 0 !important; --hi: 0 !important; }
   .about-bento-slide { transition: opacity 0.6s ease; transform: none; }
-  .about-special-cup .cup-steam { animation: none; opacity: 0.6; }
+  .about-special-steam { animation: none; opacity: 0.6; }
   .about-special-board.is-wobble { animation: none; }
   .about-muse-next span { transition: none; }
   .about-special-menu,
@@ -6061,6 +6136,4 @@ html.ab-fallback .about-panel { display: none; }
   will-change: opacity;
 }
 
-/* 屏幕外暂停（.ab-off）也管到伪元素上的灯管 / 光晕 */
-[data-theme='dark'] .ab-off::after,
-[data-theme='dark'] .ab-off *::after { animation-play-state: paused !important; }
+/* 屏幕外暂停（.ab-off）管到伪元素上的灯管 / 光晕：见上面「屏幕外暂停的循环动画」那条（含 ::before / ::after） */

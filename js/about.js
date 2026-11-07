@@ -76,7 +76,11 @@
   var reduceMotion = false;
   // 手机也走动画模式（2026-10-01，用户要求：解锁后的分割段、信纸展开都和电脑一样有动画），isMobile 暂时不参与判定
   var isMobile = window.matchMedia('(max-width: 768px)').matches;
-  var animOn = hasAnimLibs && !reduceMotion;   // 原来是 hasAnimLibs && !reduceMotion && !isMobile
+  // 手机版（html.ab-m，index.pug 头部打开时判定一次，2026-11-07 起，设计见 docs/个人页设计/13）：分割段不钉住，改成常驻的章节扉页
+  //（about-m.css 把降级模式的静态图带排成扉页），块不做钉住后的浮现（about-m.js 用 IntersectionObserver 自己做）——
+  // 也就是走降级模式那一套（不建分割段的 ScrollTrigger）；Hero 穿梭照旧（voyageOn）。手机版专属的交互在 about-m.js
+  var MOBILE = document.documentElement.classList.contains('ab-m');
+  var animOn = hasAnimLibs && !reduceMotion && !MOBILE;   // 原来是 hasAnimLibs && !reduceMotion && !isMobile；2026-10-01 起手机也走动画模式，11-07 手机版单独出来后又不走了
   // Hero 穿梭（退场 / 返回，见 initHeroVoyage）：随动画模式一起开（手机原来走降级时单独打开过这一段，现在手机也走动画模式了，两者相同）
   var voyageOn = hasAnimLibs && !reduceMotion;
 
@@ -88,6 +92,7 @@
   var LOCK_KEY = 'about-splits';
   var locked = true;
   try { locked = sessionStorage.getItem(LOCK_KEY) !== 'open'; } catch (e) { /* 存储不可用：按默认锁着 */ }
+  if (MOBILE) locked = false;   // 手机版：章节扉页常驻，没有锁（锁按钮在 about-m.css 里藏掉）
   try { localStorage.removeItem(LOCK_KEY); } catch (e) { /* 忽略 */ }
   document.documentElement.classList.toggle('ab-locked', locked);
 
@@ -382,7 +387,7 @@
     var el = document.getElementById('hero-pixel');
     if (!el || !window.AboutPixelHero || heroState === 'gone') return;
     try {
-      pixelHero = window.AboutPixelHero.mount(el, { reduceMotion: reduceMotion, config: heroConfig || undefined });
+      pixelHero = window.AboutPixelHero.mount(el, { reduceMotion: reduceMotion, config: heroConfig || undefined, lite: MOBILE });   // 手机版降配（见 about-pixel/10-mount）
       heroConfig = pixelHero.config;
     } catch (e) {
       pixelHero = null; // 画不出来就保留 CSS 夜色底
@@ -467,7 +472,8 @@
 
   // ========== 滚动导演：底色渐变 / 阅读进度 / 页眉与书签 / 章节与印花 ==========
   // 一个 rAF 节流的滚动监听统一驱动，动画模式与降级模式共用：
-  // - 底色：改写 :root 的 --ab-bg / --ab-bg-rgb（背景层、遮罩板、Hero 底边都跟着变，始终同色无接缝）
+  // - 底色：改写 --ab-bg / --ab-bg-rgb，只写到用到它的那几个元素上（背景层、页眉、遮罩板、切换幕布、Hero 底边……），始终同色无接缝；
+  //   不写在 :root 上——那样每变一级整页一千多个元素都要重算样式（见 update 里的说明）
   // - 进度：只写到页眉进度线与咖啡杯两个元素上，避免全局样式重算
   // - 章节：动画模式按"已过半的分割段数"判定（换章发生在幕布合上期间），降级模式按块位置判定
   // - 印花：当前章那层淡入 + 慢速视差；动画模式下分割段钉住前后整组淡出，换章藏在幕布后面
@@ -569,6 +575,9 @@
     var marks = [].slice.call(document.querySelectorAll('.ab-mark'));
     var blocks = [].slice.call(document.querySelectorAll('.about-block'));
     var lastBg = '', lastBusy = false;
+    // 底色写给谁：所有用到 --ab-bg / --ab-bg-rgb 的元素（about.css 里搜 var(--ab-bg)）。:root 上那份只是主题的起始色，
+    // body 的底色用它就够了（全屏的背景层盖在上面，只有页面回弹时才露出来）。CSS 里新加用到 --ab-bg 的元素，要加进这里
+    var bgTargets = [].slice.call(document.querySelectorAll('.ab-backdrop, .ab-bar, .ab-flip, .about-hero-wash, .about-panel, .about-idcard-slot, .about-cta'));
     var lastY = window.scrollY;
     var ticking = false;
     // 各块顶端的位置、页面能滚多远：量一次记下来（文档坐标），滚动时直接用——以前每滚一帧都去读，
@@ -607,12 +616,17 @@
       var max = maxY;
       var p = max > 0 ? Math.min(1, Math.max(0, y / max)) : 0;
 
-      // 底色：颜色只有几十级，变了才写，避免每帧触发全局样式重算
+      // 底色：颜色只有几十级，变了才写。只写到 bgTargets 上，每次只重算它们自己那一小块——
+      // 原来写在 :root 上，长页面滚动时每划过一百来 px 就变一级、整页重算一次样式，手机上一次上百毫秒，是滚动掉帧的头号原因
+      // （2026-11-07 实测，手机尺寸 + CPU 降速 4 倍：滚动每秒 27 帧 → 42 帧，滚动期主线程长任务 9.8 秒 → 0.3 秒）
       var rgb = bgAt(p).join(', ');
       if (rgb !== lastBg) {
         lastBg = rgb;
-        root.style.setProperty('--ab-bg', 'rgb(' + rgb + ')');
-        root.style.setProperty('--ab-bg-rgb', rgb);
+        var bgCss = 'rgb(' + rgb + ')';
+        bgTargets.forEach(function (el) {
+          el.style.setProperty('--ab-bg', bgCss);
+          el.style.setProperty('--ab-bg-rgb', rgb);
+        });
       }
 
       // 阅读进度：页眉底边进度线 + 咖啡杯液面
@@ -746,7 +760,7 @@
     if (btn) btn.addEventListener('click', function () {
       var t = isNight() ? 'light' : 'dark';
       save(t);
-      if (!flip || !animOn) { apply(t); return; }
+      if (!flip || !(animOn || MOBILE)) { apply(t); return; }
       flip.classList.add('is-on');
       setTimeout(function () {
         // 幕布等背景按新的时间画好、换上去再掀开（不然掀开后还是旧的背景，过一会儿才突然一换）；最多等 1.5 秒
@@ -1109,7 +1123,7 @@
     var prof = card.closest('.about-profile'), block = card.closest('.about-block');
     var head2 = document.querySelector('#block-2 .about-head');
     var brow2 = document.querySelector('#block-2 .about-eyebrow');
-    var smooth = animOn && !!paper.animate;
+    var smooth = (animOn || MOBILE) && !!paper.animate;   // 手机版不走动画模式，信照样抽出来 / 收回去
     var open = false, busy = false, signed = !smooth, foldH = 0;
     var prof0 = 0, room = 0, mb0 = 0, pad = 0; // 收着时第一块内容的高度 / 能让出的空当 / 原来的下外边距 / 打卡本下沿到第一块下沿
     var seamGo = null;                         // 正在开 / 关时的分割段接缝：按要去的那个状态，点下去那一刻量好
@@ -2564,7 +2578,7 @@
     function show(f, v) { f.el.textContent = f.text && v === f.to ? f.text : v.toFixed(f.dec); }
     function play() {
       [].forEach.call(bars.children, function (b) { b.style.setProperty('--h', b.dataset.h); });
-      if (!animOn) { figs.forEach(function (f) { show(f, f.to); }); return; }
+      if (!animOn && !MOBILE) { figs.forEach(function (f) { show(f, f.to); }); return; }
       var t0 = performance.now();
       (function frame(t) {
         var e = Math.min(1, (t - t0) / 1100), q = 1 - Math.pow(1 - e, 3);
@@ -2572,7 +2586,7 @@
         if (e < 1) requestAnimationFrame(frame);
       })(t0);
     }
-    if (!animOn || !('IntersectionObserver' in window)) { play(); return; }
+    if ((!animOn && !MOBILE) || !('IntersectionObserver' in window)) { play(); return; }
     var io = new IntersectionObserver(function (entries) {
       if (entries[0].isIntersecting) { io.disconnect(); play(); }
     }, { threshold: 0.5 });
@@ -3785,6 +3799,7 @@
         },
         onSoloExit: function () { solo.exit(); },
         time: isNight() ? 'night' : null,   // 夜间主题固定画夜晚（用户 2026-11-06）；白天照旧每次随机
+        lite: MOBILE,   // 手机版：小动画精简（见 about-cafe/09-cafe-mount 开头）
         manualStart: true
       });
       // 页面加载完、入场也播完再开始画（这之前它藏在 hero 后面，或者页面正忙着加载，画它会和加载、入场抢主线程）。
@@ -3940,6 +3955,8 @@
       // 手机：其余照旧降级，hero 穿梭单独打开（见 voyageOn）
       if (voyageOn) {
         gsap.registerPlugin(ScrollTrigger);
+        ScrollTrigger.config({ ignoreMobileResize: true, autoRefreshEvents: 'visibilitychange,resize' });
+        keepCssAnimPhase();
         initHeroVoyage();
       } else {
         initStaticStarsFade();
